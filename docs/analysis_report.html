@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESI E-Value Analysis: Critical Assessment of Dark Energy Evidence</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 30px; }
+        h3 { color: #0f3460; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .highlight { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; }
+        .critical { background: #f8d7da; padding: 15px; border-left: 4px solid #dc3545; margin: 20px 0; }
+        .success { background: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; }
+        code { background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: 'Monaco', monospace; }
+        pre { background: #1a1a2e; color: #0f0; padding: 20px; border-radius: 5px; overflow-x: auto; }
+        .comparison-box { display: flex; gap: 20px; margin: 20px 0; }
+        .box { flex: 1; padding: 20px; border-radius: 8px; text-align: center; }
+        .box-bad { background: #f8d7da; border: 2px solid #dc3545; }
+        .box-good { background: #d4edda; border: 2px solid #28a745; }
+        .big-number { font-size: 48px; font-weight: bold; margin: 10px 0; }
+        .arrow { font-size: 48px; display: flex; align-items: center; color: #666; }
+        a { color: #e94560; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DESI E-Value Analysis</h1>
+        <p><em>Critical Assessment of Dark Energy Evidence</em></p>
+        <p><strong>Repository:</strong> <a href="https://github.com/jinyoungkim927/desi-evalue-analysis">github.com/jinyoungkim927/desi-evalue-analysis</a></p>
+
+        <h2>Executive Summary</h2>
+        <div class="critical">
+            <strong>Key Finding:</strong> The DESI "3-4σ evidence" for dynamic dark energy is NOT robust.
+            When properly validated on held-out data, the e-value drops from 392 to 1.4 —
+            a 280x difference showing the evidence is largely due to overfitting.
+        </div>
+
+        <h2>The Critical Comparison</h2>
+        <div class="comparison-box">
+            <div class="box box-bad">
+                <div>Simple Likelihood Ratio</div>
+                <div class="big-number" style="color: #dc3545;">392</div>
+                <div>~3.9σ</div>
+                <div><strong>BIASED</strong><br>(fitted to same data)</div>
+            </div>
+            <div class="arrow">→</div>
+            <div class="box box-good">
+                <div>Data-Split Validation</div>
+                <div class="big-number" style="color: #28a745;">1.4</div>
+                <div>~0.8σ</div>
+                <div><strong>VALID</strong><br>(tested on held-out data)</div>
+            </div>
+        </div>
+        <p style="text-align: center; font-size: 1.2em;"><strong>280x difference!</strong> The evidence essentially disappears when properly validated.</p>
+
+        <h2>Data Source</h2>
+        <div class="success">
+            <strong>Official DESI DR2 Data</strong><br>
+            Source: <a href="https://github.com/CobayaSampler/bao_data">CobayaSampler/bao_data</a> (DESI-endorsed)<br>
+            Paper: <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a><br>
+            Values validated against Table IV (0.5% agreement)
+        </div>
+
+        <h2>Results: Chi-Squared Analysis (BAO Only)</h2>
+        <table>
+            <tr><th>Model</th><th>χ²</th><th>Δχ²</th><th>Naive σ</th></tr>
+            <tr><td>ΛCDM (w=-1, wa=0)</td><td>25.4</td><td>—</td><td>—</td></tr>
+            <tr><td>w₀wₐCDM (w₀=-0.73, wₐ=-1.05)</td><td>13.5</td><td>11.9</td><td>~3.5σ</td></tr>
+        </table>
+
+        <h2>Results: E-Value Analysis</h2>
+        <table>
+            <tr><th>Method</th><th>E-value</th><th>σ equiv</th><th>Validity</th></tr>
+            <tr style="background: #f8d7da;"><td>Simple Likelihood Ratio</td><td>392</td><td>3.9σ</td><td><strong>BIASED</strong> (overfitted)</td></tr>
+            <tr><td>GROW Mixture (narrow prior)</td><td>97</td><td>3.0σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>GROW Mixture (default prior)</td><td>15</td><td>2.3σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>GROW Mixture (wide prior)</td><td>17</td><td>2.4σ</td><td>Prior-sensitive</td></tr>
+            <tr style="background: #d4edda;"><td><strong>Data-Split Test</strong></td><td><strong>1.4</strong></td><td><strong>0.8σ</strong></td><td><strong>VALID</strong></td></tr>
+        </table>
+
+        <h2>What Are E-Values?</h2>
+        <ul>
+            <li><strong>Definition:</strong> Non-negative random variable with E[E | H₀] ≤ 1</li>
+            <li><strong>E = 1:</strong> No evidence against null hypothesis</li>
+            <li><strong>E = 10:</strong> Evidence equivalent to 10:1 odds against null</li>
+            <li><strong>E &lt; 1:</strong> Evidence <em>favors</em> the null hypothesis</li>
+        </ul>
+
+        <h2>Why the Evidence is Not Robust</h2>
+
+        <h3>1. Overfitting Dominates</h3>
+        <p>The DESI best-fit w₀wₐ was found by fitting to the same data used to claim significance.
+        When we split data (train on z&lt;1, test on z≥1), E drops from 392 → 1.4.</p>
+
+        <h3>2. Prior Sensitivity</h3>
+        <p>GROW e-values vary from 15 to 97 (~7x) depending on the w₀, wₐ range.
+        This shows results depend heavily on methodology choices.</p>
+
+        <h3>3. Bayesian Analysis Contradicts</h3>
+        <div class="highlight">
+            <a href="https://arxiv.org/abs/2511.10631">arXiv:2511.10631</a> analyzed the full DESI+CMB data:<br>
+            <strong>ln(B) = -0.57 ± 0.26</strong> → This <strong>FAVORS ΛCDM</strong> over w₀wₐCDM!
+        </div>
+
+        <h3>4. Dataset Tensions</h3>
+        <p>2.95σ tension exists between DESI BAO and DES-Y5 supernovae within ΛCDM.
+        The w₀wₐ model may be "resolving" this tension rather than detecting real physics.</p>
+
+        <h2>Power Analysis</h2>
+        <p>If w₀wₐCDM were true, simulations show we'd expect median E ~ 21.<br>
+        Our observed E = 15 is at the 40th percentile — consistent with <em>either</em> model being true.</p>
+
+        <h2>Summary: All Evidence Measures</h2>
+        <table>
+            <tr><th>Method</th><th>Result</th><th>Interpretation</th></tr>
+            <tr><td>DESI Reported (BAO+CMB+SNe)</td><td>3-4σ</td><td>Frequentist headline</td></tr>
+            <tr><td>Our χ² (BAO only)</td><td>~3.5σ</td><td>Consistent with DESI</td></tr>
+            <tr><td>E-value (overfitted)</td><td>392 (~3.9σ)</td><td>BIASED</td></tr>
+            <tr style="background: #d4edda;"><td><strong>E-value (validated)</strong></td><td><strong>1.4 (~0.8σ)</strong></td><td><strong>NO EVIDENCE</strong></td></tr>
+            <tr style="background: #fff3cd;"><td>Bayesian (full data)</td><td>Favors ΛCDM</td><td>Contradicts frequentist</td></tr>
+        </table>
+
+        <h2>Conclusion</h2>
+        <div class="critical">
+            <strong>The evidence for dynamic dark energy is NOT robust.</strong><br><br>
+            The disagreement between:<br>
+            • Frequentist significance (3-4σ)<br>
+            • Properly validated e-values (E=1.4, ~0.8σ)<br>
+            • Bayesian analysis (favors ΛCDM)<br><br>
+            indicates the evidence is driven by methodology choices, not robust physics.
+        </div>
+
+        <h2>Recommendations</h2>
+        <ol>
+            <li><strong>Do not claim discovery</strong> based on current data</li>
+            <li><strong>Wait for DESI DR3+</strong> (2026-2027) for more data</li>
+            <li><strong>Resolve dataset tensions</strong> (CMB vs BAO vs SNe)</li>
+            <li><strong>Seek independent confirmation</strong> (Euclid, Roman Space Telescope)</li>
+        </ol>
+
+        <h2>References</h2>
+        <ul>
+            <li>DESI DR2: <a href="https://arxiv.org/abs/2503.14738">arXiv:2503.14738</a></li>
+            <li>Bayesian critique: <a href="https://arxiv.org/abs/2511.10631">arXiv:2511.10631</a></li>
+            <li>Dataset tensions: <a href="https://arxiv.org/abs/2504.15222">arXiv:2504.15222</a></li>
+            <li>E-values: Ramdas et al. 2023, Statistical Science 38(4)</li>
+            <li>Data: <a href="https://github.com/CobayaSampler/bao_data">CobayaSampler/bao_data</a></li>
+        </ul>
+
+        <hr>
+        <p><em>Analysis: February 2026</em><br>
+        <a href="https://github.com/jinyoungkim927/desi-evalue-analysis">View full code and notebooks on GitHub</a></p>
+    </div>
+</body>
+</html>
