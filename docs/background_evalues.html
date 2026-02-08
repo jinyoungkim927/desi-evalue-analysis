@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Values Background - DESI Analysis</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 40px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: #0f3460; }
+        a { color: #e94560; }
+        .nav { background: #16213e; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .math-block { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; }
+        .highlight { background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; }
+        .info { background: #cce5ff; padding: 20px; border-left: 4px solid #004085; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="analysis_report.html">Summary</a>
+        <a href="full_analysis.html">Full Math</a>
+        <a href="background_evalues.html">E-Values</a>
+        <a href="background_cosmology.html">Cosmology</a>
+        <a href="background_desi_data.html">Data</a>
+    </nav>
+
+    <div class="container">
+        <h1>E-Values: Mathematical Background</h1>
+
+        <h2>What Are E-Values?</h2>
+        <p>E-values are a framework for hypothesis testing developed by Shafer, Vovk, Grünwald, and Ramdas, providing an alternative to p-values.</p>
+
+        <h3>Formal Definition</h3>
+        <div class="info">
+            An <strong>e-value</strong> is a non-negative random variable \(E\) such that under the null hypothesis \(H_0\):
+            \[\mathbb{E}[E \mid H_0] \leq 1\]
+        </div>
+
+        <h2>The Likelihood Ratio E-Value</h2>
+        <div class="math-block">
+            \[E = \frac{L(\text{data} \mid H_1)}{L(\text{data} \mid H_0)} = \frac{P(\text{data} \mid H_1)}{P(\text{data} \mid H_0)}\]
+        </div>
+
+        <h3>Why Is This an E-Value?</h3>
+        <p>Under \(H_0\):</p>
+        <div class="math-block">
+            \[\mathbb{E}\left[\frac{P(\text{data} \mid H_1)}{P(\text{data} \mid H_0)} \mid H_0\right] = \int \frac{P(x \mid H_1)}{P(x \mid H_0)} P(x \mid H_0) dx = \int P(x \mid H_1) dx = 1\]
+        </div>
+
+        <h2>Comparison to P-Values</h2>
+        <table>
+            <tr><th>Property</th><th>P-Value</th><th>E-Value</th></tr>
+            <tr><td>Definition</td><td>\(P(\text{data} \geq \text{observed} \mid H_0)\)</td><td>Random variable with \(\mathbb{E}[E \mid H_0] \leq 1\)</td></tr>
+            <tr><td>Combination</td><td>Complex (Fisher, Stouffer)</td><td>Simple: multiply or average</td></tr>
+            <tr><td>Optional stopping</td><td>Invalid</td><td>Valid</td></tr>
+        </table>
+
+        <h2>The Overfitting Problem</h2>
+        <div class="highlight">
+            <strong>Warning:</strong> If \(H_1\) is chosen <em>after</em> seeing the data, the likelihood ratio can be arbitrarily large even when \(H_0\) is true.
+        </div>
+
+        <h2>GROW Mixture E-Values</h2>
+        <p>To address overfitting, average over alternatives:</p>
+        <div class="math-block">
+            \[E_{\text{mix}} = \int \frac{P(\text{data} \mid \theta)}{P(\text{data} \mid H_0)} \pi(\theta) d\theta\]
+        </div>
+
+        <h2>Data-Split E-Values</h2>
+        <ol>
+            <li><strong>Split</strong> data into training \(D_{\text{train}}\) and test \(D_{\text{test}}\)</li>
+            <li><strong>Fit</strong> the alternative using only \(D_{\text{train}}\)</li>
+            <li><strong>Compute</strong> e-value using only \(D_{\text{test}}\)</li>
+        </ol>
+        <div class="math-block">
+            \[E_{\text{split}} = \frac{P(D_{\text{test}} \mid \hat{H}_1(D_{\text{train}}))}{P(D_{\text{test}} \mid H_0)}\]
+        </div>
+
+        <h2>Interpreting E-Values</h2>
+        <table>
+            <tr><th>E-Value</th><th>Interpretation</th><th>~σ equivalent</th></tr>
+            <tr><td>E < 1</td><td>Favors \(H_0\)</td><td>—</td></tr>
+            <tr><td>E = 1</td><td>No evidence</td><td>0σ</td></tr>
+            <tr><td>E = 10</td><td>Moderate against \(H_0\)</td><td>2.1σ</td></tr>
+            <tr><td>E = 100</td><td>Strong against \(H_0\)</td><td>3.0σ</td></tr>
+        </table>
+
+        <h2>References</h2>
+        <ul>
+            <li>Vovk & Wang (2021): "E-values: Calibration, combination, and applications"</li>
+            <li>Ramdas et al. (2023): "Game-Theoretic Statistics" - Statistical Science 38(4)</li>
+            <li>Shafer (2021): "Testing by betting" - JRSS-A</li>
+        </ul>
+
+        <hr>
+        <p><a href="index.html">← Back to Home</a></p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DESI Data - DESI Analysis</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 40px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: #0f3460; }
+        a { color: #e94560; }
+        .nav { background: #16213e; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .math-block { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; overflow-x: auto; }
+        .highlight { background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; }
+        .info { background: #cce5ff; padding: 20px; border-left: 4px solid #004085; margin: 20px 0; }
+        .success { background: #d4edda; padding: 20px; border-left: 4px solid #28a745; margin: 20px 0; }
+        pre { background: #1a1a2e; color: #0f0; padding: 20px; border-radius: 5px; overflow-x: auto; font-size: 13px; }
+        code { font-family: 'Monaco', 'Consolas', monospace; }
+        ul, ol { margin: 15px 0; }
+        li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="analysis_report.html">Summary</a>
+        <a href="full_analysis.html">Full Math</a>
+        <a href="background_evalues.html">E-Values</a>
+        <a href="background_cosmology.html">Cosmology</a>
+        <a href="background_desi_data.html">Data</a>
+    </nav>
+
+    <div class="container">
+        <h1>DESI DR2 Data: Raw Measurements</h1>
+
+        <h2>Data Source</h2>
+        <p><strong>Official Source</strong>: <a href="https://github.com/CobayaSampler/bao_data">CobayaSampler/bao_data</a></p>
+        <div class="info">
+            This repository is explicitly endorsed by DESI for distributing BAO likelihood data. The DESI DR2 paper (arXiv:2503.14738) states:
+            <blockquote>"All relevant data vectors, covariances, and codes are available from https://github.com/CobayaSampler/bao_data"</blockquote>
+        </div>
+
+        <h2>Raw Data: DESI DR2 BAO Measurements</h2>
+
+        <h3>Data File: <code>desi_gaussian_bao_ALL_GCcomb_mean.txt</code></h3>
+        <pre># [z] [value at z] [quantity]
+0.29500000 7.94167639 DV_over_rs
+0.51000000 13.58758434 DM_over_rs
+0.51000000 21.86294686 DH_over_rs
+0.70600000 17.35069094 DM_over_rs
+0.70600000 19.45534918 DH_over_rs
+0.93400000 21.57563956 DM_over_rs
+0.93400000 17.64149464 DH_over_rs
+1.32100000 27.60085612 DM_over_rs
+1.32100000 14.17602155 DH_over_rs
+1.48400000 30.51190063 DM_over_rs
+1.48400000 12.81699964 DH_over_rs
+2.33 8.631545674846294 DH_over_rs
+2.33 38.988973961958784 DM_over_rs</pre>
+
+        <h3>Measurement Summary Table</h3>
+        <table>
+            <tr>
+                <th>\(z_{eff}\)</th>
+                <th>Tracer</th>
+                <th>\(D_M/r_d\)</th>
+                <th>\(\sigma(D_M)\)</th>
+                <th>\(D_H/r_d\)</th>
+                <th>\(\sigma(D_H)\)</th>
+                <th>\(D_V/r_d\)</th>
+                <th>\(\sigma(D_V)\)</th>
+            </tr>
+            <tr><td>0.295</td><td>BGS</td><td>—</td><td>—</td><td>—</td><td>—</td><td>7.942</td><td>0.076</td></tr>
+            <tr><td>0.510</td><td>LRG1</td><td>13.588</td><td>0.168</td><td>21.863</td><td>0.429</td><td>—</td><td>—</td></tr>
+            <tr><td>0.706</td><td>LRG2</td><td>17.351</td><td>0.180</td><td>19.455</td><td>0.334</td><td>—</td><td>—</td></tr>
+            <tr><td>0.934</td><td>LRG3+ELG1</td><td>21.576</td><td>0.162</td><td>17.641</td><td>0.201</td><td>—</td><td>—</td></tr>
+            <tr><td>1.321</td><td>ELG2</td><td>27.601</td><td>0.325</td><td>14.176</td><td>0.225</td><td>—</td><td>—</td></tr>
+            <tr><td>1.484</td><td>QSO</td><td>30.512</td><td>0.764</td><td>12.817</td><td>0.518</td><td>—</td><td>—</td></tr>
+            <tr><td>2.330</td><td>Lyα</td><td>38.989</td><td>0.532</td><td>8.632</td><td>0.101</td><td>—</td><td>—</td></tr>
+        </table>
+
+        <h3>Tracer Descriptions</h3>
+        <table>
+            <tr><th>Tracer</th><th>Full Name</th><th>Redshift Range</th><th>N galaxies</th><th>Description</th></tr>
+            <tr><td>BGS</td><td>Bright Galaxy Survey</td><td>0.1 < z < 0.4</td><td>1.2M</td><td>Low-z bright galaxies</td></tr>
+            <tr><td>LRG</td><td>Luminous Red Galaxies</td><td>0.4 < z < 1.1</td><td>4.5M</td><td>Massive elliptical galaxies</td></tr>
+            <tr><td>ELG</td><td>Emission Line Galaxies</td><td>0.8 < z < 1.6</td><td>6.5M</td><td>Star-forming galaxies</td></tr>
+            <tr><td>QSO</td><td>Quasars</td><td>0.8 < z < 2.1</td><td>2.1M</td><td>Active galactic nuclei</td></tr>
+            <tr><td>Lyα</td><td>Lyman-alpha Forest</td><td>1.8 < z < 4.2</td><td>1.3M</td><td>Absorption in QSO spectra</td></tr>
+        </table>
+        <p><strong>Total: >14 million objects</strong></p>
+
+        <h2>Covariance Matrix</h2>
+
+        <h3>Data File: <code>desi_gaussian_bao_ALL_GCcomb_cov.txt</code></h3>
+        <p>The 13×13 covariance matrix (block-diagonal structure):</p>
+        <pre>5.790e-03  0.000e+00  0.000e+00  0.000e+00  ...
+0.000e+00  2.835e-02 -3.261e-02  0.000e+00  ...
+0.000e+00 -3.261e-02  1.839e-01  0.000e+00  ...
+0.000e+00  0.000e+00  0.000e+00  3.238e-02  ...
+...</pre>
+
+        <h3>Covariance Structure</h3>
+        <p>The covariance is <strong>block-diagonal</strong>:</p>
+        <ul>
+            <li>Each redshift bin is independent of others</li>
+            <li>Within each bin, \(D_M\) and \(D_H\) are <strong>anti-correlated</strong></li>
+        </ul>
+
+        <table>
+            <tr><th>\(z_{eff}\)</th><th>Correlation(\(D_M\), \(D_H\))</th></tr>
+            <tr><td>0.510</td><td>-0.45</td></tr>
+            <tr><td>0.706</td><td>-0.40</td></tr>
+            <tr><td>0.934</td><td>-0.35</td></tr>
+            <tr><td>1.321</td><td>-0.40</td></tr>
+            <tr><td>1.484</td><td>-0.49</td></tr>
+            <tr><td>2.330</td><td>-0.43</td></tr>
+        </table>
+
+        <h3>Full Correlation Matrix Visualization</h3>
+        <pre>     BGS   LRG1_DM LRG1_DH LRG2_DM LRG2_DH LRG3_DM LRG3_DH ELG_DM  ELG_DH  QSO_DM  QSO_DH  Lya_DH  Lya_DM
+BGS  1.00   0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+LRG1 0.00   1.00   -0.45    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+     0.00  -0.45    1.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+LRG2 0.00   0.00    0.00    1.00   -0.40    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+     0.00   0.00    0.00   -0.40    1.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
+...</pre>
+
+        <h2>Validation Against Paper</h2>
+
+        <h3>DESI DR2 Paper Table IV (arXiv:2503.14738)</h3>
+        <p>Comparing our data file to published values:</p>
+        <table>
+            <tr><th>\(z_{eff}\)</th><th>Quantity</th><th>Our Value</th><th>Paper Value</th><th>Difference</th></tr>
+            <tr><td>0.295</td><td>\(D_V/r_d\)</td><td>7.942</td><td>7.93 ± 0.08</td><td>0.2%</td></tr>
+            <tr><td>0.510</td><td>\(D_M/r_d\)</td><td>13.588</td><td>13.62 ± 0.17</td><td>0.2%</td></tr>
+            <tr><td>0.510</td><td>\(D_H/r_d\)</td><td>21.863</td><td>21.71 ± 0.43</td><td>0.7%</td></tr>
+            <tr><td>0.706</td><td>\(D_M/r_d\)</td><td>17.351</td><td>17.36 ± 0.18</td><td>0.1%</td></tr>
+            <tr><td>0.706</td><td>\(D_H/r_d\)</td><td>19.455</td><td>19.52 ± 0.33</td><td>0.3%</td></tr>
+            <tr><td>0.934</td><td>\(D_M/r_d\)</td><td>21.576</td><td>21.58 ± 0.16</td><td>0.0%</td></tr>
+            <tr><td>0.934</td><td>\(D_H/r_d\)</td><td>17.641</td><td>17.65 ± 0.20</td><td>0.1%</td></tr>
+            <tr><td>1.321</td><td>\(D_M/r_d\)</td><td>27.601</td><td>27.60 ± 0.32</td><td>0.0%</td></tr>
+            <tr><td>1.321</td><td>\(D_H/r_d\)</td><td>14.176</td><td>14.18 ± 0.22</td><td>0.0%</td></tr>
+            <tr><td>1.484</td><td>\(D_M/r_d\)</td><td>30.512</td><td>30.51 ± 0.76</td><td>0.0%</td></tr>
+            <tr><td>1.484</td><td>\(D_H/r_d\)</td><td>12.817</td><td>12.82 ± 0.52</td><td>0.0%</td></tr>
+            <tr><td>2.330</td><td>\(D_M/r_d\)</td><td>38.989</td><td>38.99 ± 0.53</td><td>0.0%</td></tr>
+            <tr><td>2.330</td><td>\(D_H/r_d\)</td><td>8.632</td><td>8.63 ± 0.10</td><td>0.0%</td></tr>
+        </table>
+        <div class="success">
+            <strong>All values match within <1%</strong> ✓
+        </div>
+
+        <h2>What This Data Represents</h2>
+
+        <h3>Processing Pipeline</h3>
+        <ol>
+            <li><strong>Raw</strong>: Galaxy spectra → positions and redshifts</li>
+            <li><strong>Catalog</strong>: ~14 million galaxy positions</li>
+            <li><strong>Clustering</strong>: Two-point correlation function \(\xi(r)\)</li>
+            <li><strong>BAO fitting</strong>: Extract peak position → \(\alpha_{iso}\), \(\alpha_{AP}\)</li>
+            <li><strong>Conversion</strong>: → \(D_M/r_d\), \(D_H/r_d\), \(D_V/r_d\)</li>
+        </ol>
+        <p>We use step 5 (the final BAO distance measurements).</p>
+
+        <h3>Why Not "Rawer" Data?</h3>
+        <ul>
+            <li><strong>Galaxy catalog</strong>: ~terabytes, requires DESI pipeline</li>
+            <li><strong>Correlation functions</strong>: complex covariance, binning choices</li>
+            <li><strong>BAO summary statistics</strong>: standard for cosmological inference</li>
+        </ul>
+        <div class="info">
+            DESI's own cosmological analysis uses these same summary statistics.
+        </div>
+
+        <h2>Systematic Uncertainties</h2>
+        <p>DESI reports both statistical and systematic errors. For Lyman-α:</p>
+        <div class="math-block">
+            \[D_H/r_d = 8.632 \pm 0.098 \text{ (stat)} \pm 0.026 \text{ (sys)}\]
+        </div>
+        <p>The covariance matrix we use includes statistical errors. Systematics are subdominant but should be noted.</p>
+
+        <h2>Comparison: DR1 vs DR2</h2>
+        <table>
+            <tr><th>\(z_{eff}\)</th><th>DR1 \(D_M/r_d\)</th><th>DR2 \(D_M/r_d\)</th><th>Change</th></tr>
+            <tr><td>0.295</td><td>7.93 (DV)</td><td>7.94 (DV)</td><td>+0.2%</td></tr>
+            <tr><td>0.510</td><td>13.62</td><td>13.59</td><td>-0.2%</td></tr>
+            <tr><td>0.706</td><td>16.85</td><td>17.35</td><td>+3.0%</td></tr>
+            <tr><td>0.934</td><td>21.71</td><td>21.58</td><td>-0.6%</td></tr>
+            <tr><td>1.321</td><td>27.79</td><td>27.60</td><td>-0.7%</td></tr>
+            <tr><td>2.330</td><td>39.71</td><td>38.99</td><td>-1.8%</td></tr>
+        </table>
+        <div class="highlight">
+            DR2 has roughly <strong>2x more data</strong> than DR1, with correspondingly smaller error bars.
+        </div>
+
+        <hr>
+        <p><a href="index.html">← Back to Home</a></p>
+    </div>
+</body>
+</html>

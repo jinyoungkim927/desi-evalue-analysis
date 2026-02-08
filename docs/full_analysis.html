@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Mathematical Analysis - DESI E-Value</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 50px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: #0f3460; margin-top: 30px; }
+        a { color: #e94560; }
+        .nav { background: #16213e; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        .nav a:hover { text-decoration: underline; }
+        .highlight { background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; border-radius: 4px; }
+        .critical { background: #f8d7da; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0; border-radius: 4px; }
+        .success { background: #d4edda; padding: 20px; border-left: 4px solid #28a745; margin: 20px 0; border-radius: 4px; }
+        .info { background: #cce5ff; padding: 20px; border-left: 4px solid #004085; margin: 20px 0; border-radius: 4px; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        code { background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-family: 'Monaco', 'Consolas', monospace; font-size: 13px; }
+        pre { background: #1a1a2e; color: #98c379; padding: 20px; border-radius: 5px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+        .math-block { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; overflow-x: auto; }
+        .toc { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .toc ul { margin: 0; padding-left: 20px; }
+        .toc li { margin: 5px 0; }
+        .section-num { color: #e94560; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="analysis_report.html">Summary</a>
+        <a href="full_analysis.html">Full Math</a>
+        <a href="background_evalues.html">E-Values</a>
+        <a href="background_cosmology.html">Cosmology</a>
+        <a href="background_desi_data.html">Data</a>
+    </nav>
+
+    <div class="container">
+        <h1>DESI E-Value Analysis: Complete Mathematical Derivation</h1>
+
+        <div class="toc">
+            <strong>Table of Contents</strong>
+            <ul>
+                <li><a href="#sec1">1. Data Loading</a></li>
+                <li><a href="#sec2">2. Cosmological Model Predictions</a></li>
+                <li><a href="#sec3">3. Chi-Squared Analysis</a></li>
+                <li><a href="#sec4">4. E-Value Computation</a></li>
+                <li><a href="#sec5">5. Data-Split Validation</a></li>
+                <li><a href="#sec6">6. Power Analysis</a></li>
+                <li><a href="#sec7">7. Results Summary</a></li>
+            </ul>
+        </div>
+
+        <h2 id="sec1"><span class="section-num">1.</span> Data Loading</h2>
+
+        <h3>Raw Data File</h3>
+        <p>From <code>desi_gaussian_bao_ALL_GCcomb_mean.txt</code>:</p>
+
+        <pre># [z] [value at z] [quantity]
+0.29500000 7.94167639 DV_over_rs
+0.51000000 13.58758434 DM_over_rs
+0.51000000 21.86294686 DH_over_rs
+0.70600000 17.35069094 DM_over_rs
+0.70600000 19.45534918 DH_over_rs
+0.93400000 21.57563956 DM_over_rs
+0.93400000 17.64149464 DH_over_rs
+1.32100000 27.60085612 DM_over_rs
+1.32100000 14.17602155 DH_over_rs
+1.48400000 30.51190063 DM_over_rs
+1.48400000 12.81699964 DH_over_rs
+2.33 8.631545674846294 DH_over_rs
+2.33 38.988973961958784 DM_over_rs</pre>
+
+        <h3>Data Vector</h3>
+        <div class="math-block">
+            \[\mathbf{d} = \begin{pmatrix} 7.942 \\ 13.588 \\ 21.863 \\ 17.351 \\ 19.455 \\ 21.576 \\ 17.641 \\ 27.601 \\ 14.176 \\ 30.512 \\ 12.817 \\ 8.632 \\ 38.989 \end{pmatrix}\]
+        </div>
+
+        <table>
+            <tr><th>Index</th><th>z_eff</th><th>Quantity</th><th>Tracer</th><th>Value</th><th>Error</th></tr>
+            <tr><td>0</td><td>0.295</td><td>\(D_V/r_d\)</td><td>BGS</td><td>7.942</td><td>0.076</td></tr>
+            <tr><td>1</td><td>0.510</td><td>\(D_M/r_d\)</td><td>LRG1</td><td>13.588</td><td>0.168</td></tr>
+            <tr><td>2</td><td>0.510</td><td>\(D_H/r_d\)</td><td>LRG1</td><td>21.863</td><td>0.429</td></tr>
+            <tr><td>3</td><td>0.706</td><td>\(D_M/r_d\)</td><td>LRG2</td><td>17.351</td><td>0.180</td></tr>
+            <tr><td>4</td><td>0.706</td><td>\(D_H/r_d\)</td><td>LRG2</td><td>19.455</td><td>0.334</td></tr>
+            <tr><td>5</td><td>0.934</td><td>\(D_M/r_d\)</td><td>LRG3+ELG</td><td>21.576</td><td>0.162</td></tr>
+            <tr><td>6</td><td>0.934</td><td>\(D_H/r_d\)</td><td>LRG3+ELG</td><td>17.641</td><td>0.201</td></tr>
+            <tr><td>7</td><td>1.321</td><td>\(D_M/r_d\)</td><td>ELG2</td><td>27.601</td><td>0.325</td></tr>
+            <tr><td>8</td><td>1.321</td><td>\(D_H/r_d\)</td><td>ELG2</td><td>14.176</td><td>0.225</td></tr>
+            <tr><td>9</td><td>1.484</td><td>\(D_M/r_d\)</td><td>QSO</td><td>30.512</td><td>0.764</td></tr>
+            <tr><td>10</td><td>1.484</td><td>\(D_H/r_d\)</td><td>QSO</td><td>12.817</td><td>0.518</td></tr>
+            <tr><td>11</td><td>2.330</td><td>\(D_H/r_d\)</td><td>Lyα</td><td>8.632</td><td>0.101</td></tr>
+            <tr><td>12</td><td>2.330</td><td>\(D_M/r_d\)</td><td>Lyα</td><td>38.989</td><td>0.532</td></tr>
+        </table>
+
+        <h3>Covariance Matrix Structure</h3>
+        <p>The 13×13 covariance matrix is <strong>block-diagonal</strong>:</p>
+
+        <div class="math-block">
+            \[\mathbf{C} = \begin{pmatrix} \sigma_0^2 & 0 & 0 & \cdots \\ 0 & \Sigma_1 & 0 & \cdots \\ 0 & 0 & \Sigma_2 & \cdots \\ \vdots & & & \ddots \end{pmatrix}\]
+        </div>
+
+        <p>Each 2×2 block \(\Sigma_i\) for \(D_M, D_H\):</p>
+        <div class="math-block">
+            \[\Sigma_i = \begin{pmatrix} \sigma_{M,i}^2 & \rho_i \sigma_{M,i} \sigma_{H,i} \\ \rho_i \sigma_{M,i} \sigma_{H,i} & \sigma_{H,i}^2 \end{pmatrix}\]
+        </div>
+
+        <table>
+            <tr><th>z_eff</th><th>\(\sigma(D_M/r_d)\)</th><th>\(\sigma(D_H/r_d)\)</th><th>\(\rho(D_M, D_H)\)</th></tr>
+            <tr><td>0.510</td><td>0.168</td><td>0.429</td><td>-0.45</td></tr>
+            <tr><td>0.706</td><td>0.180</td><td>0.334</td><td>-0.40</td></tr>
+            <tr><td>0.934</td><td>0.162</td><td>0.201</td><td>-0.35</td></tr>
+            <tr><td>1.321</td><td>0.325</td><td>0.225</td><td>-0.40</td></tr>
+            <tr><td>1.484</td><td>0.764</td><td>0.518</td><td>-0.49</td></tr>
+            <tr><td>2.330</td><td>0.532</td><td>0.101</td><td>-0.43</td></tr>
+        </table>
+
+        <h2 id="sec2"><span class="section-num">2.</span> Cosmological Model Predictions</h2>
+
+        <h3>ΛCDM Model</h3>
+        <div class="info">
+            <strong>DESI Fiducial Parameters:</strong><br>
+            \(h = 0.6766\), \(\Omega_m = 0.3111\), \(\Omega_{DE} = 0.6889\), \(w = -1\), \(r_d = 147.05\) Mpc
+        </div>
+
+        <p><strong>Friedmann equation:</strong></p>
+        <div class="math-block">
+            \[E(z) = \frac{H(z)}{H_0} = \sqrt{\Omega_m(1+z)^3 + \Omega_{DE}}\]
+        </div>
+
+        <p><strong>Comoving distance:</strong></p>
+        <div class="math-block">
+            \[D_C(z) = \frac{c}{H_0} \int_0^z \frac{dz'}{E(z')}\]
+        </div>
+
+        <p><strong>Distance measures:</strong></p>
+        <div class="math-block">
+            \[D_M(z) = D_C(z) \text{ (flat universe)}\]
+            \[D_H(z) = \frac{c}{H_0 E(z)} = \frac{c}{H(z)}\]
+            \[D_V(z) = \left[z \cdot D_H(z) \cdot D_M(z)^2\right]^{1/3}\]
+        </div>
+
+        <h3>w₀wₐCDM Model</h3>
+        <p><strong>Equation of state:</strong></p>
+        <div class="math-block">
+            \[w(a) = w_0 + w_a(1-a) = w_0 + w_a \frac{z}{1+z}\]
+        </div>
+
+        <p><strong>Dark energy density evolution:</strong></p>
+        <div class="math-block">
+            \[\Omega_{DE}(z) = \Omega_{DE,0} \cdot (1+z)^{3(1+w_0+w_a)} \cdot \exp\left(-3w_a\frac{z}{1+z}\right)\]
+        </div>
+
+        <p>Using DESI best-fit: \(w_0 = -0.727\), \(w_a = -1.05\)</p>
+
+        <h3>Model Predictions Comparison</h3>
+        <table>
+            <tr><th>z_eff</th><th>ΛCDM \(D_M/r_d\)</th><th>w₀wₐ \(D_M/r_d\)</th><th>ΛCDM \(D_H/r_d\)</th><th>w₀wₐ \(D_H/r_d\)</th></tr>
+            <tr><td>0.295</td><td>8.38</td><td>8.27</td><td>25.72</td><td>25.15</td></tr>
+            <tr><td>0.510</td><td>13.76</td><td>13.54</td><td>22.75</td><td>22.43</td></tr>
+            <tr><td>0.706</td><td>18.12</td><td>17.83</td><td>20.08</td><td>19.90</td></tr>
+            <tr><td>0.934</td><td>22.79</td><td>22.44</td><td>17.11</td><td>17.10</td></tr>
+            <tr><td>1.321</td><td>29.57</td><td>29.17</td><td>13.42</td><td>13.55</td></tr>
+            <tr><td>1.484</td><td>32.32</td><td>31.89</td><td>12.15</td><td>12.30</td></tr>
+            <tr><td>2.330</td><td>39.16</td><td>38.70</td><td>8.63</td><td>8.73</td></tr>
+        </table>
+
+        <h2 id="sec3"><span class="section-num">3.</span> Chi-Squared Analysis</h2>
+
+        <h3>Chi-Squared Formula</h3>
+        <div class="math-block">
+            \[\chi^2 = (\mathbf{d} - \mathbf{t})^T \mathbf{C}^{-1} (\mathbf{d} - \mathbf{t})\]
+        </div>
+
+        <h3>Computed Values</h3>
+        <div class="highlight">
+            \[\chi^2_{\Lambda\text{CDM}} = 25.44\]
+            \[\chi^2_{w_0w_a\text{CDM}} = 13.50\]
+            \[\Delta\chi^2 = 25.44 - 13.50 = 11.94\]
+        </div>
+
+        <h3>Frequentist Significance</h3>
+        <p>For \(\Delta\chi^2\) with 2 extra parameters:</p>
+        <div class="math-block">
+            \[p = P(\chi^2_2 > 11.94) = 0.0026\]
+            \[\sigma = \Phi^{-1}(1 - p/2) \approx 3.0\sigma\]
+        </div>
+
+        <h2 id="sec4"><span class="section-num">4.</span> E-Value Computation</h2>
+
+        <h3>Method 1: Simple Likelihood Ratio</h3>
+        <p><strong>Log-likelihood:</strong></p>
+        <div class="math-block">
+            \[\ln L = -\frac{1}{2}\chi^2 - \frac{1}{2}\ln|\mathbf{C}| - \frac{n}{2}\ln(2\pi)\]
+        </div>
+
+        <p><strong>E-value:</strong></p>
+        <div class="math-block">
+            \[E = \frac{L(\mathbf{d} | w_0w_a)}{L(\mathbf{d} | \Lambda\text{CDM})} = \exp\left(\frac{\Delta\chi^2}{2}\right) = \exp\left(\frac{11.94}{2}\right) = 392\]
+        </div>
+
+        <div class="critical">
+            <strong>⚠️ WARNING:</strong> This E = 392 is <strong>BIASED</strong> because the w₀wₐ parameters were fitted to the same data used to compute the e-value!
+        </div>
+
+        <h3>Method 2: GROW Mixture E-Value</h3>
+        <p>Average over a grid of alternatives:</p>
+        <div class="math-block">
+            \[E_{\text{mix}} = \frac{1}{N}\sum_{i=1}^{N} \frac{L(\mathbf{d} | w_{0,i}, w_{a,i})}{L(\mathbf{d} | \Lambda)}\]
+        </div>
+
+        <p>For numerical stability (log-sum-exp):</p>
+        <div class="math-block">
+            \[\ln E_{\text{mix}} = \max_i(\ln R_i) + \ln\left(\frac{1}{N}\sum_i \exp(\ln R_i - \max_j \ln R_j)\right)\]
+        </div>
+
+        <table>
+            <tr><th>Prior Range</th><th>\(\ln E\)</th><th>E</th></tr>
+            <tr><td>Narrow: \(w_0 \in [-1.3, -0.7]\), \(w_a \in [-1.5, 0.5]\)</td><td>4.58</td><td>97</td></tr>
+            <tr><td>Default: \(w_0 \in [-1.5, -0.5]\), \(w_a \in [-2.0, 1.0]\)</td><td>2.68</td><td>15</td></tr>
+            <tr><td>Wide: \(w_0 \in [-2.0, 0.0]\), \(w_a \in [-3.0, 2.0]\)</td><td>2.85</td><td>17</td></tr>
+        </table>
+
+        <div class="highlight">
+            <strong>Prior Sensitivity:</strong> E varies from 15 to 97 (~7×) depending on prior choice!
+        </div>
+
+        <h2 id="sec5"><span class="section-num">5.</span> Data-Split Validation</h2>
+
+        <div class="success">
+            <strong>Key Method:</strong> Split data to prevent overfitting
+        </div>
+
+        <h3>Split Definition</h3>
+        <ul>
+            <li><strong>Training set:</strong> z &lt; 1.0 (7 data points)</li>
+            <li><strong>Test set:</strong> z ≥ 1.0 (6 data points)</li>
+        </ul>
+
+        <h3>Step 1: Fit on Training Data</h3>
+        <p>Minimize negative log-likelihood on training set only:</p>
+        <div class="math-block">
+            \[\hat{w}_0, \hat{w}_a = \arg\min_{w_0, w_a} \left[ -\ln L_{\text{train}}(w_0, w_a) \right]\]
+        </div>
+        <p><strong>Result:</strong> \(\hat{w}_0 = -0.872\), \(\hat{w}_a = -0.327\)</p>
+
+        <h3>Step 2: Evaluate on Test Data</h3>
+        <div class="math-block">
+            \[E_{\text{test}} = \frac{L(\mathbf{d}_{\text{test}} | \hat{w}_0, \hat{w}_a)}{L(\mathbf{d}_{\text{test}} | \Lambda)}\]
+        </div>
+
+        <p><strong>Calculation:</strong></p>
+        <div class="math-block">
+            \[\chi^2_{\Lambda,\text{test}} = 10.23\]
+            \[\chi^2_{w_0w_a,\text{test}} = 9.51\]
+            \[\ln E_{\text{test}} = \frac{10.23 - 9.51}{2} = 0.36\]
+            \[E_{\text{test}} = e^{0.36} = 1.43\]
+        </div>
+
+        <h3>The Critical Comparison</h3>
+        <table>
+            <tr><th>Method</th><th>E-value</th><th>Issue</th></tr>
+            <tr style="background: #f8d7da;"><td>Simple LR (same data)</td><td>392</td><td>BIASED - overfitted</td></tr>
+            <tr style="background: #d4edda;"><td>Data-split (held-out)</td><td>1.43</td><td>VALID - honest</td></tr>
+        </table>
+
+        <div class="critical">
+            <strong>280× difference!</strong> This shows the apparent evidence is dominated by overfitting.
+        </div>
+
+        <h2 id="sec6"><span class="section-num">6.</span> Power Analysis</h2>
+
+        <h3>Question</h3>
+        <p>If w₀wₐCDM is true, what E-value would we expect?</p>
+
+        <h3>Simulation</h3>
+        <ol>
+            <li>Assume true: \(w_0 = -0.727\), \(w_a = -1.05\)</li>
+            <li>Generate: \(\mathbf{d}_{\text{sim}} = \mathbf{t}_{w_0w_a} + \mathbf{n}\), where \(\mathbf{n} \sim \mathcal{N}(0, \mathbf{C})\)</li>
+            <li>Compute GROW E-value for each of 500 simulations</li>
+        </ol>
+
+        <h3>Results</h3>
+        <table>
+            <tr><th>Statistic</th><th>Value</th></tr>
+            <tr><td>Median E (if w₀wₐCDM true)</td><td>21</td></tr>
+            <tr><td>Mean E</td><td>35</td></tr>
+            <tr><td>5th percentile</td><td>3.2</td></tr>
+            <tr><td>95th percentile</td><td>95</td></tr>
+            <tr><td><strong>Our observed E</strong></td><td><strong>15</strong></td></tr>
+            <tr><td>Observed percentile</td><td>40th</td></tr>
+        </table>
+
+        <p><strong>Interpretation:</strong> E = 15 is consistent with either ΛCDM or w₀wₐCDM being true.</p>
+
+        <h2 id="sec7"><span class="section-num">7.</span> Results Summary</h2>
+
+        <table>
+            <tr><th>Method</th><th>Value</th><th>σ equiv</th><th>Validity</th></tr>
+            <tr><td>Δχ² frequentist</td><td>11.94</td><td>3.0σ</td><td>Standard</td></tr>
+            <tr style="background: #f8d7da;"><td>E-value (simple LR)</td><td>392</td><td>3.9σ</td><td><strong>BIASED</strong></td></tr>
+            <tr><td>E-value (GROW narrow)</td><td>97</td><td>3.0σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>E-value (GROW default)</td><td>15</td><td>2.3σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>E-value (GROW wide)</td><td>17</td><td>2.4σ</td><td>Prior-sensitive</td></tr>
+            <tr style="background: #d4edda;"><td><strong>E-value (data-split)</strong></td><td><strong>1.43</strong></td><td><strong>0.8σ</strong></td><td><strong>VALID</strong></td></tr>
+            <tr style="background: #fff3cd;"><td>Bayesian evidence (external)</td><td>ln B = -0.57</td><td>—</td><td>Favors ΛCDM</td></tr>
+        </table>
+
+        <h3>Conclusion</h3>
+        <div class="critical">
+            <strong>The evidence for dynamic dark energy is NOT robust.</strong>
+            <ul>
+                <li>Overfitting: E drops from 392 → 1.43 with proper validation</li>
+                <li>Prior sensitivity: GROW E varies ~7× with different choices</li>
+                <li>Bayesian contradiction: Full data analysis favors ΛCDM</li>
+                <li>Power analysis: E = 15 is consistent with either model</li>
+            </ul>
+            <p><strong>Recommendation:</strong> Do not claim discovery. Wait for more data and independent confirmation.</p>
+        </div>
+
+        <hr>
+        <p><a href="index.html">← Back to Home</a></p>
+    </div>
+</body>
+</html>

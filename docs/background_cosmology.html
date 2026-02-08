@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmology Background - DESI Analysis</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.7; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 40px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: #0f3460; }
+        a { color: #e94560; }
+        .nav { background: #16213e; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .math-block { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; overflow-x: auto; }
+        .highlight { background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; }
+        .info { background: #cce5ff; padding: 20px; border-left: 4px solid #004085; margin: 20px 0; }
+        ul, ol { margin: 15px 0; }
+        li { margin: 8px 0; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="analysis_report.html">Summary</a>
+        <a href="full_analysis.html">Full Math</a>
+        <a href="background_evalues.html">E-Values</a>
+        <a href="background_cosmology.html">Cosmology</a>
+        <a href="background_desi_data.html">Data</a>
+    </nav>
+
+    <div class="container">
+        <h1>Cosmological Background: BAO and Dark Energy</h1>
+
+        <h2>The Expanding Universe</h2>
+        <p>The universe is expanding, described by the <strong>scale factor</strong> \(a(t)\):</p>
+        <ul>
+            <li>Today: \(a_0 = 1\)</li>
+            <li>Past: \(a < 1\)</li>
+            <li>Redshift: \(z = 1/a - 1\)</li>
+        </ul>
+        <p>The expansion rate is the <strong>Hubble parameter</strong>:</p>
+        <div class="math-block">
+            \[H(t) = \frac{\dot{a}}{a}\]
+        </div>
+        <p>Today's value: \(H_0 \approx 67.7\) km/s/Mpc (from Planck)</p>
+
+        <h2>The Friedmann Equation</h2>
+        <p>The expansion is governed by the <strong>Friedmann equation</strong>:</p>
+        <div class="math-block">
+            \[H^2(z) = H_0^2 \left[ \Omega_m (1+z)^3 + \Omega_r (1+z)^4 + \Omega_k (1+z)^2 + \Omega_{DE}(z) \right]\]
+        </div>
+        <p>Where:</p>
+        <ul>
+            <li>\(\Omega_m \approx 0.31\): Matter density (dark matter + baryons)</li>
+            <li>\(\Omega_r \approx 9 \times 10^{-5}\): Radiation density</li>
+            <li>\(\Omega_k\): Curvature (≈ 0 for flat universe)</li>
+            <li>\(\Omega_{DE}\): Dark energy density</li>
+        </ul>
+
+        <h2>Dark Energy Equation of State</h2>
+        <p>Dark energy is characterized by its <strong>equation of state</strong> \(w\):</p>
+        <div class="math-block">
+            \[P = w \rho c^2\]
+        </div>
+        <p>For the <strong>cosmological constant</strong> (ΛCDM): \(w = -1\) (constant)</p>
+        <p>For <strong>dynamic dark energy</strong> (w₀wₐCDM):</p>
+        <div class="math-block">
+            \[w(a) = w_0 + w_a(1-a) = w_0 + w_a \frac{z}{1+z}\]
+        </div>
+        <p>The dark energy density evolves as:</p>
+        <div class="math-block">
+            \[\Omega_{DE}(z) = \Omega_{DE,0} \cdot (1+z)^{3(1+w_0+w_a)} \cdot \exp\left(-3w_a \frac{z}{1+z}\right)\]
+        </div>
+
+        <h3>Model Comparison</h3>
+        <table>
+            <tr><th>Model</th><th>\(w_0\)</th><th>\(w_a\)</th><th>Description</th></tr>
+            <tr><td>ΛCDM</td><td>-1</td><td>0</td><td>Cosmological constant</td></tr>
+            <tr><td>wCDM</td><td>free</td><td>0</td><td>Constant but not -1</td></tr>
+            <tr><td>w₀wₐCDM</td><td>free</td><td>free</td><td>Time-evolving</td></tr>
+        </table>
+
+        <h2>Cosmological Distances</h2>
+
+        <h3>Comoving Distance</h3>
+        <p>The line-of-sight comoving distance to redshift \(z\):</p>
+        <div class="math-block">
+            \[D_C(z) = c \int_0^z \frac{dz'}{H(z')} = \frac{c}{H_0} \int_0^z \frac{dz'}{E(z')}\]
+        </div>
+        <p>where the dimensionless Hubble parameter is:</p>
+        <div class="math-block">
+            \[E(z) = H(z)/H_0 = \sqrt{\Omega_m(1+z)^3 + \Omega_r(1+z)^4 + \Omega_{DE}(z)}\]
+        </div>
+
+        <h3>Transverse Comoving Distance (D<sub>M</sub>)</h3>
+        <p>For a flat universe: \(D_M = D_C\)</p>
+        <p>For curved universe:</p>
+        <div class="math-block">
+            \[D_M = \begin{cases}
+            \frac{c}{H_0\sqrt{\Omega_k}} \sinh\left(\sqrt{\Omega_k} \frac{H_0 D_C}{c}\right) & \Omega_k > 0 \\
+            \frac{c}{H_0\sqrt{|\Omega_k|}} \sin\left(\sqrt{|\Omega_k|} \frac{H_0 D_C}{c}\right) & \Omega_k < 0
+            \end{cases}\]
+        </div>
+
+        <h3>Hubble Distance (D<sub>H</sub>)</h3>
+        <p>The instantaneous expansion scale:</p>
+        <div class="math-block">
+            \[D_H(z) = \frac{c}{H(z)} = \frac{c}{H_0 E(z)}\]
+        </div>
+
+        <h3>Volume-Averaged Distance (D<sub>V</sub>)</h3>
+        <p>Spherically averaged distance for isotropic measurements:</p>
+        <div class="math-block">
+            \[D_V(z) = \left[ z \cdot D_H(z) \cdot D_M(z)^2 \right]^{1/3}\]
+        </div>
+
+        <h2>Baryon Acoustic Oscillations (BAO)</h2>
+
+        <h3>Physical Origin</h3>
+        <p>In the early universe (before recombination, \(z \sim 1100\)):</p>
+        <ol>
+            <li>Photons, baryons, and electrons form a hot plasma</li>
+            <li>Dark matter clumps gravitationally</li>
+            <li>Pressure waves propagate through the plasma</li>
+            <li>At recombination, waves freeze at the <strong>sound horizon</strong></li>
+        </ol>
+        <div class="math-block">
+            \[r_d = \int_{z_{rec}}^\infty \frac{c_s(z)}{H(z)} dz \approx 147 \text{ Mpc}\]
+        </div>
+        <p>where \(c_s \approx c/\sqrt{3}\) is the sound speed.</p>
+
+        <h3>BAO as a Standard Ruler</h3>
+        <p>The sound horizon \(r_d\) is imprinted on:</p>
+        <ul>
+            <li>Galaxy clustering (correlation function peak at \(r_d\))</li>
+            <li>CMB angular power spectrum</li>
+        </ul>
+        <p>Since \(r_d\) is known from physics, measuring the <strong>apparent size</strong> of this feature gives distances:</p>
+        <div class="math-block">
+            \[\frac{D_M(z)}{r_d}, \quad \frac{D_H(z)}{r_d}, \quad \frac{D_V(z)}{r_d}\]
+        </div>
+
+        <h3>What DESI Measures</h3>
+        <p>DESI measures galaxy positions and redshifts. From the 2-point correlation function:</p>
+        <ul>
+            <li><strong>Transverse direction</strong>: \(D_M(z)/r_d\) from angular separation</li>
+            <li><strong>Radial direction</strong>: \(D_H(z)/r_d\) from redshift separation</li>
+            <li><strong>Isotropic</strong>: \(D_V(z)/r_d\) from angle-averaged signal</li>
+        </ul>
+
+        <h2>Why BAO Constrains Dark Energy</h2>
+        <p>Different dark energy models predict different \(H(z)\):</p>
+        <div class="math-block">
+            \[H(z) = H_0 \sqrt{\Omega_m(1+z)^3 + \Omega_{DE}(z)}\]
+        </div>
+        <p>This affects both \(D_M(z)\) and \(D_H(z)\):</p>
+        <div class="math-block">
+            \[D_M(z) = c \int_0^z \frac{dz'}{H(z')}\]
+        </div>
+        <div class="math-block">
+            \[D_H(z) = \frac{c}{H(z)}\]
+        </div>
+        <p>If dark energy evolves (w₀wₐCDM), the distances at different redshifts change relative to ΛCDM predictions.</p>
+
+        <h3>DESI's Leverage</h3>
+        <p>DESI measures BAO at multiple redshifts:</p>
+        <table>
+            <tr><th>Redshift</th><th>Tracer</th><th>Description</th></tr>
+            <tr><td>\(z = 0.3\)</td><td>BGS</td><td>Bright Galaxy Survey</td></tr>
+            <tr><td>\(z = 0.5, 0.7\)</td><td>LRG</td><td>Luminous Red Galaxies</td></tr>
+            <tr><td>\(z = 0.9\)</td><td>LRG+ELG</td><td>Combined sample</td></tr>
+            <tr><td>\(z = 1.3\)</td><td>ELG</td><td>Emission Line Galaxies</td></tr>
+            <tr><td>\(z = 1.5\)</td><td>QSO</td><td>Quasars</td></tr>
+            <tr><td>\(z = 2.3\)</td><td>Lyα</td><td>Lyman-alpha forest</td></tr>
+        </table>
+        <p>This wide redshift range allows distinguishing between models.</p>
+
+        <h2>DESI DR2 Fiducial Cosmology</h2>
+        <p>DESI uses Planck 2018 bestfit as reference:</p>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td>\(h\)</td><td>0.6766</td></tr>
+            <tr><td>\(\Omega_m\)</td><td>0.3111</td></tr>
+            <tr><td>\(\Omega_b\)</td><td>0.0490</td></tr>
+            <tr><td>\(\Omega_{DE}\)</td><td>0.6889</td></tr>
+            <tr><td>\(r_d\)</td><td>147.05 Mpc</td></tr>
+            <tr><td>\(w\)</td><td>-1 (ΛCDM)</td></tr>
+        </table>
+
+        <h2>References</h2>
+        <ul>
+            <li>Hogg (1999): "Distance measures in cosmology" - astro-ph/9905116</li>
+            <li>Eisenstein et al. (2005): "Detection of the Baryon Acoustic Peak" - ApJ 633, 560</li>
+            <li>DESI Collaboration (2024): "DESI 2024 VI: Cosmological Constraints" - arXiv:2404.03002</li>
+            <li>Planck Collaboration (2020): "Planck 2018 results. VI. Cosmological parameters"</li>
+        </ul>
+
+        <hr>
+        <p><a href="index.html">← Back to Home</a></p>
+    </div>
+</body>
+</html>
