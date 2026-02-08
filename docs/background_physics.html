@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Background - DESI Analysis</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.8; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 50px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: #0f3460; margin-top: 30px; }
+        h4 { color: #4a4a6a; margin-top: 20px; }
+        a { color: #e94560; }
+        .nav { background: #16213e; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .math-block { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; overflow-x: auto; }
+        .highlight { background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; border-radius: 4px; }
+        .info { background: #cce5ff; padding: 20px; border-left: 4px solid #004085; margin: 20px 0; border-radius: 4px; }
+        .concept { background: #e8f4f8; padding: 20px; border-left: 4px solid #17a2b8; margin: 20px 0; border-radius: 4px; }
+        .warning { background: #f8d7da; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0; border-radius: 4px; }
+        ul, ol { margin: 15px 0; }
+        li { margin: 10px 0; }
+        .toc { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .toc ul { list-style: none; padding-left: 0; }
+        .toc li { margin: 5px 0; }
+        .timeline { border-left: 3px solid #e94560; padding-left: 20px; margin: 20px 0; }
+        .timeline-item { margin: 20px 0; position: relative; }
+        .timeline-item::before { content: ''; position: absolute; left: -26px; top: 5px; width: 10px; height: 10px; background: #e94560; border-radius: 50%; }
+        blockquote { border-left: 4px solid #ddd; margin: 20px 0; padding: 10px 20px; color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="analysis_report.html">Summary</a>
+        <a href="full_analysis.html">Full Math</a>
+        <a href="background_evalues.html">E-Values</a>
+        <a href="background_physics.html">Physics</a>
+        <a href="background_cosmology.html">Cosmology</a>
+        <a href="background_desi_data.html">Data</a>
+    </nav>
+
+    <div class="container">
+        <h1>Physics Background: From the Big Bang to Dark Energy</h1>
+        <p><em>Understanding the physical context of DESI's dark energy measurements</em></p>
+
+        <div class="toc">
+            <strong>Contents</strong>
+            <ul>
+                <li><a href="#big-picture">1. The Big Picture: What We're Measuring</a></li>
+                <li><a href="#early-universe">2. The Early Universe: Setting the Stage</a></li>
+                <li><a href="#bao-physics">3. Baryon Acoustic Oscillations: The Physics</a></li>
+                <li><a href="#dark-energy">4. Dark Energy: The Mystery</a></li>
+                <li><a href="#observational-chain">5. The Observational Chain</a></li>
+                <li><a href="#why-matters">6. Why This Matters</a></li>
+            </ul>
+        </div>
+
+        <h2 id="big-picture">1. The Big Picture: What We're Measuring</h2>
+
+        <div class="concept">
+            <strong>The Core Question:</strong> Is dark energy a cosmological constant (fixed forever), or is it evolving over cosmic time?
+        </div>
+
+        <p>To answer this, we need a <strong>cosmic ruler</strong>—something of known physical size that we can observe at different distances (and thus different times in cosmic history). By measuring how large this ruler <em>appears</em> at different distances, we can map the expansion history of the universe.</p>
+
+        <p>The ruler we use is the <strong>sound horizon</strong>: a characteristic scale imprinted in the distribution of matter when the universe was only 380,000 years old. This is the physics of Baryon Acoustic Oscillations (BAO).</p>
+
+        <h3>The Logical Chain</h3>
+        <ol>
+            <li><strong>Early universe physics</strong> → predicts sound horizon size (~147 Mpc)</li>
+            <li><strong>Galaxy surveys</strong> → measure apparent size of this ruler at different redshifts</li>
+            <li><strong>Apparent vs. true size</strong> → tells us the distance to each redshift</li>
+            <li><strong>Distance vs. redshift relation</strong> → reveals the expansion history \(H(z)\)</li>
+            <li><strong>Expansion history</strong> → constrains dark energy properties</li>
+        </ol>
+
+        <h2 id="early-universe">2. The Early Universe: Setting the Stage</h2>
+
+        <h3>The Hot Big Bang</h3>
+        <p>Immediately after the Big Bang, the universe was:</p>
+        <ul>
+            <li><strong>Extremely hot</strong>: \(T > 10^{10}\) K</li>
+            <li><strong>Dense</strong>: All matter compressed into tiny volume</li>
+            <li><strong>Ionized</strong>: No neutral atoms; free electrons and protons</li>
+            <li><strong>Opaque</strong>: Photons constantly scattered off free electrons (Thomson scattering)</li>
+        </ul>
+
+        <div class="info">
+            <strong>Key Insight:</strong> In this hot plasma, photons and baryons (protons + neutrons) were tightly coupled. They behaved as a single fluid—the <strong>photon-baryon fluid</strong>.
+        </div>
+
+        <h3>The Players</h3>
+        <table>
+            <tr><th>Component</th><th>Behavior</th><th>Role in BAO</th></tr>
+            <tr>
+                <td><strong>Dark Matter</strong></td>
+                <td>Only feels gravity; clumps freely</td>
+                <td>Creates initial overdensities (gravity wells)</td>
+            </tr>
+            <tr>
+                <td><strong>Baryons</strong></td>
+                <td>Coupled to photons via electrons</td>
+                <td>Dragged along by photon pressure waves</td>
+            </tr>
+            <tr>
+                <td><strong>Photons</strong></td>
+                <td>Provide pressure; scatter off electrons</td>
+                <td>Drive acoustic waves outward</td>
+            </tr>
+            <tr>
+                <td><strong>Electrons</strong></td>
+                <td>Mediate photon-baryon coupling</td>
+                <td>Enable Thomson scattering</td>
+            </tr>
+        </table>
+
+        <h3>Timeline of the Early Universe</h3>
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>\(t \approx 10^{-36}\) s: Inflation ends</strong><br>
+                Quantum fluctuations become density perturbations (seeds of structure)
+            </div>
+            <div class="timeline-item">
+                <strong>\(t \approx 1\) s: Nucleosynthesis</strong><br>
+                Protons and neutrons form helium nuclei; establishes baryon-to-photon ratio
+            </div>
+            <div class="timeline-item">
+                <strong>\(t \approx 50,000\) years: Matter-radiation equality</strong><br>
+                Matter density exceeds radiation density; dark matter starts clumping
+            </div>
+            <div class="timeline-item">
+                <strong>\(t \approx 380,000\) years: Recombination</strong><br>
+                Electrons combine with protons → neutral hydrogen; photons decouple → CMB
+            </div>
+        </div>
+
+        <h2 id="bao-physics">3. Baryon Acoustic Oscillations: The Physics</h2>
+
+        <h3>Step 1: Initial Overdensity</h3>
+        <p>Inflation creates tiny density fluctuations: some regions have slightly more matter than average. Consider one such overdense region:</p>
+
+        <div class="math-block">
+            \[\delta(\vec{x}) = \frac{\rho(\vec{x}) - \bar{\rho}}{\bar{\rho}} \sim 10^{-5}\]
+        </div>
+
+        <p>This overdensity contains dark matter, baryons, and photons. The dark matter sits at the center, feeling only gravity. But the photon-baryon fluid feels <strong>both gravity and pressure</strong>.</p>
+
+        <h3>Step 2: Pressure Wave Propagation</h3>
+
+        <div class="concept">
+            <strong>The Key Physics:</strong> Gravity pulls the photon-baryon fluid inward, but photon pressure pushes it outward. This creates a spherical pressure wave propagating away from the overdensity.
+        </div>
+
+        <p>The wave equation for the photon-baryon fluid is approximately:</p>
+        <div class="math-block">
+            \[\ddot{\delta}_b + \frac{\dot{a}}{a}\dot{\delta}_b = c_s^2 \nabla^2 \delta_b + \frac{3}{2}\frac{\dot{a}^2}{a^2}\Omega_m \delta_{dm}\]
+        </div>
+
+        <p>where the <strong>sound speed</strong> is:</p>
+        <div class="math-block">
+            \[c_s = \frac{c}{\sqrt{3(1 + R)}}, \quad R = \frac{3\rho_b}{4\rho_\gamma}\]
+        </div>
+
+        <p>Early on, \(R \ll 1\), so \(c_s \approx c/\sqrt{3} \approx 0.58c\). The wave travels at about 58% the speed of light!</p>
+
+        <h3>Step 3: Freeze-Out at Recombination</h3>
+
+        <p>At recombination (\(z \approx 1100\), \(T \approx 3000\) K):</p>
+        <ol>
+            <li>Electrons combine with protons → neutral hydrogen</li>
+            <li>Photons no longer scatter; they stream freely (become the CMB)</li>
+            <li>Without photon pressure, the baryon wave <strong>freezes</strong></li>
+        </ol>
+
+        <p>The distance the wave traveled defines the <strong>sound horizon</strong>:</p>
+        <div class="math-block">
+            \[r_s = \int_0^{t_{rec}} \frac{c_s(t)}{a(t)} dt = \int_{z_{rec}}^{\infty} \frac{c_s(z)}{H(z)} dz\]
+        </div>
+
+        <h3>The Final Configuration</h3>
+        <p>After recombination, we're left with:</p>
+        <ul>
+            <li><strong>Dark matter overdensity</strong> at the original position (center)</li>
+            <li><strong>Baryon overdensity</strong> in a spherical shell at radius \(r_s \approx 147\) Mpc</li>
+        </ul>
+
+        <div class="highlight">
+            <strong>Result:</strong> There's a slight preference for pairs of galaxies to be separated by ~147 Mpc (comoving). This appears as a bump in the correlation function at this scale.
+        </div>
+
+        <h3>Why 147 Mpc?</h3>
+        <p>The sound horizon depends on early universe physics:</p>
+        <div class="math-block">
+            \[r_s \propto \frac{c_s \cdot t_{rec}}{a_{rec}} \propto \frac{1}{\sqrt{\Omega_m h^2}} \cdot \frac{1}{\sqrt{\Omega_b h^2}}\]
+        </div>
+
+        <p>With Planck-measured values (\(\Omega_m h^2 = 0.143\), \(\Omega_b h^2 = 0.0224\)):</p>
+        <div class="math-block">
+            \[r_s = 147.05 \pm 0.26 \text{ Mpc}\]
+        </div>
+
+        <p>This is known to 0.2% precision from CMB physics!</p>
+
+        <h3>The Galaxy Correlation Function</h3>
+        <p>The two-point correlation function \(\xi(r)\) measures the excess probability of finding galaxy pairs at separation \(r\):</p>
+        <div class="math-block">
+            \[dP = n^2 [1 + \xi(r)] dV_1 dV_2\]
+        </div>
+
+        <p>The BAO appears as a bump at \(r = r_s\):</p>
+
+        <div class="info">
+            <strong>What DESI Measures:</strong> The position of this bump in the correlation function at different redshifts. Comparing the observed angular/redshift separations to the known physical scale \(r_s\) gives us the angular diameter distance and Hubble parameter.
+        </div>
+
+        <h2 id="dark-energy">4. Dark Energy: The Mystery</h2>
+
+        <h3>The Discovery (1998)</h3>
+        <p>Type Ia supernovae observations by Riess et al. and Perlmutter et al. revealed that the universe's expansion is <strong>accelerating</strong>. This requires a component with negative pressure—<strong>dark energy</strong>.</p>
+
+        <h3>The Equation of State</h3>
+        <p>Any cosmic component has an equation of state relating pressure to density:</p>
+        <div class="math-block">
+            \[P = w \rho c^2\]
+        </div>
+
+        <table>
+            <tr><th>Component</th><th>\(w\)</th><th>Density evolution</th></tr>
+            <tr><td>Matter (dust)</td><td>0</td><td>\(\rho \propto a^{-3}\)</td></tr>
+            <tr><td>Radiation</td><td>1/3</td><td>\(\rho \propto a^{-4}\)</td></tr>
+            <tr><td>Cosmological constant</td><td>-1</td><td>\(\rho = \text{const}\)</td></tr>
+            <tr><td>Generic dark energy</td><td>\(w(a)\)</td><td>Depends on \(w(a)\)</td></tr>
+        </table>
+
+        <p>For acceleration, we need \(w < -1/3\). The cosmological constant has \(w = -1\) exactly.</p>
+
+        <h3>The Cosmological Constant Problem</h3>
+
+        <div class="warning">
+            <strong>The "Worst Prediction in Physics":</strong> Quantum field theory predicts the vacuum energy density should be:
+            \[\rho_{vac} \sim \frac{M_{Pl}^4}{c^5 \hbar^3} \sim 10^{76} \text{ GeV}^4\]
+            But the observed dark energy density is:
+            \[\rho_{DE} \sim 10^{-47} \text{ GeV}^4\]
+            A discrepancy of <strong>123 orders of magnitude</strong>!
+        </div>
+
+        <p>This fine-tuning problem motivates considering alternatives where dark energy <em>evolves</em> rather than being a pure cosmological constant.</p>
+
+        <h3>The CPL Parameterization</h3>
+        <p>Chevallier, Polarski, and Linder proposed a simple parameterization for evolving dark energy:</p>
+        <div class="math-block">
+            \[w(a) = w_0 + w_a(1-a)\]
+        </div>
+
+        <p>Or in terms of redshift:</p>
+        <div class="math-block">
+            \[w(z) = w_0 + w_a \frac{z}{1+z}\]
+        </div>
+
+        <p>Where:</p>
+        <ul>
+            <li>\(w_0\): equation of state today (\(a = 1\))</li>
+            <li>\(w_a\): rate of change (approximately \(-dw/da\) at \(a=1\))</li>
+        </ul>
+
+        <h3>Physical Interpretation</h3>
+        <table>
+            <tr><th>Model</th><th>\(w_0\)</th><th>\(w_a\)</th><th>Physical Meaning</th></tr>
+            <tr><td>ΛCDM</td><td>-1</td><td>0</td><td>Cosmological constant; vacuum energy</td></tr>
+            <tr><td>Quintessence</td><td>\(> -1\)</td><td>varies</td><td>Slowly-rolling scalar field</td></tr>
+            <tr><td>Phantom</td><td>\(< -1\)</td><td>varies</td><td>Exotic field; \(\rho\) increases with expansion</td></tr>
+            <tr><td>Thawing</td><td>\(\approx -1\)</td><td>\(< 0\)</td><td>Field starts frozen, now evolving</td></tr>
+            <tr><td>Freezing</td><td>\(> -1\)</td><td>\(> 0\)</td><td>Field was evolving, now slowing</td></tr>
+        </table>
+
+        <div class="info">
+            <strong>DESI's Claim:</strong> Their data prefer \(w_0 \approx -0.7\) and \(w_a \approx -1.0\), suggesting dark energy was more "cosmological-constant-like" in the past (\(w \to -1\) as \(z \to \infty\)) but is becoming less negative today.
+        </div>
+
+        <h3>How Dark Energy Affects Distances</h3>
+        <p>The Friedmann equation with dark energy:</p>
+        <div class="math-block">
+            \[H^2(z) = H_0^2 \left[\Omega_m(1+z)^3 + \Omega_{DE}(z)\right]\]
+        </div>
+
+        <p>For the CPL parameterization:</p>
+        <div class="math-block">
+            \[\Omega_{DE}(z) = \Omega_{DE,0} \cdot (1+z)^{3(1+w_0+w_a)} \cdot \exp\left(-3w_a\frac{z}{1+z}\right)\]
+        </div>
+
+        <p>The comoving distance is:</p>
+        <div class="math-block">
+            \[D_C(z) = c\int_0^z \frac{dz'}{H(z')}\]
+        </div>
+
+        <p>Different \(w_0, w_a\) → different \(H(z)\) → different \(D_C(z)\) → different apparent BAO scale!</p>
+
+        <h2 id="observational-chain">5. The Observational Chain</h2>
+
+        <h3>From Photons to Cosmology</h3>
+
+        <h4>Step 1: Spectroscopy</h4>
+        <p>DESI's 5000 robotic fiber positioners capture galaxy spectra. From the spectrum:</p>
+        <ul>
+            <li><strong>Redshift \(z\)</strong>: From emission/absorption line positions</li>
+            <li><strong>Galaxy type</strong>: From spectral features</li>
+        </ul>
+
+        <h4>Step 2: 3D Positions</h4>
+        <p>Angular position (RA, Dec) + redshift → 3D comoving position (assuming a fiducial cosmology)</p>
+
+        <h4>Step 3: Correlation Function</h4>
+        <p>Count galaxy pairs as a function of separation:</p>
+        <ul>
+            <li>\(s_\perp\): Transverse separation (from angular separation)</li>
+            <li>\(s_\parallel\): Line-of-sight separation (from redshift difference)</li>
+        </ul>
+
+        <h4>Step 4: BAO Fitting</h4>
+        <p>The BAO signal appears as a ring in the 2D correlation function \(\xi(s_\perp, s_\parallel)\). Fitting gives:</p>
+        <ul>
+            <li>\(\alpha_\perp = D_M(z)/D_M^{fid}(z)\): Transverse dilation</li>
+            <li>\(\alpha_\parallel = D_H(z)/D_H^{fid}(z)\): Radial dilation</li>
+        </ul>
+
+        <h4>Step 5: Distance Measurements</h4>
+        <div class="math-block">
+            \[\frac{D_M(z)}{r_s} = \alpha_\perp \cdot \frac{D_M^{fid}(z)}{r_s^{fid}}\]
+        </div>
+        <div class="math-block">
+            \[\frac{D_H(z)}{r_s} = \alpha_\parallel \cdot \frac{D_H^{fid}(z)}{r_s^{fid}}\]
+        </div>
+
+        <h4>Step 6: Cosmological Constraints</h4>
+        <p>Compare measured \(D_M(z)/r_s\) and \(D_H(z)/r_s\) to model predictions. Find best-fit \(\Omega_m\), \(w_0\), \(w_a\), etc.</p>
+
+        <h3>Why Both \(D_M\) and \(D_H\)?</h3>
+        <p>The BAO feature is observed in 2D (angular and redshift directions):</p>
+        <ul>
+            <li>\(D_M\): Measures distances <strong>perpendicular</strong> to line of sight (angular diameter distance)</li>
+            <li>\(D_H = c/H(z)\): Measures distances <strong>along</strong> line of sight (related to expansion rate)</li>
+        </ul>
+
+        <p>Having both breaks degeneracies and provides stronger constraints than either alone.</p>
+
+        <h2 id="why-matters">6. Why This Matters</h2>
+
+        <h3>Fundamental Physics Implications</h3>
+
+        <h4>If \(w = -1\) (Cosmological Constant):</h4>
+        <ul>
+            <li>Vacuum energy is real but inexplicably small</li>
+            <li>Requires extreme fine-tuning or anthropic selection</li>
+            <li>Universe eventually becomes de Sitter space; eternal exponential expansion</li>
+        </ul>
+
+        <h4>If \(w \neq -1\) (Evolving Dark Energy):</h4>
+        <ul>
+            <li>New physics beyond standard cosmology</li>
+            <li>Likely involves new scalar field(s)</li>
+            <li>Could connect to fundamental physics (string theory, modified gravity)</li>
+            <li>Future of universe depends on how \(w\) evolves</li>
+        </ul>
+
+        <h3>The Stakes of DESI's Claim</h3>
+
+        <div class="warning">
+            <strong>If True:</strong> Evolving dark energy would be one of the most significant discoveries in modern physics, pointing to new fundamental fields or modifications of gravity.
+        </div>
+
+        <div class="highlight">
+            <strong>The Caution:</strong> Extraordinary claims require extraordinary evidence. The statistical significance (3-4σ) must be robust to:
+            <ul>
+                <li>Statistical methodology (p-values vs. e-values vs. Bayesian evidence)</li>
+                <li>Systematic errors in the data</li>
+                <li>Model selection effects (w₀wₐCDM has 2 extra parameters)</li>
+                <li>Tension with other datasets (CMB, supernovae)</li>
+            </ul>
+        </div>
+
+        <h3>The Role of E-Values</h3>
+        <p>This is where our e-value analysis becomes crucial. By using proper validation techniques (data splitting, GROW mixtures), we can assess whether the apparent evidence for evolving dark energy is:</p>
+        <ol>
+            <li>A genuine signal in the data</li>
+            <li>An artifact of fitting a flexible model to noise</li>
+            <li>A consequence of tensions between datasets that w₀wₐCDM happens to resolve</li>
+        </ol>
+
+        <p>Our finding that e-values drop from 392 → 1.4 under proper validation suggests caution is warranted.</p>
+
+        <h2>References</h2>
+        <ul>
+            <li>Eisenstein, D. J., & Hu, W. (1998). "Baryonic Features in the Matter Transfer Function" - ApJ 496, 605</li>
+            <li>Eisenstein, D. J., et al. (2005). "Detection of the Baryon Acoustic Peak" - ApJ 633, 560</li>
+            <li>Riess, A. G., et al. (1998). "Observational Evidence from Supernovae for an Accelerating Universe" - AJ 116, 1009</li>
+            <li>Perlmutter, S., et al. (1999). "Measurements of Ω and Λ from 42 High-Redshift Supernovae" - ApJ 517, 565</li>
+            <li>Chevallier, M., & Polarski, D. (2001). "Accelerating Universes with Scaling Dark Matter" - IJMPD 10, 213</li>
+            <li>Linder, E. V. (2003). "Exploring the Expansion History of the Universe" - PRL 90, 091301</li>
+            <li>Weinberg, S. (1989). "The Cosmological Constant Problem" - Rev. Mod. Phys. 61, 1</li>
+        </ul>
+
+        <hr>
+        <p><a href="index.html">← Back to Home</a> | <a href="background_evalues.html">Next: E-Values Theory →</a></p>
+    </div>
+</body>
+</html>

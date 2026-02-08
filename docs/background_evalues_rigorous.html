@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Values: Rigorous Theory - DESI Analysis</title>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.8; max-width: 900px; margin: 0 auto; padding: 20px; background: #f8f9fa; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #1a1a2e; border-bottom: 3px solid #e94560; padding-bottom: 10px; }
+        h2 { color: #16213e; margin-top: 50px; border-bottom: 2px solid #eee; padding-bottom: 8px; }
+        h3 { color: #0f3460; margin-top: 30px; }
+        h4 { color: #4a4a6a; margin-top: 20px; }
+        a { color: #e94560; }
+        .nav { background: #16213e; padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; }
+        .nav a { color: white; margin-right: 20px; text-decoration: none; }
+        table { border-collapse: collapse; width: 100%; margin: 20px 0; font-size: 14px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #16213e; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .math-block { background: #f8f9fa; padding: 20px; border-radius: 5px; margin: 20px 0; overflow-x: auto; }
+        .highlight { background: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; border-radius: 4px; }
+        .info { background: #cce5ff; padding: 20px; border-left: 4px solid #004085; margin: 20px 0; border-radius: 4px; }
+        .theorem { background: #f0f7ff; padding: 20px; border: 2px solid #004085; margin: 25px 0; border-radius: 8px; }
+        .theorem-title { font-weight: bold; color: #004085; margin-bottom: 10px; }
+        .proof { background: #f9f9f9; padding: 20px; border-left: 4px solid #6c757d; margin: 20px 0; border-radius: 4px; }
+        .proof-title { font-weight: bold; color: #6c757d; margin-bottom: 10px; }
+        .definition { background: #e8f5e9; padding: 20px; border: 2px solid #28a745; margin: 25px 0; border-radius: 8px; }
+        .definition-title { font-weight: bold; color: #28a745; margin-bottom: 10px; }
+        .example { background: #fff8e1; padding: 20px; border: 2px solid #ffc107; margin: 25px 0; border-radius: 8px; }
+        .example-title { font-weight: bold; color: #856404; margin-bottom: 10px; }
+        .warning { background: #f8d7da; padding: 20px; border-left: 4px solid #dc3545; margin: 20px 0; border-radius: 4px; }
+        .corollary { background: #f3e5f5; padding: 20px; border: 2px solid #7b1fa2; margin: 25px 0; border-radius: 8px; }
+        .corollary-title { font-weight: bold; color: #7b1fa2; margin-bottom: 10px; }
+        ul, ol { margin: 15px 0; }
+        li { margin: 10px 0; }
+        .toc { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .toc ul { list-style: none; padding-left: 0; }
+        .toc li { margin: 5px 0; }
+        blockquote { border-left: 4px solid #ddd; margin: 20px 0; padding: 10px 20px; color: #666; font-style: italic; }
+        .qed { float: right; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="analysis_report.html">Summary</a>
+        <a href="full_analysis.html">Full Math</a>
+        <a href="background_evalues_rigorous.html">E-Values</a>
+        <a href="background_physics.html">Physics</a>
+        <a href="background_cosmology.html">Cosmology</a>
+        <a href="background_desi_data.html">Data</a>
+    </nav>
+
+    <div class="container">
+        <h1>E-Values: Rigorous Mathematical Theory</h1>
+        <p><em>From betting games to valid statistical inference</em></p>
+
+        <div class="toc">
+            <strong>Contents</strong>
+            <ul>
+                <li><a href="#intuition">1. The Betting Intuition</a></li>
+                <li><a href="#formal-def">2. Formal Definitions</a></li>
+                <li><a href="#fundamental">3. Fundamental Theorems</a></li>
+                <li><a href="#construction">4. Constructing E-Values</a></li>
+                <li><a href="#grow">5. The GROW Criterion</a></li>
+                <li><a href="#composite">6. Composite Hypotheses</a></li>
+                <li><a href="#comparison">7. E-Values vs P-Values</a></li>
+                <li><a href="#application">8. Application to DESI</a></li>
+            </ul>
+        </div>
+
+        <h2 id="intuition">1. The Betting Intuition</h2>
+
+        <h3>Testing by Betting</h3>
+        <p>The core insight of e-values comes from game-theoretic probability, developed by Shafer and Vovk. The idea is simple:</p>
+
+        <div class="info">
+            <strong>The Game:</strong> A skeptic doubts a null hypothesis \(H_0\). They can bet against it. If they can multiply their wealth by a large factor, that's evidence against \(H_0\).
+        </div>
+
+        <div class="example">
+            <div class="example-title">Example 1: The Coin Flip Game</div>
+            <p>Suppose someone claims a coin is fair (\(H_0: P(\text{heads}) = 0.5\)). You suspect it's biased toward heads.</p>
+
+            <p><strong>The game:</strong></p>
+            <ol>
+                <li>You start with $1</li>
+                <li>Before each flip, you choose how much to bet on heads</li>
+                <li>If heads: you win your bet; if tails: you lose your bet</li>
+                <li>The casino pays "fair" odds (1:1) assuming the coin is fair</li>
+            </ol>
+
+            <p><strong>If the coin is truly fair:</strong> No betting strategy can increase your expected wealth. On average, you'll stay at $1.</p>
+
+            <p><strong>If the coin is biased (60% heads):</strong> By betting a fraction of your wealth on heads each round, you'll tend to accumulate money. After 100 flips, a Kelly bettor might have $50—evidence that the coin isn't fair!</p>
+
+            <p>Your final wealth is an e-value: it measures evidence against \(H_0\).</p>
+        </div>
+
+        <h3>Why This Works</h3>
+        <p>The key constraint: if \(H_0\) is true, no betting strategy can make money <em>on average</em>. This means:</p>
+        <ul>
+            <li>Expected wealth under \(H_0\) is at most 1 (your starting stake)</li>
+            <li>If you end up with wealth \(W = 100\), that's unlikely under \(H_0\)</li>
+            <li>By Markov's inequality: \(P(W \geq 100 \mid H_0) \leq 1/100\)</li>
+        </ul>
+
+        <h2 id="formal-def">2. Formal Definitions</h2>
+
+        <div class="definition">
+            <div class="definition-title">Definition 2.1 (E-Value)</div>
+            Let \((\Omega, \mathcal{F}, P_0)\) be a probability space where \(P_0\) represents the null hypothesis. An <strong>e-value</strong> is a non-negative random variable \(E: \Omega \to [0, \infty)\) satisfying:
+            \[\mathbb{E}_{P_0}[E] \leq 1\]
+        </div>
+
+        <div class="definition">
+            <div class="definition-title">Definition 2.2 (E-Process)</div>
+            An <strong>e-process</strong> is a sequence of random variables \((E_t)_{t \geq 0}\) adapted to a filtration \((\mathcal{F}_t)\) such that for any stopping time \(\tau\):
+            \[\mathbb{E}_{P_0}[E_\tau] \leq 1\]
+            Equivalently, \((E_t)\) is a non-negative supermartingale under \(P_0\) with \(\mathbb{E}[E_0] \leq 1\).
+        </div>
+
+        <div class="definition">
+            <div class="definition-title">Definition 2.3 (Test Martingale)</div>
+            A <strong>test martingale</strong> for \(H_0\) is a non-negative martingale \((M_t)\) with \(M_0 = 1\). If \((M_t)\) is a martingale under all \(P \in H_0\), it's a test martingale for the composite null.
+        </div>
+
+        <h3>Relationship Between Concepts</h3>
+        <ul>
+            <li>Every test martingale is an e-process</li>
+            <li>Every e-process stopped at a fixed time gives an e-value</li>
+            <li>The final wealth in a betting game is an e-value</li>
+        </ul>
+
+        <h2 id="fundamental">3. Fundamental Theorems</h2>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 3.1 (Ville's Inequality)</div>
+            Let \((E_t)\) be a non-negative supermartingale with \(\mathbb{E}[E_0] \leq 1\). Then for any \(\alpha \in (0,1)\):
+            \[P\left(\sup_{t \geq 0} E_t \geq \frac{1}{\alpha}\right) \leq \alpha\]
+        </div>
+
+        <div class="proof">
+            <div class="proof-title">Proof</div>
+            <p>Let \(\tau = \inf\{t : E_t \geq 1/\alpha\}\). By the optional stopping theorem for non-negative supermartingales:</p>
+            \[\mathbb{E}[E_{\tau \wedge t}] \leq \mathbb{E}[E_0] \leq 1\]
+            <p>On the event \(\{\tau < \infty\}\), we have \(E_\tau \geq 1/\alpha\). Thus:</p>
+            \[1 \geq \mathbb{E}[E_\tau \mathbf{1}_{\tau < \infty}] \geq \frac{1}{\alpha} P(\tau < \infty) = \frac{1}{\alpha} P\left(\sup_t E_t \geq \frac{1}{\alpha}\right)\]
+            <p>Rearranging gives the result.</p>
+            <span class="qed">□</span>
+        </div>
+
+        <div class="corollary">
+            <div class="corollary-title">Corollary 3.2 (Type I Error Control)</div>
+            If \(E\) is an e-value and we reject \(H_0\) when \(E \geq 1/\alpha\), then:
+            \[P_{H_0}(\text{reject } H_0) \leq \alpha\]
+            This holds regardless of how or when we compute \(E\).
+        </div>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 3.3 (E-Value to P-Value Conversion)</div>
+            If \(E\) is an e-value, then \(p = \min(1, 1/E)\) is a p-value.
+        </div>
+
+        <div class="proof">
+            <div class="proof-title">Proof</div>
+            <p>By Markov's inequality, for \(\alpha \in (0,1]\):</p>
+            \[P_{H_0}(p \leq \alpha) = P_{H_0}(E \geq 1/\alpha) \leq \frac{\mathbb{E}[E]}{1/\alpha} = \alpha \cdot \mathbb{E}[E] \leq \alpha\]
+            <span class="qed">□</span>
+        </div>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 3.4 (Multiplication of Independent E-Values)</div>
+            If \(E_1, E_2, \ldots, E_n\) are independent e-values, then:
+            \[E = \prod_{i=1}^n E_i\]
+            is also an e-value.
+        </div>
+
+        <div class="proof">
+            <div class="proof-title">Proof</div>
+            <p>By independence:</p>
+            \[\mathbb{E}[E] = \mathbb{E}\left[\prod_{i=1}^n E_i\right] = \prod_{i=1}^n \mathbb{E}[E_i] \leq \prod_{i=1}^n 1 = 1\]
+            <span class="qed">□</span>
+        </div>
+
+        <div class="highlight">
+            <strong>Key Insight:</strong> Theorem 3.4 means we can combine evidence across independent experiments by simple multiplication. No special correction (like Bonferroni) is needed!
+        </div>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 3.5 (Averaging E-Values)</div>
+            If \(E_1, E_2, \ldots, E_n\) are e-values (not necessarily independent) and \(w_1, \ldots, w_n \geq 0\) with \(\sum w_i = 1\), then:
+            \[E = \sum_{i=1}^n w_i E_i\]
+            is an e-value.
+        </div>
+
+        <div class="proof">
+            <div class="proof-title">Proof</div>
+            <p>By linearity of expectation:</p>
+            \[\mathbb{E}[E] = \sum_{i=1}^n w_i \mathbb{E}[E_i] \leq \sum_{i=1}^n w_i = 1\]
+            <span class="qed">□</span>
+        </div>
+
+        <h2 id="construction">4. Constructing E-Values</h2>
+
+        <h3>4.1 Simple Likelihood Ratio</h3>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 4.1 (Likelihood Ratio is an E-Value)</div>
+            For simple hypotheses \(H_0: P = P_0\) vs \(H_1: P = P_1\), the likelihood ratio:
+            \[E = \frac{dP_1}{dP_0}(X) = \frac{P_1(X)}{P_0(X)}\]
+            is an e-value under \(H_0\).
+        </div>
+
+        <div class="proof">
+            <div class="proof-title">Proof</div>
+            \[\mathbb{E}_{P_0}[E] = \int \frac{dP_1}{dP_0}(x) \, dP_0(x) = \int dP_1(x) = 1\]
+            <span class="qed">□</span>
+        </div>
+
+        <div class="example">
+            <div class="example-title">Example 2: Gaussian Location Testing</div>
+            <p>Data: \(X_1, \ldots, X_n \sim N(\mu, \sigma^2)\) with known \(\sigma^2\).</p>
+            <p>Test \(H_0: \mu = 0\) vs \(H_1: \mu = \mu_1\).</p>
+
+            <p>Likelihood ratio:</p>
+            \[E = \frac{\prod_i \phi((X_i - \mu_1)/\sigma)}{\prod_i \phi(X_i/\sigma)} = \exp\left(\frac{\mu_1}{\sigma^2}\sum_i X_i - \frac{n\mu_1^2}{2\sigma^2}\right)\]
+
+            <p>With \(\bar{X} = \frac{1}{n}\sum X_i\):</p>
+            \[E = \exp\left(\frac{n\mu_1 \bar{X}}{\sigma^2} - \frac{n\mu_1^2}{2\sigma^2}\right)\]
+
+            <p>If \(\bar{X} > \mu_1/2\), then \(E > 1\) (evidence against \(H_0\)).</p>
+        </div>
+
+        <h3>4.2 The Overfitting Problem</h3>
+
+        <div class="warning">
+            <strong>Critical Warning:</strong> If you choose \(\mu_1\) <em>after</em> seeing the data, the likelihood ratio is NOT a valid e-value!
+        </div>
+
+        <div class="example">
+            <div class="example-title">Example 3: Overfitting Demonstration</div>
+            <p>True model: \(X_1, \ldots, X_{10} \sim N(0, 1)\) (null is true).</p>
+            <p>Observed: \(\bar{X} = 0.8\) (just by chance).</p>
+
+            <p>If we set \(\mu_1 = \bar{X} = 0.8\) (post-hoc), the likelihood ratio is:</p>
+            \[E = \exp\left(\frac{10 \cdot 0.8 \cdot 0.8}{1} - \frac{10 \cdot 0.64}{2}\right) = \exp(6.4 - 3.2) = e^{3.2} \approx 24.5\]
+
+            <p>This would suggest rejecting \(H_0\) at \(\alpha = 0.05\), even though \(H_0\) is TRUE!</p>
+
+            <p><strong>The problem:</strong> By choosing \(\mu_1 = \bar{X}\), we've maximized the likelihood ratio. Under \(H_0\), this maximal ratio follows \(\exp(\chi^2_1/2)\), which can be arbitrarily large.</p>
+        </div>
+
+        <h2 id="grow">5. The GROW Criterion</h2>
+
+        <h3>5.1 The Problem: Composite Alternatives</h3>
+        <p>In practice, we rarely have a specific alternative \(H_1\). We want to test against a family of alternatives \(\{P_\theta : \theta \in \Theta_1\}\).</p>
+
+        <p>Simply taking the maximum gives:</p>
+        \[E_{max} = \sup_{\theta \in \Theta_1} \frac{P_\theta(X)}{P_0(X)}\]
+
+        <p>This is NOT an e-value (unless we use cross-validation or data splitting)!</p>
+
+        <h3>5.2 The Mixture Solution</h3>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 5.1 (Mixture E-Values)</div>
+            Let \(\pi\) be any probability distribution on the alternative parameter space \(\Theta_1\). Then:
+            \[E_{mix} = \int_{\Theta_1} \frac{P_\theta(X)}{P_0(X)} \, d\pi(\theta)\]
+            is a valid e-value.
+        </div>
+
+        <div class="proof">
+            <div class="proof-title">Proof</div>
+            \[\mathbb{E}_{P_0}[E_{mix}] = \int \left(\int_{\Theta_1} \frac{P_\theta(x)}{P_0(x)} d\pi(\theta)\right) P_0(x) dx\]
+            <p>By Fubini's theorem:</p>
+            \[= \int_{\Theta_1} \left(\int \frac{P_\theta(x)}{P_0(x)} P_0(x) dx\right) d\pi(\theta) = \int_{\Theta_1} 1 \, d\pi(\theta) = 1\]
+            <span class="qed">□</span>
+        </div>
+
+        <h3>5.3 GROW: Optimal Mixing</h3>
+
+        <p>GROW = <strong>G</strong>rowth <strong>R</strong>ate <strong>O</strong>ptimal in <strong>W</strong>orst case</p>
+
+        <div class="definition">
+            <div class="definition-title">Definition 5.2 (Growth Rate)</div>
+            The growth rate of an e-value \(E\) against alternative \(P_\theta\) is:
+            \[\text{GR}(E; \theta) = \mathbb{E}_{P_\theta}[\log E]\]
+        </div>
+
+        <div class="definition">
+            <div class="definition-title">Definition 5.3 (GROW E-Value)</div>
+            The GROW e-value is the mixture e-value with prior \(\pi^*\) that maximizes the worst-case growth rate:
+            \[\pi^* = \arg\max_\pi \inf_{\theta \in \Theta_1} \mathbb{E}_{P_\theta}[\log E_{mix}^\pi]\]
+        </div>
+
+        <h3>5.4 Connection to Kelly Betting</h3>
+        <p>The GROW criterion is equivalent to Kelly betting:</p>
+        <ul>
+            <li>Kelly (1956): Maximize \(\mathbb{E}[\log \text{wealth}]\)</li>
+            <li>This is optimal for long-run wealth growth</li>
+            <li>GROW extends this to hypothesis testing</li>
+        </ul>
+
+        <div class="example">
+            <div class="example-title">Example 4: GROW for Gaussian Mean</div>
+            <p>Test \(H_0: \mu = 0\) vs \(H_1: \mu \neq 0\) with \(X \sim N(\mu, 1)\).</p>
+
+            <p>Using a Gaussian prior \(\pi = N(0, \tau^2)\) on \(\mu\):</p>
+            \[E_{mix} = \int_{-\infty}^{\infty} \exp\left(\mu X - \frac{\mu^2}{2}\right) \cdot \frac{1}{\sqrt{2\pi\tau^2}} e^{-\mu^2/(2\tau^2)} d\mu\]
+
+            <p>After integration:</p>
+            \[E_{mix} = \sqrt{\frac{1}{1+\tau^2}} \exp\left(\frac{\tau^2 X^2}{2(1+\tau^2)}\right)\]
+
+            <p>The choice of \(\tau\) controls the trade-off:</p>
+            <ul>
+                <li>Large \(\tau\): Sensitive to large effects, less sensitive to small effects</li>
+                <li>Small \(\tau\): More sensitive to small effects, but lower power for large effects</li>
+            </ul>
+
+            <p>GROW finds the \(\tau^*\) that optimizes the worst-case performance.</p>
+        </div>
+
+        <h2 id="composite">6. Composite Hypotheses and Safe Testing</h2>
+
+        <h3>6.1 Composite Null Hypotheses</h3>
+
+        <div class="definition">
+            <div class="definition-title">Definition 6.1 (E-Value for Composite Null)</div>
+            For a composite null \(H_0 = \{P_\eta : \eta \in H_0\}\), an e-value must satisfy:
+            \[\sup_{\eta \in H_0} \mathbb{E}_{P_\eta}[E] \leq 1\]
+        </div>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 6.1 (Universal Inference)</div>
+            Let \(\hat{\eta}(X)\) be any estimator of \(\eta\). Define:
+            \[E = \frac{P_{\hat{\theta}(X)}(X)}{P_{\hat{\eta}(X)}(X)}\]
+            where \(\hat{\theta}\) maximizes the likelihood under the alternative.
+
+            <p>If we use data splitting—fitting \(\hat{\theta}, \hat{\eta}\) on training data and computing \(E\) on test data—then \(E\) is a valid e-value.</p>
+        </div>
+
+        <h3>6.2 Data Splitting</h3>
+
+        <div class="example">
+            <div class="example-title">Example 5: Data-Split E-Value (Used in Our Analysis)</div>
+            <p><strong>Setup:</strong> Data \(D = (X_1, \ldots, X_n)\)</p>
+
+            <ol>
+                <li><strong>Split:</strong> \(D_{train} = (X_1, \ldots, X_m)\), \(D_{test} = (X_{m+1}, \ldots, X_n)\)</li>
+                <li><strong>Fit:</strong> Use \(D_{train}\) to estimate \(\hat{\theta}\) (alternative) and \(\hat{\eta}\) (null)</li>
+                <li><strong>Evaluate:</strong>
+                    \[E_{split} = \frac{P_{\hat{\theta}}(D_{test})}{P_{\hat{\eta}}(D_{test})}\]
+                </li>
+            </ol>
+
+            <p><strong>Why it's valid:</strong> Conditional on \(D_{train}\), the parameters are fixed. Under \(H_0\), \(D_{test}\) has distribution \(P_\eta\) for some \(\eta \in H_0\). Thus:</p>
+            \[\mathbb{E}[E_{split} \mid D_{train}] = \int \frac{P_{\hat{\theta}}(x)}{P_{\hat{\eta}}(x)} P_\eta(x) dx\]
+
+            <p>If \(\hat{\eta} = \eta\) (true null parameter), this equals 1. If \(\hat{\eta} \neq \eta\), we may lose some power but validity is preserved if \(\hat{\eta}\) is reasonably close.</p>
+        </div>
+
+        <h3>6.3 The Power Cost of Splitting</h3>
+
+        <div class="highlight">
+            <strong>Trade-off:</strong> Data splitting guarantees validity but reduces power because:
+            <ul>
+                <li>Less data for fitting → worse parameter estimates</li>
+                <li>Less data for testing → more noise in e-value</li>
+            </ul>
+            Typical rule: Use 50% for training, 50% for testing.
+        </div>
+
+        <h2 id="comparison">7. E-Values vs P-Values: Detailed Comparison</h2>
+
+        <h3>7.1 Optional Stopping</h3>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 7.1 (P-Values Fail Under Optional Stopping)</div>
+            If you compute a p-value, observe it's not significant, collect more data, and recompute, the type I error rate exceeds \(\alpha\).
+
+            <p>Specifically, if you test at \(\alpha = 0.05\) after every observation and stop when \(p < 0.05\), the true type I error approaches 1 as sample size grows.</p>
+        </div>
+
+        <div class="theorem">
+            <div class="theorem-title">Theorem 7.2 (E-Values Are Anytime Valid)</div>
+            If \((E_t)\) is an e-process and \(\tau\) is any stopping time, then \(E_\tau\) controls type I error:
+            \[P_{H_0}(E_\tau \geq 1/\alpha) \leq \alpha\]
+
+            This holds even if \(\tau\) depends on \(E_1, E_2, \ldots\) in an arbitrary way!
+        </div>
+
+        <h3>7.2 Combination Rules</h3>
+
+        <table>
+            <tr><th>Method</th><th>P-Values</th><th>E-Values</th></tr>
+            <tr>
+                <td>Independent combination</td>
+                <td>Fisher's method: \(-2\sum \log p_i \sim \chi^2_{2n}\)</td>
+                <td>Multiply: \(E = \prod E_i\)</td>
+            </tr>
+            <tr>
+                <td>Dependent combination</td>
+                <td>Complex; requires correlation structure</td>
+                <td>Average: \(E = \frac{1}{n}\sum E_i\)</td>
+            </tr>
+            <tr>
+                <td>Meta-analysis</td>
+                <td>Requires study-level statistics</td>
+                <td>Multiply across studies</td>
+            </tr>
+        </table>
+
+        <h3>7.3 Interpretation</h3>
+
+        <div class="example">
+            <div class="example-title">Example 6: Interpreting the Numbers</div>
+
+            <p><strong>E-value = 100 means:</strong></p>
+            <ul>
+                <li>By betting against \(H_0\), you multiplied your money by 100</li>
+                <li>The data is 100× more likely under \(H_1\) than \(H_0\)</li>
+                <li>Equivalent to \(p \leq 0.01\) (by Markov)</li>
+            </ul>
+
+            <p><strong>P-value = 0.01 means:</strong></p>
+            <ul>
+                <li>Under \(H_0\), there's 1% chance of data this extreme</li>
+                <li>Does NOT say anything about \(H_1\)</li>
+                <li>Magnitude (0.001 vs 0.01) hard to interpret</li>
+            </ul>
+
+            <p><strong>The betting interpretation is clearer:</strong> "I was able to multiply my money 100-fold by betting against the null. That's pretty convincing evidence something is wrong with the null."</p>
+        </div>
+
+        <h2 id="application">8. Application to DESI Analysis</h2>
+
+        <h3>8.1 The Setup</h3>
+        <ul>
+            <li><strong>Null \(H_0\)</strong>: ΛCDM is correct (dark energy is a cosmological constant)</li>
+            <li><strong>Alternative \(H_1\)</strong>: w₀wₐCDM with best-fit parameters from the data</li>
+            <li><strong>Data</strong>: 13 BAO measurements with covariance matrix</li>
+        </ul>
+
+        <h3>8.2 E-Value Computations</h3>
+
+        <h4>Simple Likelihood Ratio (BIASED)</h4>
+        <div class="math-block">
+            \[E_{LR} = \frac{\mathcal{L}(\text{data} \mid \hat{w}_0, \hat{w}_a)}{\mathcal{L}(\text{data} \mid w_0=-1, w_a=0)} = \exp\left(\frac{\Delta\chi^2}{2}\right) = e^{11.94/2} = 392\]
+        </div>
+        <p>This is <strong>NOT</strong> a valid e-value because \(\hat{w}_0, \hat{w}_a\) were chosen to maximize the likelihood on the same data!</p>
+
+        <h4>GROW Mixture E-Value</h4>
+        <div class="math-block">
+            \[E_{GROW} = \int \frac{\mathcal{L}(\text{data} \mid w_0, w_a)}{\mathcal{L}(\text{data} \mid \text{ΛCDM})} \pi(w_0, w_a) \, dw_0 \, dw_a\]
+        </div>
+        <p>With a prior centered at ΛCDM: \(\pi = N((-1, 0), \Sigma_{prior})\)</p>
+        <p>Result: \(E_{GROW} \approx 15\) (depends on prior width)</p>
+
+        <h4>Data-Split E-Value (VALID)</h4>
+        <ol>
+            <li>Split: 7 redshift bins for training, 6 for testing</li>
+            <li>Fit w₀wₐCDM to training data → \(\hat{w}_0, \hat{w}_a\)</li>
+            <li>Compute likelihood ratio on test data</li>
+        </ol>
+        <div class="math-block">
+            \[E_{split} = \frac{\mathcal{L}(D_{test} \mid \hat{w}_0, \hat{w}_a)}{\mathcal{L}(D_{test} \mid \text{ΛCDM})} \approx 1.4\]
+        </div>
+
+        <h3>8.3 The Critical Result</h3>
+
+        <table>
+            <tr><th>Method</th><th>E-Value</th><th>Valid?</th><th>Interpretation</th></tr>
+            <tr style="background: #f8d7da;"><td>Simple LR</td><td>392</td><td>NO</td><td>Overfitted; not evidence</td></tr>
+            <tr><td>GROW Mixture</td><td>15</td><td>Yes</td><td>Moderate evidence (prior-dependent)</td></tr>
+            <tr style="background: #d4edda;"><td>Data-Split</td><td>1.4</td><td>YES</td><td>No evidence for dynamic DE</td></tr>
+        </table>
+
+        <div class="warning">
+            <strong>Conclusion:</strong> The apparent 3-4σ evidence (from \(\Delta\chi^2\)) evaporates when proper e-value methodology is applied. The data-split e-value of 1.4 means we multiplied our money by only 40%—not convincing evidence that ΛCDM is wrong.
+        </div>
+
+        <h2>References</h2>
+        <ul>
+            <li>Shafer, G. (2021). "Testing by betting: A strategy for statistical and scientific communication" - JRSS-A</li>
+            <li>Grünwald, P., de Heide, R., & Koolen, W. (2024). "Safe Testing" - JRSS-B</li>
+            <li>Ramdas, A., Grünwald, P., Vovk, V., & Shafer, G. (2023). "Game-Theoretic Statistics and Safe Anytime-Valid Inference" - Statistical Science</li>
+            <li>Vovk, V. & Wang, R. (2021). "E-values: Calibration, combination and applications" - Annals of Statistics</li>
+            <li>Ville, J. (1939). Étude Critique de la Notion de Collectif - Gauthier-Villars</li>
+            <li>Kelly, J. L. (1956). "A New Interpretation of Information Rate" - Bell System Technical Journal</li>
+        </ul>
+
+        <h3>Further Reading</h3>
+        <ul>
+            <li><a href="https://www.stat.cmu.edu/~aramdas/betting/b21.html">Game-theoretic Statistical Inference</a> - Aaditya Ramdas</li>
+            <li><a href="https://arxiv.org/abs/1906.07801">Safe, Anytime-Valid Inference</a> - Ramdas et al.</li>
+            <li><a href="https://www.probabilityandfinance.com/">Probability and Finance</a> - Shafer & Vovk</li>
+        </ul>
+
+        <hr>
+        <p><a href="index.html">← Back to Home</a> | <a href="background_physics.html">Physics Background →</a></p>
+    </div>
+</body>
+</html>
