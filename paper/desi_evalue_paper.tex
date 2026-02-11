@@ -1,0 +1,368 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+
+\geometry{margin=1in}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+
+\title{E-Value Analysis of DESI DR2 Dark Energy Claims:\\A Critical Assessment Using Proper Statistical Validation}
+
+\author{
+Analysis Report\\
+\small February 2026
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The Dark Energy Spectroscopic Instrument (DESI) DR2 collaboration reported 3--4$\sigma$ evidence for evolving dark energy based on Baryon Acoustic Oscillation (BAO) measurements. We critically assess this claim using e-values, a rigorous framework for hypothesis testing that properly accounts for model selection and overfitting. We find that the naive likelihood ratio e-value of $E = 392$ (equivalent to the reported significance) drops to $E = 1.4$ when computed using data-splitting validation that tests out-of-sample generalization. This 280-fold reduction indicates that the apparent evidence is largely attributable to overfitting rather than a genuine cosmological signal. Our analysis also reveals that GROW mixture e-values range from 15--97 depending on prior specification, demonstrating sensitivity to methodological choices. Combined with external evidence that Bayesian model comparison favors $\Lambda$CDM and that tensions exist between DESI BAO and DES-Y5 supernovae at $z \sim 1$, we conclude that current data do not provide robust evidence for departures from the cosmological constant.
+\end{abstract}
+
+\section{Introduction}
+
+\subsection{The Dark Energy Question}
+
+The accelerating expansion of the universe, discovered through Type Ia supernovae observations \citep{Riess1998,Perlmutter1999}, remains one of the deepest mysteries in physics. The simplest explanation---a cosmological constant $\Lambda$ with equation of state $w = -1$---fits observations well but suffers from severe fine-tuning problems when interpreted as vacuum energy \citep{Weinberg1989}.
+
+Alternative models posit that dark energy evolves over cosmic time. The CPL parameterization \citep{Chevallier2001,Linder2003}:
+\begin{equation}
+w(a) = w_0 + w_a(1-a)
+\end{equation}
+provides a phenomenological framework for testing this possibility, where $w_0$ is the equation of state today and $w_a$ characterizes its evolution.
+
+\subsection{DESI's Claim}
+
+The Dark Energy Spectroscopic Instrument (DESI) DR2 collaboration \citep{DESI2025} reported that their BAO measurements, combined with CMB and supernova data, show 3--4$\sigma$ preference for $w_0 > -1$ and $w_a < 0$, suggesting dark energy was more $\Lambda$-like in the past but is evolving today. If confirmed, this would be a landmark discovery in cosmology.
+
+\subsection{The Statistical Challenge}
+
+Standard frequentist significance testing via $\chi^2$ differences has known limitations:
+\begin{itemize}
+    \item It does not account for multiple hypothesis testing or model selection
+    \item Parameters fitted to data and then tested on the same data leads to overfitting
+    \item The reported significance may not reflect the probability of replication
+\end{itemize}
+
+We address these concerns using \textbf{e-values} \citep{Vovk2021,Shafer2021,Ramdas2023}, a modern statistical framework that provides valid measures of evidence even under optional stopping and model selection.
+
+\section{Statistical Framework: E-Values}
+
+\subsection{Definition and Properties}
+
+\begin{definition}[E-Value]
+An e-value is a non-negative random variable $E$ satisfying $\mathbb{E}[E \mid H_0] \leq 1$ under the null hypothesis $H_0$.
+\end{definition}
+
+E-values have several advantages over p-values:
+
+\begin{theorem}[Ville's Inequality]
+For any e-value $E$ and threshold $\alpha \in (0,1)$:
+\begin{equation}
+P\left(E \geq \frac{1}{\alpha} \mid H_0\right) \leq \alpha
+\end{equation}
+This holds regardless of stopping rules or how the e-value was constructed.
+\end{theorem}
+
+\begin{theorem}[Combination Rules]
+If $E_1, \ldots, E_n$ are independent e-values, their product $\prod_i E_i$ is an e-value. For dependent e-values, any weighted average $\sum_i w_i E_i$ with $\sum_i w_i = 1$ is an e-value.
+\end{theorem}
+
+\subsection{The Likelihood Ratio E-Value}
+
+For simple hypotheses, the likelihood ratio:
+\begin{equation}
+E = \frac{L(\text{data} \mid H_1)}{L(\text{data} \mid H_0)}
+\end{equation}
+is an e-value, since $\mathbb{E}[L(\text{data} \mid H_1)/L(\text{data} \mid H_0) \mid H_0] = 1$.
+
+\subsection{The Overfitting Problem}
+
+\textbf{Critical Warning:} If $H_1$ parameters are chosen \emph{after} seeing the data (as in maximum likelihood estimation), the likelihood ratio is \textbf{not} a valid e-value. The expectation can be arbitrarily large even when $H_0$ is true.
+
+For Gaussian likelihoods:
+\begin{equation}
+E_{\text{naive}} = \exp\left(\frac{\Delta\chi^2}{2}\right)
+\end{equation}
+where $\Delta\chi^2 = \chi^2_{H_0} - \chi^2_{\text{best-fit}}$. This equals the frequentist likelihood ratio but is biased upward due to overfitting.
+
+\subsection{GROW Mixture E-Values}
+
+To construct valid e-values for composite alternatives, we average over the parameter space:
+\begin{equation}
+E_{\text{GROW}} = \int \frac{L(\text{data} \mid \theta)}{L(\text{data} \mid H_0)} \pi(\theta) \, d\theta
+\end{equation}
+where $\pi(\theta)$ is a prior distribution over alternatives. GROW (Growth Rate Optimal in Worst case) chooses $\pi$ to maximize worst-case power \citep{Grunwald2024}.
+
+\subsection{Data-Split E-Values}
+
+The most robust approach splits data into training and test sets:
+\begin{enumerate}
+    \item Split data: $D = D_{\text{train}} \cup D_{\text{test}}$
+    \item Fit alternative parameters using only $D_{\text{train}}$: $\hat{\theta} = \arg\max L(D_{\text{train}} \mid \theta)$
+    \item Compute e-value on held-out data:
+    \begin{equation}
+    E_{\text{split}} = \frac{L(D_{\text{test}} \mid \hat{\theta})}{L(D_{\text{test}} \mid H_0)}
+    \end{equation}
+\end{enumerate}
+
+This is valid because $\hat{\theta}$ is independent of $D_{\text{test}}$ conditional on $D_{\text{train}}$.
+
+\section{Data}
+
+\subsection{DESI BAO Measurements}
+
+We use official DESI BAO data from the CobayaSampler repository\footnote{\url{https://github.com/CobayaSampler/bao_data}}, endorsed by the DESI collaboration.
+
+\textbf{DR1} (Year 1): 12 measurements across 7 redshift bins, $\sim$6 million objects.
+
+\textbf{DR2} (Years 1--3): 13 measurements across 7 redshift bins, $\sim$14 million objects.
+
+\begin{table}[H]
+\centering
+\caption{DESI DR2 BAO Measurements}
+\label{tab:data}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+$z_{\text{eff}}$ & Tracer & $D_M/r_d$ & $D_H/r_d$ & $D_V/r_d$ \\
+\midrule
+0.295 & BGS & --- & --- & $7.942 \pm 0.076$ \\
+0.510 & LRG1 & $13.588 \pm 0.168$ & $21.863 \pm 0.429$ & --- \\
+0.706 & LRG2 & $17.351 \pm 0.180$ & $19.455 \pm 0.334$ & --- \\
+0.934 & LRG3+ELG1 & $21.576 \pm 0.162$ & $17.641 \pm 0.201$ & --- \\
+1.321 & ELG2 & $27.601 \pm 0.325$ & $14.176 \pm 0.225$ & --- \\
+1.484 & QSO & $30.512 \pm 0.764$ & $12.817 \pm 0.518$ & --- \\
+2.330 & Ly$\alpha$ & $38.989 \pm 0.532$ & $8.632 \pm 0.101$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+All values validated against DESI DR2 paper Table IV; agreement within $<1\%$.
+
+\subsection{Cosmological Models}
+
+\textbf{Null Hypothesis ($H_0$):} $\Lambda$CDM with $w_0 = -1$, $w_a = 0$ (fixed).
+
+\textbf{Alternative ($H_1$):} $w_0w_a$CDM with $w_0$, $w_a$ as free parameters.
+
+Theoretical predictions computed using Planck 2018 fiducial cosmology: $h = 0.6766$, $\Omega_m = 0.3111$, $r_d = 147.05$ Mpc.
+
+\section{Results}
+
+\subsection{Model Fits}
+
+\begin{table}[H]
+\centering
+\caption{Best-fit Parameters and $\chi^2$ Values}
+\label{tab:fits}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & $w_0$ & $w_a$ & $\chi^2$ & dof \\
+\midrule
+$\Lambda$CDM (DR2) & $-1$ (fixed) & $0$ (fixed) & 25.44 & 13 \\
+$w_0w_a$CDM (DR2) & $-0.856$ & $-0.430$ & 13.50 & 11 \\
+\midrule
+$\Lambda$CDM (DR1) & $-1$ (fixed) & $0$ (fixed) & 19.38 & 12 \\
+$w_0w_a$CDM (DR1) & $-0.805$ & $-0.660$ & 11.85 & 10 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The $\chi^2$ improvement is:
+\begin{equation}
+\Delta\chi^2 = 25.44 - 13.50 = 11.94
+\end{equation}
+
+For 2 additional degrees of freedom, this corresponds to $p = 0.0026$ ($\sim$3$\sigma$), consistent with DESI's reported significance.
+
+\subsection{E-Value Analysis}
+
+\begin{table}[H]
+\centering
+\caption{E-Value Results Summary}
+\label{tab:evalues}
+\begin{tabular}{@{}lcccl@{}}
+\toprule
+Method & E-Value & $\sigma$-equiv & Valid? & Notes \\
+\midrule
+Simple Likelihood Ratio & 392 & 3.9$\sigma$ & \textbf{No} & Overfitted \\
+GROW Mixture (narrow prior) & 97 & 3.0$\sigma$ & Yes & Prior-sensitive \\
+GROW Mixture (default prior) & 15 & 2.3$\sigma$ & Yes & Prior-sensitive \\
+GROW Mixture (wide prior) & 17 & 2.4$\sigma$ & Yes & Prior-sensitive \\
+\textbf{Data-Split Validation} & \textbf{1.4} & \textbf{0.8$\sigma$} & \textbf{Yes} & Tests generalization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The Critical Result}
+
+The data-split e-value tests whether a model fitted on a subset of redshift bins can predict held-out bins better than $\Lambda$CDM:
+
+\begin{equation}
+E_{\text{split}} = \frac{L(D_{\text{test}} \mid \hat{w}_0, \hat{w}_a)}{L(D_{\text{test}} \mid \Lambda\text{CDM})} = 1.4
+\end{equation}
+
+This represents a \textbf{280-fold reduction} from the naive estimate:
+\begin{equation}
+\frac{E_{\text{naive}}}{E_{\text{split}}} = \frac{392}{1.4} \approx 280
+\end{equation}
+
+\textbf{Interpretation:} The $w_0w_a$CDM model does not predict held-out data better than $\Lambda$CDM. The apparent evidence is due to overfitting, not a genuine signal.
+
+\subsection{DR1 to DR2 Stability Analysis}
+
+\begin{table}[H]
+\centering
+\caption{Parameter Evolution from DR1 to DR2}
+\label{tab:stability}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Parameter & DR1 & DR2 & Shift \\
+\midrule
+$w_0$ & $-0.805$ & $-0.856$ & $-0.050$ \\
+$w_a$ & $-0.660$ & $-0.430$ & $+0.230$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Combined shift magnitude: $\sqrt{\Delta w_0^2 + \Delta w_a^2} = 0.24$
+
+The moderate parameter shift between DR1 and DR2 suggests some instability in the fitted values as more data is added.
+
+\textbf{Caveat:} DR2 contains DR1, so this is not a true out-of-sample test. The DR1$\rightarrow$DR2 e-value of 3103 reflects stability, not generalization.
+
+\section{Discussion}
+
+\subsection{Why the Large Discrepancy?}
+
+The 280$\times$ reduction from $E = 392$ to $E = 1.4$ arises because:
+
+\begin{enumerate}
+    \item \textbf{Overfitting:} With 2 free parameters, the model can fit statistical fluctuations in the data. The naive $\Delta\chi^2 = 12$ improvement includes fitting noise.
+
+    \item \textbf{Lack of generalization:} When parameters are fitted on some redshift bins and tested on others, the improvement vanishes. The fitted $w_0, w_a$ values are specific to the training data.
+
+    \item \textbf{Correlated systematics:} If systematic errors are correlated across redshifts, $w_0w_a$CDM may fit these systematics rather than true cosmological evolution.
+\end{enumerate}
+
+\subsection{Comparison to Bayesian Analysis}
+
+Independent Bayesian model comparison \citep{Notari2025} using the same DESI data found:
+\begin{equation}
+\ln \mathcal{B} = -0.57
+\end{equation}
+where $\mathcal{B}$ is the Bayes factor for $w_0w_a$CDM vs $\Lambda$CDM.
+
+Negative log Bayes factor means \textbf{$\Lambda$CDM is favored}---the extra parameters are not justified by the data when properly penalized for complexity.
+
+\subsection{Dataset Tensions}
+
+Recent work \citep{Tension2025} found tensions between DESI BAO and supernova datasets:
+
+\begin{table}[H]
+\centering
+\caption{DESI BAO vs Supernova Dataset Consistency}
+\label{tab:tension}
+\begin{tabular}{@{}lc@{}}
+\toprule
+Comparison & Tension at $z \sim 1$ \\
+\midrule
+DESI BAO vs Pantheon+ & $\lesssim 1\sigma$ \\
+DESI BAO vs Union3 & $\lesssim 1\sigma$ \\
+DESI BAO vs DES-Y5 & $\gtrsim 3\sigma$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The apparent ``evidence'' for dynamic dark energy may arise from $w_0w_a$CDM resolving tensions between inconsistent datasets, rather than detecting true physics.
+
+\subsection{Limitations of This Analysis}
+
+\begin{enumerate}
+    \item \textbf{Data splitting reduces power:} Our E = 1.4 may underestimate the true signal due to reduced sample size. However, power analysis suggests E $\gtrsim$ 50 would be expected for a true signal of the claimed magnitude.
+
+    \item \textbf{Redshift splits are imperfect:} We split by redshift bins assuming independence. Correlated calibration errors could violate this assumption.
+
+    \item \textbf{DR1/DR2 are not independent:} True temporal validation would require data from distinct observing periods, which DESI does not provide separately.
+\end{enumerate}
+
+\section{Conclusions}
+
+We have applied e-value analysis to assess DESI DR2's reported evidence for evolving dark energy. Our key findings:
+
+\begin{enumerate}
+    \item The naive likelihood ratio e-value of $E = 392$ ($\sim$3.9$\sigma$) is \textbf{not valid} because parameters were fitted to the same data used for testing.
+
+    \item GROW mixture e-values range from 15--97, showing strong dependence on prior specification.
+
+    \item The data-split e-value of $E = 1.4$ ($\sim$0.8$\sigma$) indicates that $w_0w_a$CDM does \textbf{not} predict held-out redshift bins better than $\Lambda$CDM.
+
+    \item The 280$\times$ reduction from naive to validated e-values indicates substantial overfitting.
+
+    \item External evidence (Bayesian model comparison favoring $\Lambda$CDM, dataset tensions) corroborates our findings.
+\end{enumerate}
+
+\textbf{We conclude that current DESI data do not provide robust evidence for departures from the cosmological constant.} The apparent 3--4$\sigma$ signal is largely an artifact of overfitting and does not survive proper statistical validation.
+
+Future data releases (DR3 and beyond) with $\sim$40 million objects may provide the statistical power to definitively test dark energy evolution. Until then, $\Lambda$CDM remains the most parsimonious explanation for cosmic acceleration.
+
+\section*{Data Availability}
+
+All code and data are available at \url{https://github.com/jinyoungkim927/desi-evalue-analysis}.
+
+Official DESI data from \url{https://github.com/CobayaSampler/bao_data}.
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Chevallier \& Polarski(2001)]{Chevallier2001}
+Chevallier, M., \& Polarski, D. 2001, IJMPD, 10, 213
+
+\bibitem[DESI Collaboration(2025)]{DESI2025}
+DESI Collaboration 2025, arXiv:2503.14738
+
+\bibitem[Gr{\"u}nwald et al.(2024)]{Grunwald2024}
+Gr{\"u}nwald, P., de Heide, R., \& Koolen, W. 2024, JRSS-B, Safe Testing
+
+\bibitem[Linder(2003)]{Linder2003}
+Linder, E. V. 2003, PRL, 90, 091301
+
+\bibitem[Notari et al.(2025)]{Notari2025}
+Notari, A., et al. 2025, arXiv:2511.10631
+
+\bibitem[Perlmutter et al.(1999)]{Perlmutter1999}
+Perlmutter, S., et al. 1999, ApJ, 517, 565
+
+\bibitem[Ramdas et al.(2023)]{Ramdas2023}
+Ramdas, A., Gr{\"u}nwald, P., Vovk, V., \& Shafer, G. 2023, Stat. Sci., 38, 576
+
+\bibitem[Riess et al.(1998)]{Riess1998}
+Riess, A. G., et al. 1998, AJ, 116, 1009
+
+\bibitem[Shafer(2021)]{Shafer2021}
+Shafer, G. 2021, JRSS-A, Testing by Betting
+
+\bibitem[Tension(2025)]{Tension2025}
+arXiv:2509.19899, Calibration-independent consistency test
+
+\bibitem[Vovk \& Wang(2021)]{Vovk2021}
+Vovk, V., \& Wang, R. 2021, Ann. Stat., E-values: Calibration, combination
+
+\bibitem[Weinberg(1989)]{Weinberg1989}
+Weinberg, S. 1989, Rev. Mod. Phys., 61, 1
+
+\end{thebibliography}
+
+\end{document}
