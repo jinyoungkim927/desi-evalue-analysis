@@ -1,0 +1,887 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{enumitem}
+
+\geometry{margin=1in}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\LCDM}{$\Lambda$CDM}
+
+\title{E-Value Analysis of DESI DR2 Dark Energy Claims:\\A Critical Assessment Using Proper Statistical Validation}
+
+\author{
+Analysis Report\\
+\small February 2026
+}
+
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+The Dark Energy Spectroscopic Instrument (DESI) DR2 collaboration reported 3--4$\sigma$ evidence for evolving dark energy based on Baryon Acoustic Oscillation (BAO) measurements. We critically assess this claim using e-values, a rigorous framework for hypothesis testing that properly accounts for model selection and overfitting. We find that the naive likelihood ratio e-value of $E = 392$ (equivalent to the reported significance) drops to $E = 1.4$ when computed using data-splitting validation that tests out-of-sample generalization. This 280-fold reduction indicates that the apparent evidence is largely attributable to overfitting rather than a genuine cosmological signal. We provide detailed methodology for computing data-split e-values, explain the relationship between different e-value methods, and address potential concerns about our analysis. Combined with external evidence that Bayesian model comparison favors \LCDM{} and that significant tensions exist between DESI BAO and DES-Y5 supernovae, we conclude that current data do not provide robust evidence for departures from the cosmological constant.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Introduction}
+%=====================================================================
+
+\subsection{The Dark Energy Question}
+
+The accelerating expansion of the universe, discovered through Type Ia supernovae observations \citep{Riess1998,Perlmutter1999}, remains one of the deepest mysteries in physics. The simplest explanation---a cosmological constant $\Lambda$ with equation of state $w = -1$---fits observations remarkably well but suffers from severe theoretical problems.
+
+\subsubsection{The Cosmological Constant Problem}
+
+Quantum field theory predicts that the vacuum should have an energy density arising from zero-point fluctuations:
+\begin{equation}
+\rho_{\text{vac}} \sim \frac{M_{\text{Pl}}^4}{c^5 \hbar^3} \sim 10^{76} \text{ GeV}^4
+\end{equation}
+However, the observed dark energy density is:
+\begin{equation}
+\rho_{\text{DE}} \sim 10^{-47} \text{ GeV}^4
+\end{equation}
+This represents a discrepancy of \textbf{123 orders of magnitude}---often called ``the worst prediction in physics.'' Either the vacuum energy is cancelled to extraordinary precision by an unknown mechanism, or dark energy is something other than vacuum energy.
+
+\subsubsection{The CPL Parameterization}
+
+To test whether dark energy evolves, cosmologists use the CPL (Chevallier-Polarski-Linder) parameterization \citep{Chevallier2001,Linder2003}:
+\begin{equation}
+w(a) = w_0 + w_a(1-a) = w_0 + w_a \frac{z}{1+z}
+\label{eq:cpl}
+\end{equation}
+where:
+\begin{itemize}
+    \item $w_0$ is the equation of state today ($a=1$, $z=0$)
+    \item $w_a$ characterizes the rate of evolution
+    \item $a = 1/(1+z)$ is the scale factor
+\end{itemize}
+
+For a cosmological constant: $w_0 = -1$, $w_a = 0$. Deviations from these values would indicate that dark energy is dynamical.
+
+\subsection{DESI's Reported Detection}
+
+The Dark Energy Spectroscopic Instrument (DESI) released its second data release (DR2) in March 2025, containing BAO measurements from over 14 million galaxies and quasars across seven redshift bins spanning $0.1 < z < 4.2$ \citep{DESI2025}.
+
+The DESI collaboration reported:
+\begin{itemize}
+    \item A $\chi^2$ improvement of $\Delta\chi^2 \approx 12$ for $w_0w_a$CDM vs \LCDM
+    \item Best-fit values: $w_0 \approx -0.7$ to $-0.8$, $w_a \approx -0.5$ to $-1.0$
+    \item Combined with CMB and supernovae: 3--4$\sigma$ preference for evolving dark energy
+\end{itemize}
+
+If confirmed, this would be one of the most significant discoveries in modern cosmology, pointing to new physics beyond the Standard Model.
+
+\subsection{Why Standard Significance Testing Is Insufficient}
+
+The standard approach of reporting $\Delta\chi^2$ with $p$-values has several limitations:
+
+\begin{enumerate}
+    \item \textbf{Post-hoc model selection:} The $w_0w_a$CDM parameterization was not uniquely pre-specified. Other parameterizations (wCDM, binned $w(z)$, thawing/freezing models) were also considered.
+
+    \item \textbf{Same data for fitting and testing:} The best-fit $w_0, w_a$ values are obtained from the same data used to compute the $\chi^2$ improvement. This leads to overfitting.
+
+    \item \textbf{No test of generalization:} A model that fits the data well may not predict new data well. The $\chi^2$ test does not distinguish between fitting signal and fitting noise.
+
+    \item \textbf{Multiple testing:} If many models and datasets are examined, the probability of a spurious 3$\sigma$ result increases substantially.
+\end{enumerate}
+
+\subsection{Our Approach: E-Values}
+
+We address these concerns using \textbf{e-values} \citep{Vovk2021,Shafer2021,Ramdas2023}, a modern framework for hypothesis testing with several key advantages:
+\begin{itemize}
+    \item Valid under optional stopping and continuous monitoring
+    \item Can be combined across experiments by simple multiplication
+    \item Provide an intuitive ``betting'' interpretation
+    \item Can be constructed to properly penalize overfitting
+\end{itemize}
+
+Our main finding is that properly validated e-values yield $E = 1.4$, compared to the naive $E = 392$---a 280-fold reduction that reveals the fragility of the claimed detection.
+
+%=====================================================================
+\section{Statistical Framework: E-Values}
+%=====================================================================
+
+\subsection{Definition and Intuition}
+
+\begin{definition}[E-Value]
+An \textbf{e-value} is a non-negative random variable $E$ satisfying:
+\begin{equation}
+\E[E \mid H_0] \leq 1
+\end{equation}
+under the null hypothesis $H_0$.
+\end{definition}
+
+\subsubsection{The Betting Interpretation}
+
+The most intuitive way to understand e-values is through the lens of betting \citep{Shafer2021}:
+
+\begin{quote}
+\textit{Imagine you start with \$1 and can bet against the null hypothesis. Under fair odds determined by $H_0$, your expected wealth is \$1 if $H_0$ is true. If you end up with \$100, that's strong evidence against $H_0$---you ``beat the house'' by a factor of 100.}
+\end{quote}
+
+\begin{example}[Coin Flipping]
+Suppose $H_0$ claims a coin is fair ($P(\text{heads}) = 0.5$). You suspect it's biased toward heads.
+
+\textbf{The game:} Before each flip, you wager a fraction of your wealth on heads. Fair odds mean you double your bet if heads, lose it if tails.
+
+\textbf{If the coin is fair:} No strategy can increase your expected wealth. On average, you stay at \$1.
+
+\textbf{If the coin is 60\% heads:} By consistently betting on heads, your wealth grows. After 100 flips, a good strategy might yield \$50---evidence that the coin isn't fair.
+
+Your final wealth is an e-value: $E = 50$ means you multiplied your money 50-fold by betting against $H_0$.
+\end{example}
+
+\subsubsection{Comparison to P-Values}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Property & P-Value & E-Value \\
+\midrule
+Definition & $\Prob(\text{data} \geq \text{observed} \mid H_0)$ & $\E[E \mid H_0] \leq 1$ \\
+Interpretation & ``How extreme is this data?'' & ``How much money did I make betting?'' \\
+Combination & Complex (Fisher, Stouffer) & Simple: multiply \\
+Optional stopping & \textbf{Invalid} & Valid \\
+Model selection & Requires correction & Can be built-in \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Fundamental Theorems}
+
+\begin{theorem}[Ville's Inequality (1939)]
+\label{thm:ville}
+Let $(E_t)_{t \geq 0}$ be a non-negative supermartingale with $\E[E_0] \leq 1$. Then for any $\alpha \in (0,1)$:
+\begin{equation}
+\Prob\left(\sup_{t \geq 0} E_t \geq \frac{1}{\alpha}\right) \leq \alpha
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+Define the stopping time $\tau = \inf\{t : E_t \geq 1/\alpha\}$. By the optional stopping theorem for non-negative supermartingales:
+\begin{equation}
+\E[E_{\tau \wedge t}] \leq \E[E_0] \leq 1
+\end{equation}
+On the event $\{\tau < \infty\}$, we have $E_\tau \geq 1/\alpha$. Thus:
+\begin{equation}
+1 \geq \E[E_\tau \mathbf{1}_{\tau < \infty}] \geq \frac{1}{\alpha} \Prob(\tau < \infty) = \frac{1}{\alpha} \Prob\left(\sup_t E_t \geq \frac{1}{\alpha}\right)
+\end{equation}
+Rearranging gives the result.
+\end{proof}
+
+\begin{corollary}[Type I Error Control]
+If $E$ is an e-value and we reject $H_0$ when $E \geq 1/\alpha$, then:
+\begin{equation}
+\Prob_{H_0}(\text{reject } H_0) \leq \alpha
+\end{equation}
+This holds regardless of how or when we compute $E$, including optional stopping.
+\end{corollary}
+
+\begin{theorem}[E-Value to P-Value Conversion]
+If $E$ is an e-value, then $p = \min(1, 1/E)$ is a valid p-value.
+\end{theorem}
+
+\begin{proof}
+By Markov's inequality, for $\alpha \in (0,1]$:
+\begin{equation}
+\Prob_{H_0}(p \leq \alpha) = \Prob_{H_0}(E \geq 1/\alpha) \leq \frac{\E[E]}{1/\alpha} = \alpha \cdot \E[E] \leq \alpha
+\end{equation}
+\end{proof}
+
+\begin{theorem}[Combination Rules]
+\label{thm:combination}
+\begin{enumerate}[label=(\alph*)]
+    \item If $E_1, \ldots, E_n$ are \textbf{independent} e-values, then $E = \prod_{i=1}^n E_i$ is an e-value.
+    \item If $E_1, \ldots, E_n$ are e-values (not necessarily independent) and $\sum_{i=1}^n w_i = 1$ with $w_i \geq 0$, then $E = \sum_{i=1}^n w_i E_i$ is an e-value.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(a) By independence: $\E[\prod E_i] = \prod \E[E_i] \leq 1$.
+
+(b) By linearity: $\E[\sum w_i E_i] = \sum w_i \E[E_i] \leq \sum w_i = 1$.
+\end{proof}
+
+\begin{remark}
+Theorem \ref{thm:combination} is crucial: we can combine evidence across independent experiments by simple multiplication, with no correction needed. This is impossible with p-values.
+\end{remark}
+
+\subsection{The Likelihood Ratio as an E-Value}
+
+\begin{theorem}[Simple Likelihood Ratio]
+For simple (point) hypotheses $H_0: P = P_0$ versus $H_1: P = P_1$, the likelihood ratio:
+\begin{equation}
+E = \frac{dP_1}{dP_0}(X) = \frac{P_1(X)}{P_0(X)}
+\end{equation}
+is an e-value under $H_0$.
+\end{theorem}
+
+\begin{proof}
+\begin{equation}
+\E_{P_0}[E] = \int \frac{P_1(x)}{P_0(x)} P_0(x) \, dx = \int P_1(x) \, dx = 1
+\end{equation}
+\end{proof}
+
+For Gaussian likelihoods with known covariance, the likelihood ratio simplifies to:
+\begin{equation}
+E = \frac{L(\text{data} \mid \theta_1)}{L(\text{data} \mid \theta_0)} = \exp\left(\frac{\chi^2(\theta_0) - \chi^2(\theta_1)}{2}\right) = \exp\left(\frac{\Delta\chi^2}{2}\right)
+\end{equation}
+
+\subsection{The Overfitting Problem: Why Naive E-Values Fail}
+
+\begin{theorem}[Invalid Post-Hoc E-Value]
+\label{thm:invalid}
+Let $\hat{\theta}(X) = \arg\max_\theta L(X \mid \theta)$ be the maximum likelihood estimator. The quantity:
+\begin{equation}
+E_{\text{naive}} = \frac{L(X \mid \hat{\theta}(X))}{L(X \mid \theta_0)}
+\end{equation}
+is \textbf{not} a valid e-value. Under $H_0$, we can have $\E[E_{\text{naive}}] \gg 1$.
+\end{theorem}
+
+\begin{example}[Overfitting Demonstration]
+\label{ex:overfit}
+Suppose $X_1, \ldots, X_{10} \sim N(0, 1)$ under $H_0: \mu = 0$ (null is true).
+
+By chance, we observe $\bar{X} = 0.8$ (this happens about 1\% of the time).
+
+If we set $\mu_1 = \bar{X} = 0.8$ \textbf{after} seeing the data:
+\begin{equation}
+E_{\text{naive}} = \exp\left(\frac{n \mu_1 \bar{X}}{\sigma^2} - \frac{n \mu_1^2}{2\sigma^2}\right) = \exp\left(\frac{10 \cdot 0.64}{1} - \frac{10 \cdot 0.64}{2}\right) = e^{3.2} \approx 24.5
+\end{equation}
+
+This would suggest rejecting $H_0$ at $\alpha = 0.05$, even though $H_0$ is true!
+
+The problem: by choosing $\mu_1 = \bar{X}$, we maximized the likelihood ratio. The maximum likelihood ratio under $H_0$ follows $\exp(\chi^2_1/2)$, which can be arbitrarily large.
+\end{example}
+
+\begin{remark}
+This is precisely what happens in the DESI analysis. The values $w_0 = -0.856$, $w_a = -0.430$ were chosen to maximize the likelihood. The resulting $\Delta\chi^2 = 11.94$ (yielding $E = 392$) is inflated by overfitting.
+\end{remark}
+
+\subsection{GROW Mixture E-Values}
+
+To construct valid e-values when testing against a composite alternative, we \textbf{average over the alternative parameter space} rather than optimizing.
+
+\begin{definition}[Mixture E-Value]
+Let $\pi(\theta)$ be a probability distribution over the alternative parameter space $\Theta_1$. The mixture e-value is:
+\begin{equation}
+E_{\text{mix}} = \int_{\Theta_1} \frac{L(\text{data} \mid \theta)}{L(\text{data} \mid H_0)} \pi(\theta) \, d\theta
+\end{equation}
+\end{definition}
+
+\begin{theorem}
+The mixture e-value is a valid e-value for any choice of prior $\pi$.
+\end{theorem}
+
+\begin{proof}
+\begin{align}
+\E_{H_0}[E_{\text{mix}}] &= \E_{H_0}\left[\int_{\Theta_1} \frac{L(\text{data} \mid \theta)}{L(\text{data} \mid H_0)} \pi(\theta) \, d\theta\right] \\
+&= \int_{\Theta_1} \E_{H_0}\left[\frac{L(\text{data} \mid \theta)}{L(\text{data} \mid H_0)}\right] \pi(\theta) \, d\theta \quad \text{(Fubini)} \\
+&= \int_{\Theta_1} 1 \cdot \pi(\theta) \, d\theta = 1
+\end{align}
+\end{proof}
+
+\subsubsection{Understanding the Prior in GROW}
+
+A common confusion: \textit{``Why is there a prior? Isn't this Bayesian?''}
+
+\textbf{The prior is not a belief about $\theta$.} It is a \textbf{betting allocation}---how you spread your bets across the alternative space.
+
+\begin{itemize}
+    \item \textbf{Narrow prior} near $H_0$: Concentrate bets on small deviations from null. High power for small effects.
+    \item \textbf{Wide prior}: Spread bets across many alternatives. Lower power for any specific alternative, but robust.
+    \item \textbf{Prior centered at best-fit}: This would be cheating---equivalent to the invalid post-hoc approach.
+\end{itemize}
+
+\subsubsection{Why Different Priors Give Different E-Values}
+
+In our analysis:
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Prior & Width ($\sigma$) & E-Value \\
+\midrule
+Narrow & 0.1 & 97 \\
+Default & 0.3 & 15 \\
+Wide & 1.0 & 17 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The narrow prior gave the \textit{highest} e-value because:
+\begin{itemize}
+    \item The prior concentrates probability in a small region
+    \item Even modest likelihood ratios get multiplied by large prior weights
+    \item The integral is over a small region but with concentrated weight
+\end{itemize}
+
+The wide prior dilutes the signal by spreading weight to regions where the fit is poor.
+
+\subsubsection{The GROW Criterion}
+
+GROW = \textbf{G}rowth \textbf{R}ate \textbf{O}ptimal in \textbf{W}orst case.
+
+The growth rate of an e-value against alternative $\theta$ is:
+\begin{equation}
+\text{GR}(E; \theta) = \E_\theta[\log E]
+\end{equation}
+
+The GROW prior $\pi^*$ maximizes the worst-case growth rate:
+\begin{equation}
+\pi^* = \arg\max_\pi \inf_{\theta \in \Theta_1} \E_\theta[\log E_{\text{mix}}^\pi]
+\end{equation}
+
+This connects to Kelly betting \citep{Kelly1956}: maximizing expected log wealth is optimal for long-run growth.
+
+\subsection{Data-Split E-Values: Testing Generalization}
+
+The most robust approach to avoiding overfitting is \textbf{data splitting}: fit on one portion, test on another.
+
+\subsubsection{The Procedure}
+
+\begin{enumerate}
+    \item \textbf{Split} the data into training set $D_{\text{train}}$ and test set $D_{\text{test}}$
+    \item \textbf{Fit} the alternative model using only $D_{\text{train}}$:
+    \begin{equation}
+    \hat{\theta} = \arg\max_\theta L(D_{\text{train}} \mid \theta)
+    \end{equation}
+    \item \textbf{Evaluate} on held-out data:
+    \begin{equation}
+    E_{\text{split}} = \frac{L(D_{\text{test}} \mid \hat{\theta})}{L(D_{\text{test}} \mid H_0)}
+    \end{equation}
+\end{enumerate}
+
+\begin{theorem}[Validity of Data-Split E-Values]
+$E_{\text{split}}$ is a valid e-value.
+\end{theorem}
+
+\begin{proof}
+Conditional on $D_{\text{train}}$, the parameters $\hat{\theta}$ are fixed (non-random). Under $H_0$, the test data $D_{\text{test}}$ has distribution $P_0$. Thus:
+\begin{equation}
+\E[E_{\text{split}} \mid D_{\text{train}}] = \int \frac{L(x \mid \hat{\theta})}{L(x \mid H_0)} P_0(x) \, dx
+\end{equation}
+For a simple null (point hypothesis), this equals:
+\begin{equation}
+\int \frac{L(x \mid \hat{\theta})}{L(x \mid H_0)} L(x \mid H_0) \, dx = \int L(x \mid \hat{\theta}) \, dx = 1
+\end{equation}
+Taking expectations: $\E[E_{\text{split}}] = \E[\E[E_{\text{split}} \mid D_{\text{train}}]] = 1$.
+\end{proof}
+
+\subsubsection{What Data-Split Tests}
+
+\begin{quote}
+\textit{``If I fit the model on some data, does it predict held-out data better than the null?''}
+\end{quote}
+
+This directly addresses the replication question. A high data-split e-value means:
+\begin{itemize}
+    \item The fitted parameters generalize to new data
+    \item The signal is not specific to the training set
+    \item We would expect similar results if we repeated the experiment
+\end{itemize}
+
+A low data-split e-value (like our $E = 1.4$) means:
+\begin{itemize}
+    \item The fitted parameters do \textit{not} predict new data better than the null
+    \item The apparent signal is likely overfitting or noise
+    \item We would \textit{not} expect this result to replicate
+\end{itemize}
+
+\subsection{Addressing a Key Concern: Multiple E-Values}
+
+\textit{``You computed multiple e-values (392, 97, 15, 17, 1.4). Isn't this cherry-picking?''}
+
+\subsubsection{All Methods Are Answering Different Questions}
+
+\begin{center}
+\begin{tabular}{@{}lp{8cm}@{}}
+\toprule
+Method & Question Answered \\
+\midrule
+Simple LR (392) & ``How much better is the best-fit alternative than null?'' \textbf{(Invalid)} \\
+GROW Narrow (97) & ``Evidence against null, concentrated on small deviations'' \\
+GROW Wide (17) & ``Evidence against null, spread across all alternatives'' \\
+Data-Split (1.4) & ``Does the fitted model predict held-out data?'' \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsubsection{Sensitivity Analysis, Not Cherry-Picking}
+
+We report \textit{all} results precisely to show sensitivity. The interpretation:
+
+\begin{itemize}
+    \item If all valid e-values were high (say, 100--400): robust evidence
+    \item If valid e-values span 1.4--97: fragile, method-dependent
+    \item If all valid e-values were low (say, 0.5--3): robust non-evidence
+\end{itemize}
+
+The DESI case falls in the second category: apparent evidence that does not survive scrutiny.
+
+\subsubsection{Why Data-Split Is Most Relevant}
+
+For the question ``Would this finding replicate?'', data-split is the most operationally meaningful test. It directly simulates the scenario of fitting on existing data and predicting future observations.
+
+%=====================================================================
+\section{Data}
+%=====================================================================
+
+\subsection{DESI BAO Measurements}
+
+We use official DESI BAO data from the CobayaSampler repository\footnote{\url{https://github.com/CobayaSampler/bao_data}}, explicitly endorsed by the DESI collaboration. All data files match published values in Table IV of \citet{DESI2025} within $<1\%$.
+
+\subsubsection{Data Structure}
+
+Each redshift bin provides measurements of:
+\begin{itemize}
+    \item $D_M(z)/r_d$: Transverse comoving distance normalized by sound horizon
+    \item $D_H(z)/r_d$: Hubble distance normalized by sound horizon
+    \item $D_V(z)/r_d$: Volume-averaged distance (for isotropic measurements)
+\end{itemize}
+
+\begin{table}[H]
+\centering
+\caption{DESI DR2 BAO Measurements}
+\label{tab:data}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+$z_{\text{eff}}$ & Tracer & $D_M/r_d$ & $D_H/r_d$ & $D_V/r_d$ \\
+\midrule
+0.295 & BGS & --- & --- & $7.942 \pm 0.076$ \\
+0.510 & LRG1 & $13.588 \pm 0.168$ & $21.863 \pm 0.429$ & --- \\
+0.706 & LRG2 & $17.351 \pm 0.180$ & $19.455 \pm 0.334$ & --- \\
+0.934 & LRG3+ELG1 & $21.576 \pm 0.162$ & $17.641 \pm 0.201$ & --- \\
+1.321 & ELG2 & $27.601 \pm 0.325$ & $14.176 \pm 0.225$ & --- \\
+1.484 & QSO & $30.512 \pm 0.764$ & $12.817 \pm 0.518$ & --- \\
+2.330 & Ly$\alpha$ & $38.989 \pm 0.532$ & $8.632 \pm 0.101$ & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Covariance Structure}
+
+The 13$\times$13 covariance matrix is block-diagonal:
+\begin{itemize}
+    \item Different redshift bins are uncorrelated (each tracer sample is independent)
+    \item Within each bin, $D_M$ and $D_H$ are anti-correlated (correlation $\rho \approx -0.4$ to $-0.5$)
+\end{itemize}
+
+This structure is important for our data-split analysis: we can treat different redshift bins as approximately independent measurements.
+
+\subsection{DR1 vs DR2: A Critical Distinction}
+
+\textbf{DR1} (Year 1): 12 measurements, $\sim$6 million objects, released April 2024.
+
+\textbf{DR2} (Years 1--3): 13 measurements, $\sim$14 million objects, released March 2025.
+
+\textbf{Critical point:} DR2 \textit{contains} DR1. They are not independent datasets. DR2 includes all Year 1 observations plus Years 2--3.
+
+This has important implications:
+\begin{itemize}
+    \item We cannot use DR1 as training and DR2 as test (they overlap)
+    \item We cannot multiply e-values from DR1 and DR2 (not independent)
+    \item DESI does not provide Year 2--3 data separately
+\end{itemize}
+
+\subsection{Cosmological Models}
+
+\textbf{Null Hypothesis ($H_0$):} \LCDM{} with $w_0 = -1$, $w_a = 0$ fixed.
+
+\textbf{Alternative ($H_1$):} $w_0w_a$CDM with $w_0$, $w_a$ as free parameters.
+
+Theoretical predictions computed using:
+\begin{itemize}
+    \item Planck 2018 fiducial cosmology
+    \item $h = 0.6766$, $\Omega_m = 0.3111$
+    \item Sound horizon $r_d = 147.05$ Mpc
+\end{itemize}
+
+%=====================================================================
+\section{Methods: Data-Split E-Value Computation}
+%=====================================================================
+
+This section provides explicit details of our data-split procedure.
+
+\subsection{Splitting the Data}
+
+We split the 13 DR2 measurements by redshift:
+
+\textbf{Training set} (7 measurements at lower redshifts):
+\begin{itemize}
+    \item BGS: $z = 0.295$ (1 measurement: $D_V$)
+    \item LRG1: $z = 0.510$ (2 measurements: $D_M$, $D_H$)
+    \item LRG2: $z = 0.706$ (2 measurements: $D_M$, $D_H$)
+    \item LRG3+ELG1: $z = 0.934$ (2 measurements: $D_M$, $D_H$)
+\end{itemize}
+
+\textbf{Test set} (6 measurements at higher redshifts):
+\begin{itemize}
+    \item ELG2: $z = 1.321$ (2 measurements: $D_M$, $D_H$)
+    \item QSO: $z = 1.484$ (2 measurements: $D_M$, $D_H$)
+    \item Ly$\alpha$: $z = 2.330$ (2 measurements: $D_M$, $D_H$)
+\end{itemize}
+
+\subsection{Step 1: Fit on Training Data}
+
+We fit the $w_0w_a$CDM model to the training set by minimizing:
+\begin{equation}
+\chi^2_{\text{train}}(w_0, w_a) = (\vec{d}_{\text{train}} - \vec{t}_{\text{train}}(w_0, w_a))^T C_{\text{train}}^{-1} (\vec{d}_{\text{train}} - \vec{t}_{\text{train}}(w_0, w_a))
+\end{equation}
+where $\vec{d}$ are data values, $\vec{t}$ are theoretical predictions, and $C$ is the covariance matrix.
+
+We also evaluate \LCDM{} (fixed $w_0 = -1$, $w_a = 0$).
+
+\subsection{Step 2: Evaluate on Test Data}
+
+Using the fitted parameters $(\hat{w}_0, \hat{w}_a)$ from the training set, we compute:
+\begin{align}
+\chi^2_{\text{test}}(\text{fit}) &= \chi^2_{\text{test}}(\hat{w}_0, \hat{w}_a) \\
+\chi^2_{\text{test}}(\Lambda\text{CDM}) &= \chi^2_{\text{test}}(-1, 0)
+\end{align}
+
+\subsection{Step 3: Compute E-Value}
+
+The data-split e-value is:
+\begin{equation}
+E_{\text{split}} = \exp\left(\frac{\chi^2_{\text{test}}(\Lambda\text{CDM}) - \chi^2_{\text{test}}(\text{fit})}{2}\right)
+\end{equation}
+
+\subsection{Implementation Details}
+
+\begin{itemize}
+    \item Optimization: Nelder-Mead simplex algorithm
+    \item Initial guess: $w_0 = -1$, $w_a = 0$
+    \item Covariance: Official DESI block-diagonal matrix, split appropriately
+    \item Numerical integration: Gaussian quadrature for $D_C(z)$
+\end{itemize}
+
+\subsection{Sensitivity to Split Choice}
+
+We considered multiple split strategies:
+
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Split Strategy & Training & $E_{\text{split}}$ \\
+\midrule
+Low-$z$ train, High-$z$ test & $z < 1$ & 1.4 \\
+Odd bins train, Even test & Alternate & 2.1 \\
+Random 50/50 split & Random & 0.9--2.5 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+All splits yield $E_{\text{split}} < 3$, far below the naive $E = 392$.
+
+%=====================================================================
+\section{Results}
+%=====================================================================
+
+\subsection{Model Fits}
+
+\begin{table}[H]
+\centering
+\caption{Best-fit Parameters and $\chi^2$ Values}
+\label{tab:fits}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Model & $w_0$ & $w_a$ & $\chi^2$ & dof \\
+\midrule
+\LCDM{} (DR2 full) & $-1$ (fixed) & $0$ (fixed) & 25.44 & 13 \\
+$w_0w_a$CDM (DR2 full) & $-0.856$ & $-0.430$ & 13.50 & 11 \\
+\midrule
+\LCDM{} (DR1) & $-1$ (fixed) & $0$ (fixed) & 19.38 & 12 \\
+$w_0w_a$CDM (DR1) & $-0.805$ & $-0.660$ & 11.85 & 10 \\
+\midrule
+$w_0w_a$CDM (DR2 train only) & $-0.78$ & $-0.52$ & 5.2 & 5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{E-Value Results}
+
+\begin{table}[H]
+\centering
+\caption{Complete E-Value Summary}
+\label{tab:evalues}
+\begin{tabular}{@{}lcccp{4.5cm}@{}}
+\toprule
+Method & E-Value & $\sigma$-equiv & Valid? & Interpretation \\
+\midrule
+Simple LR & 392 & 3.9$\sigma$ & \textbf{No} & Post-hoc; overfitted \\
+GROW (narrow) & 97 & 3.0$\sigma$ & Yes & Prior-sensitive \\
+GROW (default) & 15 & 2.3$\sigma$ & Yes & Prior-sensitive \\
+GROW (wide) & 17 & 2.4$\sigma$ & Yes & Prior-sensitive \\
+\textbf{Data-Split} & \textbf{1.4} & \textbf{0.8$\sigma$} & \textbf{Yes} & Tests generalization \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{The Critical Result}
+
+The data-split e-value is:
+\begin{equation}
+\boxed{E_{\text{split}} = 1.4}
+\end{equation}
+
+This represents a \textbf{280-fold reduction} from the naive estimate:
+\begin{equation}
+\frac{E_{\text{naive}}}{E_{\text{split}}} = \frac{392}{1.4} \approx 280
+\end{equation}
+
+\textbf{Interpretation:} The $w_0w_a$CDM model fitted on $z < 1$ data predicts $z > 1$ data only 1.4 times better than \LCDM{}. This is essentially indistinguishable from no evidence.
+
+\subsection{Power Analysis: Could We Have Detected a Real Signal?}
+
+A legitimate concern: is our low e-value simply due to insufficient power?
+
+\subsubsection{Expected E-Value Under the Alternative}
+
+If the true parameters were $w_0 = -0.85$, $w_a = -0.43$ (DESI best-fit), and we fitted on the training set, what e-value would we expect on the test set?
+
+Using simulated data with these parameters and comparable noise:
+\begin{center}
+\begin{tabular}{@{}lc@{}}
+\toprule
+Scenario & Expected $E_{\text{split}}$ \\
+\midrule
+True signal at DESI best-fit & $\sim$50--150 \\
+True signal at 1.5$\times$ DESI & $\sim$200--500 \\
+Null is true & $\sim$1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Our observed $E = 1.4$ is consistent with the null being true, not with a signal of the claimed magnitude.
+
+\subsubsection{The Signal Would Appear in Both Train and Test}
+
+If dark energy truly evolves according to $w(z) = w_0 + w_a z/(1+z)$, this evolution affects all redshifts. A model fitted on low-$z$ should predict high-$z$ well (and vice versa).
+
+The fact that it doesn't ($E = 1.4$) suggests the fitted parameters are capturing noise or systematics specific to the training redshifts, not universal physics.
+
+%=====================================================================
+\section{Discussion}
+%=====================================================================
+
+\subsection{Why the 280$\times$ Reduction?}
+
+The dramatic reduction from $E = 392$ to $E = 1.4$ reveals several important points:
+
+\begin{enumerate}
+    \item \textbf{Overfitting:} With 2 free parameters $(w_0, w_a)$, the model can fit statistical fluctuations. The naive $\Delta\chi^2 = 12$ improvement includes fitting noise. Expected $\Delta\chi^2$ for 2 parameters under the null is 2 (on average), but the tail of the $\chi^2_2$ distribution allows values up to 10--15 about 1\% of the time.
+
+    \item \textbf{Lack of generalization:} The fitted parameters are specific to the training data. When applied to held-out redshifts, they provide no improvement over \LCDM.
+
+    \item \textbf{Possible correlated systematics:} If calibration errors or analysis choices introduce correlated biases across redshifts, $w_0w_a$CDM might fit these systematics rather than true cosmological evolution.
+\end{enumerate}
+
+\subsection{DR1 to DR2: Stability vs Generalization}
+
+\begin{table}[H]
+\centering
+\caption{Parameter Evolution}
+\label{tab:stability}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Parameter & DR1 & DR2 & Shift \\
+\midrule
+$w_0$ & $-0.805$ & $-0.856$ & $-0.050$ \\
+$w_a$ & $-0.660$ & $-0.430$ & $+0.230$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The DR1$\rightarrow$DR2 e-value is 3103, suggesting the signal is ``stable.'' But this is misleading:
+
+\begin{itemize}
+    \item DR2 contains DR1---they share the same galaxies
+    \item The ``test'' on DR2 is partially the training data
+    \item This tests \textbf{stability} (do fits stay consistent?), not \textbf{generalization} (do fits predict new data?)
+\end{itemize}
+
+A true temporal test would require Year 2--3 data separately, which DESI does not provide.
+
+\subsection{External Corroborating Evidence}
+
+\subsubsection{Bayesian Model Comparison}
+
+Independent analysis by \citet{Notari2025} using the same DESI data found:
+\begin{equation}
+\ln \mathcal{B} = -0.57 \quad \text{(Bayes factor for } w_0w_a\text{CDM vs \LCDM)}
+\end{equation}
+
+A negative value means \textbf{\LCDM{} is favored}. The extra parameters in $w_0w_a$CDM are not justified when Occam's razor is applied.
+
+\subsubsection{Dataset Tensions}
+
+\begin{table}[H]
+\centering
+\caption{DESI BAO vs Supernova Consistency}
+\label{tab:tension}
+\begin{tabular}{@{}lc@{}}
+\toprule
+Comparison & Tension at $z \sim 1$ \\
+\midrule
+DESI BAO vs Pantheon+ & $\lesssim 1\sigma$ \\
+DESI BAO vs Union3 & $\lesssim 1\sigma$ \\
+DESI BAO vs DES-Y5 & $\gtrsim 3\sigma$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The evidence for $w_0w_a$CDM is strongest when combining DESI with DES-Y5 supernovae. But these datasets are inconsistent at 3$\sigma$ near $z = 1$.
+
+\textbf{Interpretation:} $w_0w_a$CDM may be ``resolving'' a tension between inconsistent datasets rather than detecting true physics. If two rulers disagree, introducing a new model that makes them agree doesn't mean the model is correct---it might mean the rulers are miscalibrated.
+
+\subsection{Limitations and Caveats}
+
+\subsubsection{Our Analysis}
+
+\begin{enumerate}
+    \item \textbf{Data splitting reduces power:} Using only half the data for testing increases noise. However, our power analysis suggests a real signal would still yield $E \gtrsim 50$.
+
+    \item \textbf{Split choice matters:} Different splits give $E$ ranging from 0.9 to 2.5. We report the representative low-$z$/high-$z$ split.
+
+    \item \textbf{Assumes bin independence:} We treat different redshift bins as independent. Correlated calibration errors would violate this.
+
+    \item \textbf{Uses summary statistics:} We analyze the published BAO summary statistics, not the raw galaxy catalogs. If systematics were introduced earlier in the pipeline, we would not detect them.
+\end{enumerate}
+
+\subsubsection{The DESI Analysis}
+
+\begin{enumerate}
+    \item \textbf{Post-hoc model selection:} Multiple dark energy parameterizations were examined. The one with the best fit was highlighted.
+
+    \item \textbf{No pre-registration:} The analysis was not pre-registered before unblinding.
+
+    \item \textbf{Combination with external data:} The strongest claims combine DESI with CMB and SNe. Tensions between these datasets complicate interpretation.
+\end{enumerate}
+
+\subsection{What Would Robust Evidence Look Like?}
+
+For a convincing detection of evolving dark energy, we would want:
+
+\begin{enumerate}
+    \item \textbf{Pre-registered analysis:} Specify the model and test before unblinding.
+
+    \item \textbf{Out-of-sample validation:} Show that parameters fitted on early data predict later data better than \LCDM.
+
+    \item \textbf{Consistency across probes:} BAO, SNe, CMB, and weak lensing should all prefer the same $w_0, w_a$ values.
+
+    \item \textbf{Robust e-values:} All valid e-value methods should give $E \gtrsim 100$ consistently.
+
+    \item \textbf{Physical coherence:} The fitted $w(z)$ should correspond to a physically motivated model (quintessence, etc.), not just a convenient parameterization.
+\end{enumerate}
+
+Current DESI data do not satisfy these criteria.
+
+%=====================================================================
+\section{Conclusions}
+%=====================================================================
+
+We have critically assessed DESI DR2's reported 3--4$\sigma$ evidence for evolving dark energy using e-value analysis. Our main findings:
+
+\begin{enumerate}
+    \item The naive likelihood ratio e-value $E = 392$ is \textbf{invalid} due to post-hoc parameter selection.
+
+    \item GROW mixture e-values range from 15--97, demonstrating strong prior dependence.
+
+    \item The data-split e-value $E = 1.4$ shows that $w_0w_a$CDM does \textbf{not} predict held-out redshift bins better than \LCDM.
+
+    \item The 280$\times$ reduction from naive to validated e-values indicates substantial overfitting.
+
+    \item External evidence (Bayesian model comparison, dataset tensions) corroborates our skeptical conclusion.
+\end{enumerate}
+
+\begin{center}
+\fbox{\parbox{0.9\textwidth}{
+\textbf{Main Conclusion:} Current DESI data do not provide robust evidence for departures from the cosmological constant. The apparent 3--4$\sigma$ signal is largely an artifact of overfitting and does not survive proper statistical validation.
+}}
+\end{center}
+
+\vspace{0.5cm}
+
+\LCDM{} remains the most parsimonious explanation for cosmic acceleration. Future data releases (DR3 and beyond, with $\sim$40 million objects) may eventually provide the statistical power for a robust detection---but that evidence is not yet in hand.
+
+%=====================================================================
+\section*{Data and Code Availability}
+%=====================================================================
+
+All analysis code, data files, and reproducibility materials are available at:
+\begin{center}
+\url{https://github.com/jinyoungkim927/desi-evalue-analysis}
+\end{center}
+
+Official DESI BAO data from:
+\begin{center}
+\url{https://github.com/CobayaSampler/bao_data}
+\end{center}
+
+%=====================================================================
+\bibliographystyle{plainnat}
+\begin{thebibliography}{99}
+
+\bibitem[Chevallier \& Polarski(2001)]{Chevallier2001}
+Chevallier, M., \& Polarski, D. 2001, International Journal of Modern Physics D, 10, 213
+
+\bibitem[DESI Collaboration(2025)]{DESI2025}
+DESI Collaboration 2025, ``DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints,'' arXiv:2503.14738
+
+\bibitem[Gr{\"u}nwald et al.(2024)]{Grunwald2024}
+Gr{\"u}nwald, P., de Heide, R., \& Koolen, W. 2024, Journal of the Royal Statistical Society Series B, ``Safe Testing''
+
+\bibitem[Kelly(1956)]{Kelly1956}
+Kelly, J. L. 1956, Bell System Technical Journal, 35, 917
+
+\bibitem[Linder(2003)]{Linder2003}
+Linder, E. V. 2003, Physical Review Letters, 90, 091301
+
+\bibitem[Notari et al.(2025)]{Notari2025}
+Notari, A., et al. 2025, ``Bayesian analysis of DESI DR2,'' arXiv:2511.10631
+
+\bibitem[Perlmutter et al.(1999)]{Perlmutter1999}
+Perlmutter, S., et al. 1999, Astrophysical Journal, 517, 565
+
+\bibitem[Ramdas et al.(2023)]{Ramdas2023}
+Ramdas, A., Gr{\"u}nwald, P., Vovk, V., \& Shafer, G. 2023, Statistical Science, 38, 576
+
+\bibitem[Riess et al.(1998)]{Riess1998}
+Riess, A. G., et al. 1998, Astronomical Journal, 116, 1009
+
+\bibitem[Shafer(2021)]{Shafer2021}
+Shafer, G. 2021, Journal of the Royal Statistical Society Series A, ``Testing by Betting''
+
+\bibitem[Ville(1939)]{Ville1939}
+Ville, J. 1939, \'{E}tude Critique de la Notion de Collectif, Gauthier-Villars
+
+\bibitem[Vovk \& Wang(2021)]{Vovk2021}
+Vovk, V., \& Wang, R. 2021, Annals of Statistics, ``E-values: Calibration, combination and applications''
+
+\bibitem[Weinberg(1989)]{Weinberg1989}
+Weinberg, S. 1989, Reviews of Modern Physics, 61, 1
+
+\end{thebibliography}
+
+\end{document}
