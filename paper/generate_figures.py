@@ -254,6 +254,80 @@ def figure5_summary():
     plt.savefig('figure5_summary.png', dpi=300, bbox_inches='tight')
     print("Saved figure5_summary.pdf/png")
 
+def figure6_cross_dataset():
+    """Cross-dataset e-value matrix showing asymmetries"""
+
+    fig, ax = plt.subplots(figsize=(9, 7))
+
+    # Cross-dataset e-values (log10 scale for visualization)
+    datasets = ['DESI', 'Pantheon+', 'Union3', 'DES-Y5']
+    # E-values: rows = training, cols = test
+    # Using log10(E) for visualization, capped at ±3
+    evalues = [
+        [np.nan, np.log10(1.5), np.log10(6.3), np.log10(86)],      # DESI →
+        [np.log10(2049), np.nan, np.nan, np.log10(18)],            # Pantheon+ →
+        [np.log10(1304), np.nan, np.nan, np.nan],                  # Union3 →
+        [np.log10(0.19), np.log10(0.001), np.nan, np.nan],         # DES-Y5 →
+    ]
+
+    # Create matrix
+    evalues_arr = np.array(evalues)
+
+    # Custom colormap: red for <0, white for ~0, green for >0
+    from matplotlib.colors import TwoSlopeNorm
+    norm = TwoSlopeNorm(vmin=-3, vcenter=0, vmax=3.5)
+
+    im = ax.imshow(evalues_arr, cmap='RdYlGn', norm=norm, aspect='auto')
+
+    # Add colorbar
+    cbar = plt.colorbar(im, ax=ax, label='log₁₀(E-value)')
+    cbar.ax.set_ylabel('log₁₀(E-value)', fontsize=12)
+
+    # Set ticks
+    ax.set_xticks(range(len(datasets)))
+    ax.set_yticks(range(len(datasets)))
+    ax.set_xticklabels(datasets, fontsize=11)
+    ax.set_yticklabels(datasets, fontsize=11)
+
+    # Labels
+    ax.set_xlabel('Test Dataset', fontsize=13)
+    ax.set_ylabel('Training Dataset', fontsize=13)
+    ax.set_title('Cross-Dataset E-Values: Testing Generalization', fontsize=14, fontweight='bold')
+
+    # Add value annotations
+    raw_evalues = [
+        [None, 1.5, 6.3, 86],
+        [2049, None, None, 18],
+        [1304, None, None, None],
+        [0.19, 0.00, None, None],
+    ]
+    for i in range(len(datasets)):
+        for j in range(len(datasets)):
+            if raw_evalues[i][j] is not None:
+                val = raw_evalues[i][j]
+                if val >= 1:
+                    text = f'{val:.0f}' if val >= 10 else f'{val:.1f}'
+                else:
+                    text = f'{val:.2f}'
+                color = 'white' if abs(evalues_arr[i,j]) > 1.5 else 'black'
+                ax.text(j, i, text, ha='center', va='center', fontsize=11,
+                       fontweight='bold', color=color)
+
+    # Add annotations for key findings
+    ax.annotate('DES-Y5 fails\nto predict\nDESI', xy=(0, 3), xytext=(-1.2, 3.5),
+                arrowprops=dict(arrowstyle='->', color='red', lw=2),
+                fontsize=10, ha='center', color='red', fontweight='bold')
+
+    ax.annotate('Pantheon+\npredicts\nDESI well', xy=(0, 1), xytext=(-1.2, 0.5),
+                arrowprops=dict(arrowstyle='->', color='green', lw=2),
+                fontsize=10, ha='center', color='green', fontweight='bold')
+
+    plt.tight_layout()
+    plt.savefig('figure6_cross_dataset.pdf', dpi=300, bbox_inches='tight')
+    plt.savefig('figure6_cross_dataset.png', dpi=300, bbox_inches='tight')
+    print("Saved figure6_cross_dataset.pdf/png")
+
+
 if __name__ == "__main__":
     import os
     os.chdir('/Users/jinyoungkim/Desktop/Projects/desi-evalue-analysis/paper')
@@ -264,4 +338,5 @@ if __name__ == "__main__":
     figure3_parameter_space()
     figure4_split_validation()
     figure5_summary()
+    figure6_cross_dataset()
     print("\nAll figures generated!")
