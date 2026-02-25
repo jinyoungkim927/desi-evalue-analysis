@@ -212,7 +212,7 @@
             <strong>⚠️ WARNING:</strong> This E = 392 is <strong>BIASED</strong> because the w₀wₐ parameters were fitted to the same data used to compute the e-value!
         </div>
 
-        <h3>Method 2: GROW Mixture E-Value</h3>
+        <h3>Method 2: Uniform Mixture Mixture E-Value</h3>
         <p>Average over a grid of alternatives:</p>
         <div class="math-block">
             \[E_{\text{mix}} = \frac{1}{N}\sum_{i=1}^{N} \frac{L(\mathbf{d} | w_{0,i}, w_{a,i})}{L(\mathbf{d} | \Lambda)}\]
@@ -286,7 +286,7 @@
         <ol>
             <li>Assume true: \(w_0 = -0.727\), \(w_a = -1.05\)</li>
             <li>Generate: \(\mathbf{d}_{\text{sim}} = \mathbf{t}_{w_0w_a} + \mathbf{n}\), where \(\mathbf{n} \sim \mathcal{N}(0, \mathbf{C})\)</li>
-            <li>Compute GROW E-value for each of 500 simulations</li>
+            <li>Compute Uniform Mixture E-value for each of 500 simulations</li>
         </ol>
 
         <h3>Results</h3>
@@ -308,9 +308,9 @@
             <tr><th>Method</th><th>Value</th><th>σ equiv</th><th>Validity</th></tr>
             <tr><td>Δχ² frequentist</td><td>11.94</td><td>3.0σ</td><td>Standard</td></tr>
             <tr style="background: #f8d7da;"><td>E-value (simple LR)</td><td>392</td><td>3.9σ</td><td><strong>BIASED</strong></td></tr>
-            <tr><td>E-value (GROW narrow)</td><td>97</td><td>3.0σ</td><td>Prior-sensitive</td></tr>
-            <tr><td>E-value (GROW default)</td><td>15</td><td>2.3σ</td><td>Prior-sensitive</td></tr>
-            <tr><td>E-value (GROW wide)</td><td>17</td><td>2.4σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>E-value (Uniform Mixture narrow)</td><td>97</td><td>3.0σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>E-value (Uniform Mixture default)</td><td>15</td><td>2.3σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>E-value (Uniform Mixture wide)</td><td>17</td><td>2.4σ</td><td>Prior-sensitive</td></tr>
             <tr style="background: #d4edda;"><td><strong>E-value (data-split)</strong></td><td><strong>1.43</strong></td><td><strong>0.8σ</strong></td><td><strong>VALID</strong></td></tr>
             <tr style="background: #fff3cd;"><td>Bayesian evidence (external)</td><td>ln B = -0.57</td><td>—</td><td>Favors ΛCDM</td></tr>
         </table>
@@ -320,7 +320,7 @@
             <strong>The evidence for dynamic dark energy is NOT robust.</strong>
             <ul>
                 <li>Overfitting: E drops from 392 → 1.43 with proper validation</li>
-                <li>Prior sensitivity: GROW E varies ~7× with different choices</li>
+                <li>Prior sensitivity: Uniform Mixture E varies ~7× with different choices</li>
                 <li>Bayesian contradiction: Full data analysis favors ΛCDM</li>
                 <li>Power analysis: E = 15 is consistent with either model</li>
             </ul>

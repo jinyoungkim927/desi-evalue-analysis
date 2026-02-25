@@ -52,13 +52,13 @@ Example:
 - $L(H_1)$ will be higher than $L(H_0)$ just by chance
 - This inflates the apparent evidence
 
-## GROW E-Values (Growth Rate Optimal)
+## Uniform Mixture E-Values
 
 To address overfitting, we use **mixture e-values**:
 
 $$E_{\text{mix}} = \int \frac{P(\text{data} \mid \theta)}{P(\text{data} \mid H_0)} \pi(\theta) d\theta$$
 
-where $\pi(\theta)$ is a prior/mixture distribution over the alternative hypothesis space.
+where $\pi(\theta)$ is a prior/mixture distribution over the alternative hypothesis space. In our implementation, $\pi$ is a discrete uniform distribution over a grid of $(w_0, w_a)$ values. This is equivalent to a Bayes factor with a uniform prior.
 
 ### Why This Works
 
@@ -66,13 +66,13 @@ where $\pi(\theta)$ is a prior/mixture distribution over the alternative hypothe
 2. Averaging prevents cherry-picking the best-fitting alternative
 3. Still satisfies $\mathbb{E}[E_{\text{mix}} \mid H_0] \leq 1$
 
-### GROW Criterion
+### Relation to GROW
 
-GROW stands for **Growth Rate Optimal in the Worst case**. It chooses the mixture $\pi$ to maximize:
+GROW (Growth Rate Optimal in the Worst case), from Grünwald, de Heide & Koolen (2024), chooses the mixture $\pi$ to maximize:
 
 $$\inf_{\theta \in \Theta_1} \mathbb{E}_\theta[\log E]$$
 
-This ensures good power against all alternatives in $\Theta_1$.
+This optimizes the mixture weights for maximum power against all alternatives. Our implementation does **not** perform this optimization -- we use simple uniform weights over the grid. The GROW-optimal procedure would generally give different (and potentially better-calibrated) results, but requires solving an optimization problem over the mixture weights.
 
 ## Data-Split E-Values
 
@@ -154,6 +154,6 @@ $$\mathbb{E}\left[\frac{1}{n}\sum E_i \mid H_0\right] = \frac{1}{n}\sum \mathbb{
 ## Key Takeaways for DESI Analysis
 
 1. **Simple likelihood ratio e-values are BIASED** if the alternative is fitted to the same data
-2. **GROW mixture e-values** are more principled but depend on prior choice
+2. **Uniform mixture e-values** are more principled but depend on prior/grid range choice
 3. **Data-split e-values** prevent overfitting and give honest assessment
 4. **Large differences between methods** indicate non-robust evidence

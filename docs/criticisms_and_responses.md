@@ -68,7 +68,7 @@
 - The key advantage: they're calibrated (E[E|H0] ≤ 1)
 **Action**: Clearly explain what e-values are and why we use them
 
-### 3.2 "Your GROW mixture prior is arbitrary"
+### 3.2 "Your uniform mixture prior is arbitrary"
 **Validity**: HIGH - This is a fundamental issue
 **Response**:
 - Yes, different priors give different e-values (we show this varies ~7x)
@@ -97,7 +97,7 @@
 **Validity**: HIGH
 **Response**:
 - If alternative is perfectly fitted, E can be arbitrarily large
-- This is why we use GROW mixture (bounded by averaging)
+- This is why we use uniform mixture (bounded by averaging)
 - Data splitting also addresses this (alternative fitted to different data)
 **Action**: Explain why simple LR is biased, show multiple methods
 

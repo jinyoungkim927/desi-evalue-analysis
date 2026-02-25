@@ -30,7 +30,7 @@ This project analyzes DESI DR2 BAO measurements using e-values to assess the rob
 | Method | E-value | σ equiv | Status |
 |--------|---------|---------|--------|
 | Simple Likelihood Ratio | 392 | 3.9σ | **BIASED** |
-| GROW Mixture | 15 | 2.3σ | Prior-sensitive |
+| Uniform Mixture | 15 | 2.3σ | Prior-sensitive |
 | **Data-Split Validation** | **1.4** | **0.8σ** | **VALID** |
 
 ---

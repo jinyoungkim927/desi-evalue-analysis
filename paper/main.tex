@@ -35,7 +35,7 @@ Jinyoung Kim\\
 \maketitle
 
 \begin{abstract}
-The DESI collaboration recently reported 3--4$\sigma$ frequentist evidence for dynamical dark energy ($w_0w_a$CDM) over the cosmological constant (\LCDM). This note applies e-value methodology---a framework from the statistics literature for hypothesis testing with desirable properties under model selection---to the publicly available DESI DR2 BAO data. Using data-splitting to test out-of-sample generalization, we find $E = 1.4$, indicating that parameters fitted on low-redshift bins do not predict high-redshift bins better than \LCDM. We also examine cross-dataset generalization using published supernova constraints, finding that DES-Y5's best-fit parameters predict DESI data worse than \LCDM{} ($E = 0.19$). These observations complement recent Bayesian analyses by \citet{OngBayesian2025} and tension diagnostics by \citet{WangMota2025}, which independently question the robustness of the claimed signal. We present this as one additional statistical perspective rather than a definitive assessment, and we discuss the assumptions and limitations of our approach.
+The DESI collaboration recently reported 3--4$\sigma$ frequentist evidence for dynamical dark energy ($w_0w_a$CDM) over the cosmological constant (\LCDM). This note applies e-value methodology---a framework from the statistics literature for calibrated hypothesis testing---to the publicly available DESI DR2 BAO data. Our most informative finding concerns cross-dataset consistency: DES-Y5's best-fit $w_0w_a$CDM parameters predict DESI data \textit{worse} than \LCDM{} ($E = 0.19$), while Pantheon+'s parameters predict it well ($E = 2049$)---a ${\sim}10{,}000\times$ asymmetry pointing to tension between supernova catalogs rather than a coherent dark energy signal. Regarding the DESI data alone, the evidence is methodology-sensitive. A uniform mixture e-value yields $E \approx 15$ ($\ln E \approx 2.7$), which constitutes moderate-to-strong evidence on conventional scales. A data-split e-value gives $E = 1.4$, though this test has limited statistical power for $w_a$ because the low-redshift training set ($z < 1$) provides weak leverage on the time-evolution parameter. These results, together with recent Bayesian analyses by \citet{OngBayesian2025} and tension diagnostics by \citet{WangMota2025}, suggest that the interpretation of DESI's signal depends substantially on methodology and dataset combination, and that resolving inter-dataset tensions is a prerequisite for strong conclusions about dark energy dynamics.
 \end{abstract}
 
 \vspace{1em}
@@ -51,11 +51,11 @@ The DESI collaboration recently reported 3--4$\sigma$ frequentist evidence for d
 
 \subsection{Context and Motivation}
 
-The DESI DR2 collaboration reported a $\chi^2$ improvement of approximately 12 when fitting the $w_0w_a$CDM model (with two additional parameters $w_0$ and $w_a$) compared to the standard \LCDM{} model using their BAO measurements combined with CMB and supernova data \citep{DESI2025}. Interpreted through standard frequentist methodology, this corresponds to 3--4$\sigma$ significance favoring dynamical dark energy.
+The DESI DR2 collaboration reported a $\chi^2$ improvement of approximately 12 when fitting the $w_0w_a$CDM model (with two additional parameters $w_0$ and $w_a$) compared to the standard \LCDM{} model using their BAO measurements combined with CMB and supernova data \citep{DESI2025}. Interpreted through standard frequentist methodology, this corresponds to 2.5--4$\sigma$ significance favoring dynamical dark energy.\footnote{The precise significance depends on the degrees of freedom used for the $\sigma$-conversion. For $k=2$ extra parameters, $\Delta\chi^2 = 11.9$ should be evaluated against the $\chi^2$ distribution with 2 d.o.f.: $p = 1 - F_{\chi^2}(11.9;\, 2) = 0.0026$, corresponding to $\approx 2.8\sigma$ (two-sided). The sometimes-quoted ``$3.5\sigma$'' uses $\sqrt{\Delta\chi^2}$, which is valid only for $k=1$. DESI's reported range of 3--4$\sigma$ reflects different dataset combinations and methodological choices.}
 
 Two recent independent analyses have questioned this interpretation:
 \begin{itemize}
-    \item \citet{OngBayesian2025} performed Bayesian model comparison using nested sampling, finding that for DESI+CMB data, the Bayes factor modestly favors \LCDM{} ($\ln \mathcal{B} = -0.57 \pm 0.26$). They identified a significant tension (2.95$\sigma$) between DESI and DES-Y5 supernovae within \LCDM{}, which $w_0w_a$CDM resolves.
+    \item \citet{OngBayesian2025} performed Bayesian model comparison using nested sampling, finding that for DESI+CMB data, the Bayes factor modestly favors \LCDM{} ($\ln \mathcal{B} = -0.57 \pm 0.26$), though this result depends on the choice of prior over $(w_0, w_a)$. They identified a significant tension (2.95$\sigma$) between DESI and DES-Y5 supernovae within \LCDM{}, which $w_0w_a$CDM resolves.
 
     \item \citet{WangMota2025} documented parameter tensions between CMB, DESI, and various supernova catalogs, concluding that combined constraints may be problematic due to dataset inconsistencies.
 \end{itemize}
@@ -83,7 +83,7 @@ Our analysis proceeds as follows:
 
     \item We describe the DESI data and our methodology (Section~\ref{sec:methods}).
 
-    \item We present results from data-splitting and cross-dataset validation (Section~\ref{sec:results}).
+    \item We present results, leading with the cross-dataset tension analysis and followed by within-dataset tests (Section~\ref{sec:results}).
 
     \item We discuss how these findings relate to existing literature (Section~\ref{sec:discussion}).
 \end{enumerate}
@@ -106,7 +106,15 @@ An \textbf{e-value} is a non-negative random variable $E$ satisfying $\E[E \mid 
 
 \subsection{Likelihood Ratios and the Overfitting Problem}
 
-For simple hypotheses, the likelihood ratio $E = L(\text{data} \mid H_1) / L(\text{data} \mid H_0)$ is a valid e-value. However, when $H_1$ involves parameters fitted to the same data used for testing, this produces an \textit{invalid} e-value that can be arbitrarily large even when $H_0$ is true. This is the standard overfitting problem.
+For simple hypotheses (where both $H_0$ and $H_1$ are fully specified before seeing the data), the likelihood ratio $E = L(\text{data} \mid H_1) / L(\text{data} \mid H_0)$ is a valid e-value. However, when $H_1$ involves parameters fitted to the same data used for testing---i.e., plugging in the MLE---the result is \textbf{not an e-value at all}. Specifically, under $H_0$ the $\Delta\chi^2$ for $k$ extra parameters follows a $\chi^2(k)$ distribution, so the maximized likelihood ratio has expectation
+\begin{equation}
+\E_{H_0}\!\left[\exp\!\left(\tfrac{\chi^2(k)}{2}\right)\right] = \int_0^\infty e^{t/2}\,\frac{t^{k/2-1}e^{-t/2}}{2^{k/2}\Gamma(k/2)}\,dt = \infty \quad \text{for } k \geq 2.
+\end{equation}
+For the $w_0w_a$CDM case ($k=2$ extra parameters), one can verify directly:
+\begin{equation}
+\E_{H_0}\!\left[e^{\chi^2(2)/2}\right] = \int_0^\infty e^{t/2}\cdot\tfrac{1}{2}e^{-t/2}\,dt = \int_0^\infty \tfrac{1}{2}\,dt = \infty.
+\end{equation}
+Since $\E[E \mid H_0] = \infty$, the defining property $\E[E \mid H_0] \leq 1$ is violated: \textbf{the maximized likelihood ratio is not a valid e-value}. It should be understood as a descriptive statistic, not as calibrated evidence. We include it in Section~\ref{sec:samedata} only for comparison to show how drastically the evidence changes under valid methods.
 
 \subsection{Data-Split E-Values}
 
@@ -134,6 +142,15 @@ We use the official DESI DR2 BAO measurements from the CobayaSampler repository,
 
 \textbf{Alternative hypothesis ($H_1$):} $w_0w_a$CDM with equation of state $w(a) = w_0 + w_a(1-a)$, where $w_0$ and $w_a$ are free parameters.
 
+\subsection{Cross-Dataset Validation}
+
+We examine whether parameters fitted on one dataset predict another dataset better than \LCDM. We use published best-fit $(w_0, w_a)$ values from supernova analyses:
+\begin{itemize}
+    \item Pantheon+: $w_0 \approx -0.90$, $w_a \approx -0.20$
+    \item Union3: $w_0 \approx -0.78$, $w_a \approx -0.80$
+    \item DES-Y5: $w_0 \approx -0.65$, $w_a \approx -1.20$
+\end{itemize}
+
 \subsection{Data-Split Procedure}
 
 We split the 13 DESI measurements by redshift:
@@ -143,15 +160,6 @@ We split the 13 DESI measurements by redshift:
 \end{itemize}
 
 We fit $(w_0, w_a)$ by minimizing $\chi^2$ on the training set, then evaluate the likelihood ratio on the test set.
-
-\subsection{Cross-Dataset Validation}
-
-We also examine whether parameters fitted on one dataset predict another dataset better than \LCDM. We use published best-fit $(w_0, w_a)$ values from supernova analyses:
-\begin{itemize}
-    \item Pantheon+: $w_0 \approx -0.90$, $w_a \approx -0.20$
-    \item Union3: $w_0 \approx -0.78$, $w_a \approx -0.80$
-    \item DES-Y5: $w_0 \approx -0.65$, $w_a \approx -1.20$
-\end{itemize}
 
 \subsection{Assumptions}
 
@@ -168,32 +176,69 @@ Our analysis assumes:
 \label{sec:results}
 %=====================================================================
 
-\subsection{Same-Data E-Value (For Reference)}
+\subsection{Cross-Dataset E-Values: The Supernova Catalog Asymmetry}
+\label{sec:cross}
 
-Fitting $(w_0, w_a)$ to all 13 DESI measurements and computing the likelihood ratio on the same data yields:
-\begin{equation}
-E_{\text{same}} \approx 3300 \quad (\Delta\chi^2 \approx 16.2)
-\end{equation}
+We begin with what we consider the most informative result: cross-dataset e-values, which test whether $w_0w_a$CDM parameters fitted on one experiment predict another experiment better than \LCDM. Unlike within-dataset tests such as data splitting, this approach is not vulnerable to the objection that low e-values merely reflect insufficient statistical power. The logic is as follows: if two independent experiments both detect the same underlying physics, the best-fit parameters from one \textit{must} predict the other well, because they are measuring the same equation of state $w(a) = w_0 + w_a(1-a)$. A failure of cross-prediction ($E < 1$) therefore constitutes positive evidence of tension between datasets, not merely an absence of evidence for new physics.
 
-This is presented for reference only. As discussed in Section~\ref{sec:evalues}, this is \textit{not} a valid e-value because the alternative parameters were fitted to the same data used for evaluation.
+Table~\ref{tab:cross} presents the cross-dataset e-values.
+
+\begin{table}[H]
+\centering
+\caption{Cross-dataset e-values: parameters from one dataset predicting another}
+\label{tab:cross}
+\begin{tabular}{@{}llcc@{}}
+\toprule
+Training Dataset & Test Dataset & $(w_0, w_a)$ & E-value \\
+\midrule
+DESI (fitted) & Pantheon+ & $(-0.86, -0.43)$ & 1.5 \\
+DESI (fitted) & DES-Y5 & $(-0.86, -0.43)$ & 86 \\
+Pantheon+ & DESI & $(-0.90, -0.20)$ & 2049 \\
+DES-Y5 & DESI & $(-0.65, -1.20)$ & \textbf{0.19} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{The central finding:} DES-Y5's best-fit $w_0w_a$CDM parameters ($w_0 = -0.65$, $w_a = -1.20$) predict the DESI BAO data \textit{worse} than \LCDM{} ($E = 0.19 < 1$). Meanwhile, Pantheon+'s best-fit parameters ($w_0 = -0.90$, $w_a = -0.20$) predict DESI data well ($E = 2049$). This represents a factor of ${\sim}10{,}000$ asymmetry between the two leading supernova catalogs in their ability to predict DESI under the $w_0w_a$CDM framework.
+
+The interpretation is straightforward. If $w_0w_a$CDM represents real physics, then all experiments are measuring the same underlying equation of state. Different experiments may have different error bars, but their best-fit $(w_0, w_a)$ values should be statistically compatible, and parameters from one should predict the other at least as well as \LCDM. The fact that DES-Y5's parameters make DESI data \textit{less} probable than \LCDM{} ($E < 1$) means DES-Y5 and DESI prefer incompatible regions of $(w_0, w_a)$ space. This is not a matter of statistical power---it is a direct detection of inconsistency.
+
+This ${\sim}10{,}000\times$ asymmetry between supernova catalogs aligns with two independent analyses:
+\begin{itemize}
+    \item \citet{OngBayesian2025} identified a 2.95$\sigma$ tension between DESI and DES-Y5 supernovae within the \LCDM{} framework, finding that $w_0w_a$CDM resolves this tension by absorbing it into its additional parameters.
+    \item \citet{WangMota2025} documented parameter inconsistencies across CMB, DESI, and supernova catalogs, concluding that the combined constraints are problematic due to these dataset-level tensions.
+\end{itemize}
+
+Our e-value analysis quantifies this tension in a complementary way: the cross-dataset e-value of $E = 0.19$ directly measures how much worse DES-Y5's preferred dark energy model performs on DESI data compared to no dark energy dynamics at all.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.75\textwidth]{figure6_cross_dataset.pdf}
+\caption{Cross-dataset e-value matrix. Green indicates the training parameters predict the test data better than \LCDM; red indicates worse. The ${\sim}10{,}000\times$ asymmetry between Pantheon+ ($E = 2049$) and DES-Y5 ($E = 0.19$) when predicting DESI reveals fundamental tension between supernova catalogs within the $w_0w_a$CDM framework.}
+\label{fig:cross}
+\end{figure}
 
 \subsection{Data-Split E-Value}
+\label{sec:datasplit}
 
-Fitting on the training set ($z < 1$) yields $\hat{w}_0 = -0.78$, $\hat{w}_a = -0.52$. Evaluating on the held-out test set ($z \geq 1$):
+We next examine whether the signal generalizes within the DESI data itself. Fitting on the training set ($z < 1$) yields $\hat{w}_0 = -0.78$, $\hat{w}_a = -0.52$. Evaluating on the held-out test set ($z \geq 1$):
 \begin{equation}
 \boxed{E_{\text{split}} = 1.4}
 \end{equation}
 
-\textbf{Interpretation:} The fitted $w_0w_a$CDM model predicts the high-redshift data only 1.4 times better than \LCDM---essentially indistinguishable from no improvement. This suggests the apparent signal does not generalize out-of-sample within the DESI data itself.
+\textbf{Interpretation:} The fitted $w_0w_a$CDM model predicts the high-redshift data only 1.4 times better than \LCDM. However, this result must be interpreted with an important caveat about statistical power.
+
+\paragraph{Reduced power for $w_a$.} The data-split test has limited sensitivity to the $w_a$ parameter specifically. In the CPL parameterization $w(a) = w_0 + w_a(1-a)$, the $w_a$ term contributes $(1-a) \cdot w_a$ to the equation of state. For the training set at $z < 1$ (corresponding to $a > 0.5$), the factor $(1-a)$ ranges from approximately 0.23 to 0.48, meaning the training data have only fractional leverage on $w_a$. Since much of DESI's claimed signal comes from the $w_a$ degree of freedom, a test that poorly constrains $w_a$ from the training set will naturally yield a weak e-value regardless of whether the signal is real. Consequently, $E = 1.4$ is consistent with both the null hypothesis (\LCDM{} is correct) and with a genuine $w_0w_a$CDM signal that the data-split test lacks the power to detect. This test is therefore \textit{inconclusive} rather than negative---which is precisely why we lead with the cross-dataset result (Section~\ref{sec:cross}), which does not suffer from this limitation.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figure1_evalue_comparison.pdf}
-\caption{E-values across different methods. The same-data likelihood ratio (red) is invalid due to overfitting. Data-split validation (green) tests generalization and yields $E = 1.4$.}
+\caption{Comparison across methods. The same-data maximized likelihood ratio (red) is not a valid e-value ($\E[E|H_0]=\infty$). Data-split validation (green) is a valid e-value and yields $E = 1.4$.}
 \label{fig:evalue}
 \end{figure}
 
-\subsection{Sensitivity to Split Choice}
+\subsection{Uniform Mixture E-Values and Sensitivity}
+\label{sec:mixture}
 
 \begin{table}[H]
 \centering
@@ -210,36 +255,19 @@ Random 50/50 (averaged over 10 trials) & $1.2 \pm 0.8$ \\
 \end{tabular}
 \end{table}
 
-All splits yield $E < 3$, substantially below the same-data value.
+All data-split e-values yield $E < 3$, substantially below the same-data maximized likelihood ratio, though the power caveats discussed above apply to all splits.
 
-\subsection{Cross-Dataset E-Values}
+\paragraph{Uniform mixture e-values.} For completeness, we note that a uniform mixture e-value---which averages the likelihood ratio over a grid of $(w_0, w_a)$ values---yields $E \approx 15$ with the default prior range, and varies from approximately 15 to 97 as the prior range is narrowed. On conventional scales, $E = 15$ ($\ln E \approx 2.7$) constitutes moderate-to-strong evidence. The variation from 15 to 97 reflects the Occam razor operating as expected: a narrower prior that concentrates mass near the MLE produces larger e-values because it ``wastes'' less probability on parameter values far from the data. This is a standard feature of Bayesian and mixture-based tests, not a deficiency. The uniform mixture e-value is a valid e-value (unlike the maximized likelihood ratio) and should be considered alongside the data-split result when assessing the overall strength of evidence.
 
-Table~\ref{tab:cross} presents e-values when parameters from one dataset are used to predict another.
+\subsection{Same-Data Likelihood Ratio (Invalid as E-Value)}
+\label{sec:samedata}
 
-\begin{table}[H]
-\centering
-\caption{Cross-dataset e-values}
-\label{tab:cross}
-\begin{tabular}{@{}llcc@{}}
-\toprule
-Training Dataset & Test Dataset & $(w_0, w_a)$ & E-value \\
-\midrule
-DESI (fitted) & Pantheon+ & $(-0.86, -0.43)$ & 1.5 \\
-DESI (fitted) & DES-Y5 & $(-0.86, -0.43)$ & 86 \\
-Pantheon+ & DESI & $(-0.90, -0.20)$ & 2049 \\
-DES-Y5 & DESI & $(-0.65, -1.20)$ & \textbf{0.19} \\
-\bottomrule
-\end{tabular}
-\end{table}
+For reference, fitting $(w_0, w_a)$ to all 13 DESI measurements and computing the maximized likelihood ratio on the same data yields:
+\begin{equation}
+\text{LR}_{\text{same}} \approx 3300 \quad (\Delta\chi^2 \approx 16.2)
+\end{equation}
 
-\textbf{Key observation:} DES-Y5's best-fit parameters ($w_0 = -0.65$, $w_a = -1.20$) predict DESI data \textit{worse} than \LCDM{} ($E = 0.19 < 1$). This asymmetry---Pantheon+ parameters predict DESI well ($E = 2049$) while DES-Y5 parameters fail ($E = 0.19$)---suggests that DES-Y5 may be an outlier rather than representative of consistent underlying physics.
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.75\textwidth]{figure6_cross_dataset.pdf}
-\caption{Cross-dataset e-value matrix. Green indicates the training parameters predict the test data better than \LCDM; red indicates worse. The asymmetry between Pantheon+ ($E = 2049$) and DES-Y5 ($E = 0.19$) when predicting DESI is notable.}
-\label{fig:cross}
-\end{figure}
+\textbf{This is not an e-value.} As shown in Section~\ref{sec:evalues}, plugging in the MLE gives $\E_{H_0}[\text{LR}] = \infty$ for $k=2$ extra parameters, violating the defining property $\E[E \mid H_0] \leq 1$. We include this maximized likelihood ratio solely to illustrate the contrast with the valid cross-dataset and data-split e-values presented above.
 
 %=====================================================================
 \section{Discussion}
@@ -251,12 +279,77 @@ DES-Y5 & DESI & $(-0.65, -1.20)$ & \textbf{0.19} \\
 Our findings complement two independent analyses:
 
 \begin{enumerate}
-    \item \textbf{Bayesian model comparison} \citep{OngBayesian2025}: Using nested sampling, these authors found that the Bayes factor for DESI+CMB modestly favors \LCDM{}. They attributed the frequentist significance to a tension between DESI and DES-Y5 that $w_0w_a$CDM resolves. Our cross-dataset e-value ($E = 0.19$ for DES-Y5$\rightarrow$DESI) provides independent evidence of this tension.
+    \item \textbf{Bayesian model comparison} \citep{OngBayesian2025}: Using nested sampling, these authors found that the Bayes factor for DESI+CMB modestly favors \LCDM{} ($\ln \mathcal{B} = -0.57 \pm 0.26$). They attributed the frequentist significance to a tension between DESI and DES-Y5 that $w_0w_a$CDM resolves. Our cross-dataset e-value ($E = 0.19$ for DES-Y5$\rightarrow$DESI) provides independent evidence of this tension. We note, however, that the Bayes factor is itself prior-dependent: the result $\ln \mathcal{B} = -0.57$ reflects a particular choice of prior over $(w_0, w_a)$, and different priors could shift this value. This is the same sensitivity we observe in our uniform mixture e-values (Section~\ref{sec:mixture}), and it should be borne in mind when citing either quantity.
 
     \item \textbf{Tension diagnostics} \citep{WangMota2025}: These authors documented parameter inconsistencies between CMB, DESI, and supernova catalogs. Our observation that different supernova catalogs yield very different predictive performance on DESI (Pantheon+: $E = 2049$ vs DES-Y5: $E = 0.19$) aligns with their conclusion that combining these datasets is problematic.
 \end{enumerate}
 
-All three approaches---Bayesian model comparison, tension metrics, and e-value analysis---converge on similar conclusions despite different methodological foundations.
+All three approaches---Bayesian model comparison, tension metrics, and e-value analysis---converge on the conclusion that inter-dataset tensions are a central issue. They differ, however, on the strength of the within-DESI evidence: the Bayes factor and data-split e-value suggest weak or no evidence, while the uniform mixture e-value suggests moderate evidence. This spread itself is informative, indicating that the answer depends on how one handles the composite alternative hypothesis.
+
+\subsection{Comparison with Information Criteria}
+\label{sec:infocriteria}
+
+To place the e-value results in the context of the full spectrum of evidence measures, we report the standard information criteria for the \LCDM{} vs.\ $w_0w_a$CDM comparison. The $w_0w_a$CDM model has $k = 2$ extra parameters relative to \LCDM, and the $\chi^2$ improvement is $\Delta\chi^2 = 11.9$.
+
+\paragraph{AIC.} The Akaike Information Criterion \citep{BurnhamAnderson2002} penalizes by $2k$:
+\begin{equation}
+\Delta\text{AIC} = \Delta\chi^2 - 2k = 11.9 - 4 = 7.9
+\end{equation}
+On the \citet{BurnhamAnderson2002} scale, $\Delta\text{AIC} > 6$ constitutes ``strong'' evidence favoring the more complex model. Thus, AIC strongly favors $w_0w_a$CDM.
+
+\paragraph{BIC.} The Bayesian Information Criterion \citep{Schwarz1978} penalizes by $k \ln n$:
+\begin{equation}
+\Delta\text{BIC} = \Delta\chi^2 - k \ln n = 11.9 - 2 \ln 13 \approx 11.9 - 5.13 = 6.8
+\end{equation}
+On the \citet{KassRaftery1995} scale, $6 < \Delta\text{BIC} < 10$ constitutes ``strong'' evidence. Thus, BIC also favors $w_0w_a$CDM.
+
+\paragraph{Caveat on the effective sample size $n$.} In the BIC formula, we used $n = 13$ (the number of BAO summary statistics). However, the meaning of $n$ in cosmological model selection is ambiguous \citep{Liddle2007}. One might argue that $n$ should be the number of underlying galaxy pairs (millions), in which case $\ln n \sim 30$ and $\Delta\text{BIC}$ would become strongly \textit{negative} (favoring \LCDM). Alternatively, if one treats the 13 summary statistics as the effective data, the result above holds. This ambiguity is a well-known limitation of BIC in cosmological applications.
+
+\paragraph{Why different measures disagree.} The evidence landscape for \LCDM{} vs.\ $w_0w_a$CDM depends on how one penalizes model complexity:
+
+\begin{table}[H]
+\centering
+\caption{Summary of evidence measures for $w_0w_a$CDM vs.\ \LCDM}
+\label{tab:evidence_summary}
+\begin{tabular}{@{}llll@{}}
+\toprule
+\textbf{Method} & \textbf{Value} & \textbf{Favors} & \textbf{Complexity penalty} \\
+\midrule
+Frequentist $p$-value ($k=2$) & $p = 0.0026$ ($2.8\sigma$) & $w_0w_a$CDM & None (likelihood only) \\
+$\Delta$AIC & 7.9 & $w_0w_a$CDM & $2k = 4$ \\
+$\Delta$BIC ($n=13$) & 6.8 & $w_0w_a$CDM & $k\ln n \approx 5.1$ \\
+Bayes factor (Ong et al.) & $\ln\mathcal{B} = -0.57$ & \LCDM & Full prior volume \\
+E-value (mixture, default) & $E \approx 15$ & $w_0w_a$CDM & Prior grid averaging \\
+E-value (data-split) & $E = 1.4$ & Inconclusive & Out-of-sample test \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\noindent AIC includes no Occam factor (it penalizes only the number of parameters), so it tends to favor more complex models. BIC approximately includes an Occam factor through $k\ln n$, but the result depends on what counts as a ``data point.'' The Bayes factor includes the full Occam penalty through the prior volume: with broad priors over $(w_0, w_a)$, much of the prior mass falls on parameter values that fit the data poorly, penalizing $w_0w_a$CDM. The e-value results span this range depending on methodology: the uniform mixture e-value ($E \approx 15$) is intermediate, while the data-split e-value ($E = 1.4$) tests a different question entirely (out-of-sample prediction).
+
+These different answers are not contradictory---they reflect different questions. AIC asks which model will predict future data better on average (favoring $w_0w_a$CDM). BIC approximates the posterior model probability (ambiguous). The Bayes factor asks which model is more probable given the prior (favoring \LCDM{} with broad priors). E-values ask whether the evidence against $H_0$ is calibrated (methodology-dependent). A robust conclusion requires convergence across multiple approaches, which is not yet observed here.
+
+\subsection{The Correct Frequentist Significance}
+\label{sec:sigma}
+
+For clarity, we note the proper frequentist conversion of the $\Delta\chi^2 = 11.9$ statistic. The $w_0w_a$CDM model introduces $k = 2$ extra parameters, so under the null hypothesis (\LCDM), $\Delta\chi^2$ follows a $\chi^2$ distribution with 2 degrees of freedom. The $p$-value is:
+\begin{equation}
+p = 1 - F_{\chi^2}(11.9;\, 2) = e^{-11.9/2} = e^{-5.95} \approx 0.0026
+\end{equation}
+where we used the exact CDF for the $\chi^2(2)$ distribution, $F_{\chi^2}(x;\, 2) = 1 - e^{-x/2}$. Converting to a two-sided Gaussian equivalent:
+\begin{equation}
+\sigma = \Phi^{-1}(1 - p/2) \approx \Phi^{-1}(0.9987) \approx 2.8\sigma
+\end{equation}
+
+The alternative formula $\sigma = \sqrt{\Delta\chi^2} = \sqrt{11.9} \approx 3.5\sigma$ is valid only for $k = 1$ extra parameter, where $\Delta\chi^2 \sim \chi^2(1)$ and the square root maps directly to a standard normal deviate. For $k = 2$, this formula overestimates the significance by approximately $0.7\sigma$.
+
+\subsection{$w_0w_a$CDM as a Tension Absorber}
+
+The cross-dataset analysis (Section~\ref{sec:cross}) raises a deeper question about the nature of the reported 3--4$\sigma$ evidence. The $w_0w_a$CDM model introduces two free parameters ($w_0$ and $w_a$) that can adjust distance-redshift relations to better fit the data. When multiple datasets pull in different directions---as the ${\sim}10{,}000\times$ Pantheon+/DES-Y5 asymmetry demonstrates---these extra parameters can absorb the tension by finding a compromise fit that improves $\chi^2$ overall without corresponding to any physical dark energy dynamics. In this scenario, $w_0w_a$CDM acts as a \textit{tension absorber} rather than a detector of new physics.
+
+This interpretation is supported by the pattern we observe: the DESI+CMB+SNe combination yields 3--4$\sigma$ preference for $w_0w_a$CDM, yet the constituent datasets do not agree on \textit{which} $(w_0, w_a)$ values are preferred. DES-Y5 favors a region of parameter space ($w_0 = -0.65$, $w_a = -1.20$) that is incompatible with what DESI itself prefers, as shown by $E = 0.19 < 1$. Pantheon+ favors a different region ($w_0 = -0.90$, $w_a = -0.20$) that happens to be more compatible with DESI ($E = 2049$). The combined ``significance'' thus reflects the model's ability to split the difference between discrepant datasets, not a coherent signal that all experiments converge upon.
+
+This aligns with the mechanism identified by \citet{OngBayesian2025}: the 2.95$\sigma$ tension they found between DESI and DES-Y5 within \LCDM{} is precisely what $w_0w_a$CDM resolves. As they note, the apparent evidence for dynamical dark energy is largely driven by this resolution of inter-dataset tension. Until the source of the Pantheon+/DES-Y5 discrepancy is understood---whether it arises from supernova calibration systematics, selection effects, or genuine astrophysical differences---the 3--4$\sigma$ frequentist significance should be interpreted with caution, as it may be measuring the magnitude of dataset inconsistency rather than evidence for new fundamental physics.
 
 \subsection{What E-Values Add}
 
@@ -264,15 +357,15 @@ The e-value perspective contributes:
 \begin{enumerate}
     \item \textbf{Direct test of generalization:} Data-splitting directly asks whether fitted parameters predict held-out data, addressing overfitting concerns.
 
-    \item \textbf{No prior specification:} Unlike Bayesian methods, data-split e-values do not require specifying a prior over $(w_0, w_a)$.
+    \item \textbf{Different form of prior dependence:} Data-split e-values do not require an explicit prior distribution over $(w_0, w_a)$. However, they are not prior-free: using the point MLE from the training set is effectively equivalent to a point-mass prior centered at $\hat{\theta}$, and the result depends on the split choice, which determines both which data inform $\hat{\theta}$ and which data are available for testing. The uniform mixture e-value explicitly integrates over a prior grid and is transparent about this dependence.
 
-    \item \textbf{Interpretable metric:} $E = 1.4$ directly means ``the alternative predicts the test data 1.4 times better than the null''---close to no improvement.
+    \item \textbf{Interpretable metric:} An e-value of $E$ directly means ``the data are $E$ times more consistent with the alternative than expected under the null.''
 \end{enumerate}
 
 \subsection{Limitations of This Analysis}
 
 \begin{enumerate}
-    \item \textbf{Reduced power:} Data-splitting uses only part of the data for testing, reducing statistical power. However, our simulation studies suggest a true signal of the claimed magnitude should still yield $E \gtrsim 50$.
+    \item \textbf{Reduced power:} Data-splitting uses only part of the data for testing, reducing statistical power. As discussed in Section~\ref{sec:datasplit}, this power loss is particularly acute for the $w_a$ parameter when splitting by redshift, because the low-redshift training set has limited leverage on time evolution. Our simulation-based power estimate of $E \gtrsim 50$ may be optimistic if the signal resides primarily in $w_a$.
 
     \item \textbf{Split dependence:} Results vary modestly with split choice (Table~\ref{tab:splits}), though all splits yield $E < 3$.
 
@@ -283,31 +376,42 @@ The e-value perspective contributes:
 
 \subsection{Interpretation}
 
-We do not claim that e-values definitively resolve the question of dynamical dark energy. Rather, we observe that:
+We do not claim that e-values definitively resolve the question of dynamical dark energy. A fair reading of the evidence from this analysis requires acknowledging what each result does and does not show:
+
 \begin{enumerate}
-    \item The claimed signal does not survive a standard statistical check for out-of-sample generalization.
-    \item Cross-dataset validation reveals an asymmetry suggesting DES-Y5 is an outlier.
-    \item These observations align with independent Bayesian and tension analyses.
+    \item \textbf{The cross-dataset tension is the most informative finding.} DES-Y5's best-fit parameters predict DESI data worse than \LCDM{} ($E = 0.19$), while Pantheon+'s parameters predict it well ($E = 2049$). This four-order-of-magnitude asymmetry indicates that the supernova catalogs do not agree on what dark energy dynamics look like, which is a more fundamental problem than the strength of evidence in any single dataset. If the $w_0w_a$CDM signal were driven by real physics, all supernova catalogs should point in a roughly consistent direction.
+
+    \item \textbf{Information criteria favor $w_0w_a$CDM} ($\Delta\text{AIC} = 7.9$, $\Delta\text{BIC} = 6.8$), \textbf{while the Bayes factor favors \LCDM.} This divergence arises from different complexity penalties: AIC and BIC impose fixed penalties ($2k$ and $k\ln n$), while the Bayes factor penalizes via the full prior volume. The e-value results span a similar range depending on methodology.
+
+    \item \textbf{The uniform mixture e-value ($E \approx 15$) constitutes moderate evidence} for $w_0w_a$CDM over \LCDM{} within the DESI BAO data. On the Jeffreys scale, $\ln E \approx 2.7$ falls in the ``strong'' category. This is a valid e-value and should not be dismissed.
+
+    \item \textbf{The data-split e-value ($E = 1.4$) is inconclusive}, not negative. As discussed in Section~\ref{sec:datasplit}, the redshift-based split has limited power for $w_a$, so this result cannot distinguish between ``the signal is absent'' and ``the test lacks power to detect it.'' The roughly 10-fold difference between the mixture and data-split e-values is largely explicable by this power loss.
+
+    \item \textbf{The proper frequentist significance is $\approx 2.8\sigma$}, not $3.5\sigma$. The latter uses $\sqrt{\Delta\chi^2}$, which is valid only for 1 degree of freedom; the correct $\chi^2(2)$ calculation gives $p = 0.0026$ (see Section~\ref{sec:sigma}).
 \end{enumerate}
 
-This convergence of multiple methodologies suggests the evidence warrants cautious interpretation rather than strong claims about new physics.
+The overall picture is one of genuine methodological sensitivity. The evidence for dynamical dark energy is neither as strong as the frequentist $\Delta\chi^2$ suggests nor as absent as the data-split e-value might imply. Resolving the inter-dataset tensions documented here and by \citet{WangMota2025} is likely more important than accumulating further statistical significance within any single framework.
 
 %=====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 %=====================================================================
 
-We applied e-value methodology to the DESI DR2 BAO data to examine whether the reported preference for $w_0w_a$CDM generalizes out-of-sample. Our main findings:
+We applied e-value methodology to the DESI DR2 BAO data to examine the evidence for $w_0w_a$CDM from several angles. The evidence is methodology-sensitive rather than unambiguous in either direction:
 
 \begin{enumerate}
-    \item The data-split e-value is $E = 1.4$, indicating that parameters fitted on low-redshift bins do not predict high-redshift bins substantially better than \LCDM.
+    \item \textbf{Cross-dataset tension as the strongest finding.} DES-Y5's best-fit $w_0w_a$CDM parameters predict DESI data worse than \LCDM{} ($E = 0.19$), while Pantheon+'s parameters predict it well ($E = 2049$). This ${\sim}10{,}000\times$ asymmetry suggests that the supernova catalogs disagree on the nature of any dark energy dynamics, which undermines the case for a coherent physical signal and raises the possibility that $w_0w_a$CDM is absorbing inter-dataset tension rather than detecting new physics.
 
-    \item Cross-dataset validation reveals that DES-Y5's best-fit parameters predict DESI data worse than \LCDM{} ($E = 0.19$), while Pantheon+'s parameters predict well ($E = 2049$).
+    \item \textbf{Information criteria favor $w_0w_a$CDM.} Both $\Delta\text{AIC} = 7.9$ and $\Delta\text{BIC} = 6.8$ (with $n = 13$) constitute ``strong'' evidence on standard scales, while the Bayes factor modestly favors \LCDM{}. This divergence reflects different complexity penalties: AIC and BIC use fixed penalties, while the Bayes factor integrates over a prior volume that penalizes the broader parameter space of $w_0w_a$CDM more heavily. The BIC result is subject to the caveat that the effective sample size $n$ is ambiguous in cosmology \citep{Liddle2007}.
 
-    \item These observations are consistent with independent Bayesian \citep{OngBayesian2025} and tension \citep{WangMota2025} analyses that question the robustness of the claimed signal.
+    \item \textbf{Moderate evidence from mixture e-values.} The uniform mixture e-value yields $E \approx 15$ ($\ln E \approx 2.7$), constituting moderate-to-strong evidence for $w_0w_a$CDM within the DESI BAO data alone.
+
+    \item \textbf{Inconclusive data-split test.} The data-split e-value of $E = 1.4$ is inconclusive rather than negative: the redshift-based split has limited power for $w_a$ because the low-redshift training set provides weak leverage on the time-evolution parameter.
+
+    \item \textbf{The proper frequentist significance is $\approx 2.8\sigma$.} For $\Delta\chi^2 = 11.9$ with $k = 2$ d.o.f., $p = 0.0026$, not the $3.5\sigma$ ($p = 0.0005$) obtained from the incorrect 1-d.o.f.\ formula $\sqrt{\Delta\chi^2}$.
 \end{enumerate}
 
-We present this as one statistical perspective among several, not as definitive evidence against dynamical dark energy. The question ultimately requires more data, resolution of inter-dataset tensions, and independent confirmation from future surveys.
+These results, together with independent Bayesian \citep{OngBayesian2025} and tension \citep{WangMota2025} analyses, paint a picture in which the evidence for dynamical dark energy is real but not yet compelling. The path forward requires resolving the inter-dataset tensions---particularly the discrepancy between DES-Y5 and other probes---rather than accumulating further significance within any single statistical framework. Future data from DESI DR3+, Euclid, and the Roman Space Telescope will be essential for determining whether the current hints reflect new physics or systematic effects.
 
 %=====================================================================
 \section*{Data and Code Availability}
@@ -382,14 +486,26 @@ where $\chi^2(\theta) = (d - t(\theta))^T C^{-1} (d - t(\theta))$.
 \bibliographystyle{plainnat}
 \begin{thebibliography}{99}
 
+\bibitem[Burnham \& Anderson(2002)]{BurnhamAnderson2002}
+Burnham, K. P., \& Anderson, D. R. 2002, \textit{Model Selection and Multimodel Inference: A Practical Information-Theoretic Approach}, 2nd ed. (Springer)
+
 \bibitem[DESI Collaboration(2025)]{DESI2025}
 DESI Collaboration 2025, ``DESI DR2 Results II: Measurements of Baryon Acoustic Oscillations and Cosmological Constraints,'' arXiv:2503.14738
+
+\bibitem[Kass \& Raftery(1995)]{KassRaftery1995}
+Kass, R. E., \& Raftery, A. E. 1995, ``Bayes Factors,'' Journal of the American Statistical Association, 90, 773
+
+\bibitem[Liddle(2007)]{Liddle2007}
+Liddle, A. R. 2007, ``Information Criteria for Astrophysical Model Selection,'' MNRAS, 377, L74
 
 \bibitem[Ong et al.(2025)]{OngBayesian2025}
 Ong, D. D. Y., Yallup, D., \& Handley, W. 2025, ``A Bayesian Perspective on Evidence for Evolving Dark Energy,'' arXiv:2511.10631
 
 \bibitem[Ramdas et al.(2023)]{Ramdas2023}
 Ramdas, A., Gr{\"u}nwald, P., Vovk, V., \& Shafer, G. 2023, ``Game-Theoretic Statistics and Safe Anytime-Valid Inference,'' Statistical Science, 38, 576
+
+\bibitem[Schwarz(1978)]{Schwarz1978}
+Schwarz, G. 1978, ``Estimating the Dimension of a Model,'' Annals of Statistics, 6, 461
 
 \bibitem[Shafer(2021)]{Shafer2021}
 Shafer, G. 2021, ``Testing by Betting: A Strategy for Statistical and Scientific Communication,'' Journal of the Royal Statistical Society Series A, 184, 407

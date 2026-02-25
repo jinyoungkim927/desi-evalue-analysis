@@ -67,8 +67,8 @@ def main():
     print(f"        log(E) = {e_simple.log_e:.2f}")
     print(f"        WARNING: Alternative fitted to same data - inflates E!")
 
-    # GROW mixture
-    print(f"\n    3b. GROW Mixture E-Value (averaging over alternatives):")
+    # Uniform mixture
+    print(f"\n    3b. Uniform Mixture E-Value (averaging over alternatives):")
     e_grow = grow_evalue(dr2.data, dr2.cov, dr2.z_eff, dr2.quantities)
     print(f"        E = {e_grow.e_value:.2f}")
     print(f"        log(E) = {e_grow.log_e:.2f}")
@@ -135,7 +135,7 @@ def main():
 Results:
 --------
 - Chi-squared improvement: Delta chi2 = {delta_chi2:.1f} for w0waCDM
-- GROW E-value: E = {e_grow.e_value:.1f} (~{e_grow.sigma_equivalent:.1f} sigma equivalent)
+- Uniform mixture E-value: E = {e_grow.e_value:.1f} (~{e_grow.sigma_equivalent:.1f} sigma equivalent)
 - E-value varies {ranges[0][2]} to {ranges[2][2]} by factor ~2-3x
 
 Critical Issues:

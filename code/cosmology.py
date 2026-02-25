@@ -27,11 +27,15 @@ class CosmologyParams:
     """Cosmological parameters for distance calculations."""
     h: float = 0.6766  # Hubble parameter H0 = 100*h km/s/Mpc
     omega_m: float = 0.3111  # Matter density today
-    omega_de: float = 0.6889  # Dark energy density today
+    omega_de: float = None  # Dark energy density (derived from flatness if None)
     omega_r: float = 9.0e-5  # Radiation density (approximate)
     w0: float = -1.0  # Dark energy equation of state at z=0
     wa: float = 0.0  # Dark energy EoS evolution parameter
-    rd: float = 147.09  # Sound horizon in Mpc (Planck 2018)
+    rd: float = 147.05  # Sound horizon in Mpc (DESI fiducial)
+
+    def __post_init__(self):
+        if self.omega_de is None:
+            self.omega_de = 1.0 - self.omega_m - self.omega_r
 
     @property
     def omega_k(self) -> float:
@@ -43,19 +47,22 @@ class CosmologyParams:
         return self.w0 + self.wa * (1.0 - a)
 
     def copy(self, **kwargs) -> 'CosmologyParams':
-        """Return a copy with updated parameters."""
+        """Return a copy with updated parameters. omega_de re-derived from flatness unless explicitly set."""
         params = {
-            'h': self.h, 'omega_m': self.omega_m, 'omega_de': self.omega_de,
+            'h': self.h, 'omega_m': self.omega_m,
             'omega_r': self.omega_r, 'w0': self.w0, 'wa': self.wa, 'rd': self.rd
         }
         params.update(kwargs)
+        # Only pass omega_de if explicitly requested; otherwise let __post_init__ derive it
+        if 'omega_de' not in kwargs:
+            params['omega_de'] = None
         return CosmologyParams(**params)
 
 
-# Standard cosmologies
+# Standard cosmologies (omega_de derived from flatness constraint)
 LCDM = CosmologyParams(w0=-1.0, wa=0.0)
-DESI_DR1_BEST_FIT = CosmologyParams(w0=-0.836, wa=-0.807)  # From DR1 paper
-DESI_DR2_BEST_FIT = CosmologyParams(w0=-0.75, wa=-1.05)  # Approximate from DR2
+DESI_DR1_BEST_FIT = CosmologyParams(w0=-0.836, wa=-0.807)
+DESI_DR2_BEST_FIT = CosmologyParams(w0=-0.75, wa=-1.05)
 
 
 def E_z(z: float, cosmo: CosmologyParams) -> float:
@@ -117,7 +124,7 @@ def DM(z: float, cosmo: CosmologyParams) -> float:
     """
     dc = DC(z, cosmo)
 
-    if abs(cosmo.omega_k) < 1e-10:
+    if abs(cosmo.omega_k) < 1e-6:
         return dc
 
     DH0 = C_LIGHT_KM_S / (100.0 * cosmo.h)  # c/H0

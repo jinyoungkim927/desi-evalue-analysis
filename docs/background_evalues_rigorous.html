@@ -453,12 +453,12 @@
         </div>
         <p>This is <strong>NOT</strong> a valid e-value because \(\hat{w}_0, \hat{w}_a\) were chosen to maximize the likelihood on the same data!</p>
 
-        <h4>GROW Mixture E-Value</h4>
+        <h4>Uniform Mixture E-Value</h4>
         <div class="math-block">
-            \[E_{GROW} = \int \frac{\mathcal{L}(\text{data} \mid w_0, w_a)}{\mathcal{L}(\text{data} \mid \text{ΛCDM})} \pi(w_0, w_a) \, dw_0 \, dw_a\]
+            \[E_{\text{mix}} = \int \frac{\mathcal{L}(\text{data} \mid w_0, w_a)}{\mathcal{L}(\text{data} \mid \text{ΛCDM})} \pi(w_0, w_a) \, dw_0 \, dw_a\]
         </div>
-        <p>With a prior centered at ΛCDM: \(\pi = N((-1, 0), \Sigma_{prior})\)</p>
-        <p>Result: \(E_{GROW} \approx 15\) (depends on prior width)</p>
+        <p>With a discrete uniform prior over a grid of \((w_0, w_a)\) values (note: this is a standard Bayes factor with uniform prior, not the GROW-optimal procedure described in Section 5):</p>
+        <p>Result: \(E_{\text{mix}} \approx 15\) (depends on prior/grid range)</p>
 
         <h4>Data-Split E-Value (VALID)</h4>
         <ol>
@@ -475,7 +475,7 @@
         <table>
             <tr><th>Method</th><th>E-Value</th><th>Valid?</th><th>Interpretation</th></tr>
             <tr style="background: #f8d7da;"><td>Simple LR</td><td>392</td><td>NO</td><td>Overfitted; not evidence</td></tr>
-            <tr><td>GROW Mixture</td><td>15</td><td>Yes</td><td>Moderate evidence (prior-dependent)</td></tr>
+            <tr><td>Uniform Mixture</td><td>15</td><td>Yes</td><td>Moderate evidence (prior-dependent)</td></tr>
             <tr style="background: #d4edda;"><td>Data-Split</td><td>1.4</td><td>YES</td><td>No evidence for dynamic DE</td></tr>
         </table>
 

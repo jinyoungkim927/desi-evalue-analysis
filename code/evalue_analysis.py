@@ -10,16 +10,19 @@ Key concepts:
 - E-value: Non-negative random variable with E[E] <= 1 under null hypothesis
 - Can be combined by multiplication (sequential) or averaging
 - Related to likelihood ratios but without requiring full Bayesian priors
-- GROW (Growth Rate Optimality): Maximizes expected log(E) under alternative
+- Uniform mixture: Bayes factor with discrete uniform prior over a grid of alternatives
+- WARNING: The maximized likelihood ratio (plugging in the MLE) is NOT a valid
+  e-value. For k>=2 extra parameters, E[exp(chi^2(k)/2)] = infinity under H0.
 
 References:
 - Shafer (2021): "Testing by betting" - JRSS-A 184, 407-478
 - Ramdas et al. (2023): "Game-Theoretic Statistics" - Statistical Science 38(4)
 - Vovk & Wang (2021): "E-values: Calibration, combination, and applications"
+- Grünwald, de Heide & Koolen (2024): "Safe Testing" - JRSS-B (GROW-optimal procedure)
 
 Criticisms and limitations:
 - Prior sensitivity: Results depend on choice of alternative hypothesis
-- Computational cost: GROW-optimal e-values require optimization
+- Computational cost: Optimized mixture weights (e.g., GROW) require optimization
 - Interpretation: Not as intuitive as p-values for many practitioners
 - See also: arxiv:2511.10631 (Bayesian critique of DESI evidence)
 """
@@ -52,15 +55,18 @@ class EValueResult:
 
     @property
     def sigma_equivalent(self) -> float:
-        """Convert to approximate sigma significance."""
+        """Convert to approximate sigma significance.
+
+        Uses sigma = sqrt(2 * ln(E)), which equals sqrt(delta_chi2)
+        when E = exp(delta_chi2 / 2). This is the standard conversion
+        used in cosmology for comparing nested models.
+
+        Note: This is approximate. E-values and p-values answer
+        different questions.
+        """
         if self.e_value <= 1:
             return 0.0
-        # E-value of E corresponds roughly to 1/E p-value
-        # Convert to sigma using chi2 with 1 dof
-        p_approx = 1.0 / self.e_value
-        if p_approx >= 1:
-            return 0.0
-        return np.sqrt(chi2.ppf(1 - p_approx, df=1))
+        return np.sqrt(2.0 * np.log(self.e_value))
 
 
 def likelihood_ratio_evalue(
@@ -70,16 +76,20 @@ def likelihood_ratio_evalue(
     theory_alt: np.ndarray
 ) -> EValueResult:
     """
-    Compute e-value as simple likelihood ratio.
+    Compute likelihood ratio statistic.
 
-    E = L(data | H1) / L(data | H0)
+    LR = L(data | H1) / L(data | H0)
 
-    This is the most basic e-value, equivalent to a Bayes factor
-    with point mass priors on specific parameter values.
+    This is a valid e-value ONLY when theory_alt is specified independently
+    of the data (e.g., from a pre-registered alternative or from a separate
+    dataset). When theory_alt comes from MLE fitting on the same data,
+    the result is a maximized likelihood ratio, NOT a valid e-value:
+    for k>=2 extra parameters, E[exp(chi^2(k)/2) | H0] = infinity.
 
-    Note: This can give arbitrarily large e-values if the alternative
-    is fine-tuned to the data, which is why GROW-optimal approaches
-    are preferred.
+    This function is used internally by split_evalue (where it IS valid
+    because the alternative is fitted on disjoint training data) and for
+    cross-dataset validation (also valid, since parameters come from a
+    different dataset).
     """
     log_L_null = log_likelihood(data, theory_null, cov)
     log_L_alt = log_likelihood(data, theory_alt, cov)
@@ -193,21 +203,22 @@ def grow_evalue(
     cov: np.ndarray,
     z_values: np.ndarray,
     quantities: list,
-    n_samples: int = 1000
 ) -> EValueResult:
     """
-    Compute GROW (Growth Rate Optimal) e-value.
+    Compute uniform mixture e-value by averaging over a grid of alternatives.
 
-    GROW e-values maximize the expected log(E) under the alternative
-    hypothesis, subject to E[E|H0] <= 1.
+    Averages the likelihood ratio L(data|theta)/L(data|H0) over a
+    uniform grid of (w0, wa) values. This is equivalent to a Bayes
+    factor with a discrete uniform prior and produces a valid e-value
+    (E[E|H0] = 1 by construction).
 
-    This is done by:
-    1. Define a mixture alternative over plausible (w0, wa) values
-    2. Compute the e-value as weighted average of likelihood ratios
-    3. Optimize the weights to maximize growth rate
+    Note: This is NOT the GROW-optimal e-value from Grünwald et al. (2024),
+    which would optimize the mixture weights to maximize expected log growth
+    rate. We use equal (uniform) weights for simplicity. The result depends
+    on the grid range chosen.
 
-    Note: This is computationally expensive and the result depends
-    on the choice of prior/mixture distribution over alternatives.
+    The function name 'grow_evalue' is retained for backwards compatibility;
+    use 'uniform_mixture_evalue' as the preferred alias.
     """
     # Define grid of alternative hypotheses
     w0_grid = np.linspace(-1.5, -0.5, 10)
@@ -259,8 +270,12 @@ def grow_evalue(
         delta_chi2=chi2_null - chi2_alt,
         null_params=LCDM,
         alt_params=best_cosmo,
-        method='grow_mixture'
+        method='uniform_mixture'
     )
+
+
+# Alias for backwards compatibility
+uniform_mixture_evalue = grow_evalue
 
 
 def sequential_evalue(
@@ -306,7 +321,197 @@ def sequential_evalue(
         delta_chi2=chi2_null_total - chi2_alt_total,
         null_params=LCDM,
         alt_params=None,
-        method='sequential_grow'
+        method='sequential_uniform_mixture'
+    )
+
+
+@dataclass
+class LOOCVResult:
+    """Results from LOOCV e-value computation."""
+    e_value: float  # Product of all per-bin E_k values
+    log_e: float  # Sum of log(E_k) for numerical stability
+    per_bin_e: Dict[float, float]  # E_k for each held-out redshift bin
+    per_bin_log_e: Dict[float, float]  # log(E_k) for each bin
+    per_bin_w0: Dict[float, float]  # Best-fit w0 for each fold
+    per_bin_wa: Dict[float, float]  # Best-fit wa for each fold
+    chi2_null_total: float  # Sum of per-bin chi2 under null
+    chi2_alt_total: float  # Sum of per-bin chi2 under alt
+
+    @property
+    def sigma_equivalent(self) -> float:
+        if self.e_value <= 1:
+            return 0.0
+        return np.sqrt(2.0 * np.log(self.e_value))
+
+
+def _identify_redshift_bins(z_values: np.ndarray) -> Dict[float, list]:
+    """
+    Group measurement indices by redshift bin.
+
+    Returns dict mapping each unique redshift to a list of indices
+    into the data/z_values arrays.
+    """
+    bins = {}
+    for i, z in enumerate(z_values):
+        # Round to avoid floating-point matching issues
+        z_key = round(float(z), 4)
+        if z_key not in bins:
+            bins[z_key] = []
+        bins[z_key].append(i)
+    return bins
+
+
+def loocv_evalue(
+    data: np.ndarray,
+    cov: np.ndarray,
+    z_values: np.ndarray,
+    quantities: list,
+    verbose: bool = True
+) -> LOOCVResult:
+    """
+    Compute Leave-One-Out Cross-Validation e-value over redshift bins.
+
+    For each of the 7 redshift bins:
+      1. Hold out that bin's measurements (1 for DV-only, 2 for DM+DH)
+      2. Fit (w0, wa) on remaining measurements
+      3. Compute likelihood ratio E_k on held-out data
+      4. The overall e-value is the product of all E_k
+
+    This is a valid e-value because the covariance matrix is block-diagonal
+    (bins are independent), so the product of per-bin likelihood ratios is
+    itself a likelihood ratio. Each E_k uses training data disjoint from
+    the test point, avoiding overfitting.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        Measurement vector (length 13 for DESI DR2)
+    cov : np.ndarray
+        Full covariance matrix (13x13, block-diagonal by redshift bin)
+    z_values : np.ndarray
+        Effective redshifts for each measurement
+    quantities : list
+        Quantity labels ('DM_over_rs', 'DH_over_rs', 'DV_over_rs')
+    verbose : bool
+        Print per-fold diagnostics
+
+    Returns
+    -------
+    LOOCVResult with overall and per-bin e-values
+    """
+    bins = _identify_redshift_bins(z_values)
+
+    if verbose:
+        print(f"LOOCV over {len(bins)} redshift bins:")
+        for z_key, idxs in sorted(bins.items()):
+            qtys = [quantities[i] for i in idxs]
+            print(f"  z={z_key:.3f}: {len(idxs)} point(s) - {qtys}")
+        print()
+
+    per_bin_e = {}
+    per_bin_log_e = {}
+    per_bin_w0 = {}
+    per_bin_wa = {}
+    chi2_null_total = 0.0
+    chi2_alt_total = 0.0
+
+    for z_held_out, held_out_idx in sorted(bins.items()):
+        held_out_idx = np.array(held_out_idx)
+        # Training indices: everything except held-out bin
+        train_idx = np.array([i for i in range(len(data)) if i not in held_out_idx])
+
+        # Extract subsets
+        data_train = data[train_idx]
+        cov_train = cov[np.ix_(train_idx, train_idx)]
+        z_train = z_values[train_idx]
+        q_train = [quantities[i] for i in train_idx]
+
+        data_test = data[held_out_idx]
+        cov_test = cov[np.ix_(held_out_idx, held_out_idx)]
+        z_test = z_values[held_out_idx]
+        q_test = [quantities[i] for i in held_out_idx]
+
+        # Fit (w0, wa) on training data
+        def neg_log_likelihood_train(params):
+            w0, wa = params
+            cosmo = CosmologyParams(w0=w0, wa=wa)
+            pred = compute_bao_predictions(z_train, cosmo)
+            theory = _build_theory_vector(pred, z_train, q_train)
+            return -log_likelihood(data_train, theory, cov_train)
+
+        # Use multiple starting points to avoid local minima
+        best_result = None
+        best_nll = np.inf
+        starts = [
+            [-0.9, -0.5],
+            [-1.0, 0.0],
+            [-0.75, -1.0],
+            [-0.8, -0.8],
+            [-1.1, 0.5],
+        ]
+        for x0 in starts:
+            try:
+                result = minimize(
+                    neg_log_likelihood_train,
+                    x0=x0,
+                    bounds=[(-2.0, 0.0), (-4.0, 3.0)],
+                    method='L-BFGS-B'
+                )
+                if result.fun < best_nll:
+                    best_nll = result.fun
+                    best_result = result
+            except Exception:
+                continue
+
+        w0_fit, wa_fit = best_result.x
+        alt_cosmo = CosmologyParams(w0=w0_fit, wa=wa_fit)
+
+        # Compute E_k on held-out data
+        pred_null_test = compute_bao_predictions(z_test, LCDM)
+        theory_null_test = _build_theory_vector(pred_null_test, z_test, q_test)
+        pred_alt_test = compute_bao_predictions(z_test, alt_cosmo)
+        theory_alt_test = _build_theory_vector(pred_alt_test, z_test, q_test)
+
+        log_L_null = log_likelihood(data_test, theory_null_test, cov_test)
+        log_L_alt = log_likelihood(data_test, theory_alt_test, cov_test)
+        log_ek = log_L_alt - log_L_null
+        ek = np.exp(log_ek)
+
+        chi2_null_k = chi_squared(data_test, theory_null_test, cov_test)
+        chi2_alt_k = chi_squared(data_test, theory_alt_test, cov_test)
+
+        per_bin_e[z_held_out] = ek
+        per_bin_log_e[z_held_out] = log_ek
+        per_bin_w0[z_held_out] = w0_fit
+        per_bin_wa[z_held_out] = wa_fit
+        chi2_null_total += chi2_null_k
+        chi2_alt_total += chi2_alt_k
+
+        if verbose:
+            print(f"  Fold z={z_held_out:.3f}: "
+                  f"E_k={ek:.4f}, log(E_k)={log_ek:+.4f}, "
+                  f"dchi2={chi2_null_k - chi2_alt_k:+.3f}, "
+                  f"w0={w0_fit:.3f}, wa={wa_fit:.3f}")
+
+    # Overall LOOCV e-value = product of per-bin E_k
+    log_e_total = sum(per_bin_log_e.values())
+    e_total = np.exp(log_e_total)
+
+    if verbose:
+        print(f"\n  LOOCV E-value = {e_total:.4f}")
+        print(f"  log(E) = {log_e_total:.4f}")
+        if e_total > 1:
+            print(f"  sigma equivalent = {np.sqrt(2.0 * np.log(e_total)):.2f}")
+
+    return LOOCVResult(
+        e_value=e_total,
+        log_e=log_e_total,
+        per_bin_e=per_bin_e,
+        per_bin_log_e=per_bin_log_e,
+        per_bin_w0=per_bin_w0,
+        per_bin_wa=per_bin_wa,
+        chi2_null_total=chi2_null_total,
+        chi2_alt_total=chi2_alt_total,
     )
 
 
@@ -321,6 +526,8 @@ def _build_theory_vector(pred: dict, z_values: np.ndarray, quantities: list) -> 
             theory[i] = pred['DH_over_rd'][z_idx]
         elif 'DV' in q:
             theory[i] = pred['DV_over_rd'][z_idx]
+        else:
+            raise ValueError(f"Unknown BAO quantity: {q}")
     return theory
 
 
@@ -333,14 +540,15 @@ Why E-values May Be Flawed for DESI Dark Energy Evidence
 =========================================================
 
 1. PRIOR/MIXTURE SENSITIVITY
-   - GROW e-values depend on the choice of mixture distribution over alternatives
+   - Uniform mixture e-values depend on the choice of grid range over alternatives
    - Different choices of w0, wa ranges give different e-values
    - No principled way to choose the "right" prior for dark energy
 
-2. POINT-ALTERNATIVE PROBLEM
-   - Simple likelihood ratio e-values can be arbitrarily large
-   - If alternative is fit to data, E can be huge even under null
-   - Data splitting helps but reduces statistical power
+2. MAXIMIZED LIKELIHOOD RATIO IS NOT AN E-VALUE
+   - Plugging in the MLE gives E[exp(chi^2(k)/2)] = infinity for k>=2
+   - The maximized LR violates the defining property E[E|H0] <= 1
+   - It is a descriptive statistic, not calibrated evidence
+   - Data splitting or mixture methods are needed for valid e-values
 
 3. MODEL COMPLEXITY NOT PENALIZED
    - Unlike Bayesian evidence, e-values don't inherently penalize complexity
@@ -436,13 +644,13 @@ if __name__ == "__main__":
     data = theory_true + np.random.multivariate_normal(np.zeros(len(z_test)), cov)
 
     # Compute e-values
-    print("\n1. Simple likelihood ratio e-value:")
+    print("\n1. Likelihood ratio (valid here because alternative is pre-specified):")
     pred_lcdm = compute_bao_predictions(z_test, LCDM)
     theory_lcdm = _build_theory_vector(pred_lcdm, z_test, quantities)
     e_simple = likelihood_ratio_evalue(data, cov, theory_lcdm, theory_true)
     print(f"   E = {e_simple.e_value:.2f}, Δχ² = {e_simple.delta_chi2:.2f}")
 
-    print("\n2. GROW mixture e-value:")
+    print("\n2. Uniform mixture e-value:")
     e_grow = grow_evalue(data, cov, z_test, quantities)
     print(f"   E = {e_grow.e_value:.2f}, Δχ² = {e_grow.delta_chi2:.2f}")
     print(f"   Best-fit: w0={e_grow.alt_params.w0:.3f}, wa={e_grow.alt_params.wa:.3f}")

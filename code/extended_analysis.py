@@ -148,15 +148,21 @@ class SNConstraint:
         return (self.omega_m, self.w0, self.wa)
 
     def chi2(self, omega_m: float, w0: float, wa: float) -> float:
-        """Approximate chi-squared for given parameters."""
-        # Simplified: treat as uncorrelated Gaussian in each parameter
-        chi2 = 0
-        chi2 += ((omega_m - self.omega_m) / self.sigma_omega_m)**2
-        chi2 += ((w0 - self.w0) / self.sigma_w0)**2
-        chi2 += ((wa - self.wa) / self.sigma_wa)**2
-        # Add correlation term for w0-wa
-        chi2 += 2 * self.corr_w0_wa * (w0 - self.w0) * (wa - self.wa) / (self.sigma_w0 * self.sigma_wa)
-        return chi2
+        """Approximate chi-squared for given parameters.
+
+        Builds the full covariance matrix from sigmas and w0-wa correlation,
+        then computes chi2 = delta^T C^{-1} delta.
+        """
+        delta = np.array([omega_m - self.omega_m, w0 - self.w0, wa - self.wa])
+        sigmas = np.array([self.sigma_omega_m, self.sigma_w0, self.sigma_wa])
+        # Correlation matrix: omega_m uncorrelated with (w0, wa)
+        R = np.array([[1.0, 0.0, 0.0],
+                      [0.0, 1.0, self.corr_w0_wa],
+                      [0.0, self.corr_w0_wa, 1.0]])
+        # Covariance = diag(sigma) @ R @ diag(sigma)
+        C = np.diag(sigmas) @ R @ np.diag(sigmas)
+        C_inv = np.linalg.inv(C)
+        return float(delta @ C_inv @ delta)
 
 
 # Published constraints from various SNe catalogs (approximate from figures)
@@ -335,11 +341,9 @@ def compute_cross_dataset_evalue(
     results['log_e'] = log_e
     results['log_e_raw'] = log_e  # Store raw value
 
-    # Convert to sigma
+    # Convert to sigma: sigma = sqrt(2 * ln(E))
     if e_value > 1:
-        from scipy.stats import chi2 as chi2_dist
-        p_approx = 1.0 / e_value
-        results['sigma'] = np.sqrt(chi2_dist.ppf(1 - min(p_approx, 0.9999), df=1)) if p_approx < 1 else 0
+        results['sigma'] = np.sqrt(2.0 * np.log(e_value))
     else:
         results['sigma'] = 0.0
 

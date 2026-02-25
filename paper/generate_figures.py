@@ -19,8 +19,8 @@ def figure1_evalue_comparison():
 
     fig, ax = plt.subplots(figsize=(10, 6))
 
-    methods = ['Simple LR\n(BIASED)', 'GROW\n(narrow)', 'GROW\n(default)',
-               'GROW\n(wide)', 'Data-Split\n(VALID)']
+    methods = ['Simple LR\n(BIASED)', 'Uniform mix.\n(narrow)', 'Uniform mix.\n(default)',
+               'Uniform mix.\n(wide)', 'Data-Split\n(VALID)']
     evalues = [392, 97, 15, 17, 1.4]
     colors = ['#dc3545', '#ffc107', '#ffc107', '#ffc107', '#28a745']
 

@@ -208,7 +208,7 @@ $$E = e^{5.97} = 392$$
 
 **⚠️ WARNING:** This is BIASED because w₀wₐ was fitted to the same data!
 
-### Method 2: GROW Mixture E-Value
+### Method 2: Uniform Mixture E-Value
 
 **Grid over alternatives:**
 
@@ -291,7 +291,7 @@ If w₀wₐCDM is true, what E-value would we expect?
 1. Assume true cosmology: $w_0 = -0.727$, $w_a = -1.05$
 2. Generate synthetic data: $\mathbf{d}_{\text{sim}} = \mathbf{t}_{w_0w_a} + \mathbf{n}$
 3. Where $\mathbf{n} \sim \mathcal{N}(0, \mathbf{C})$
-4. Compute GROW E-value for each simulation
+4. Compute uniform mixture E-value for each simulation
 5. Repeat 500 times
 
 ### Results
@@ -323,9 +323,9 @@ If w₀wₐCDM is true, what E-value would we expect?
 |--------|-------|---------|----------|
 | Δχ² frequentist | 11.94 | 3.0σ | Standard |
 | E-value (simple LR) | 392 | 3.9σ | **BIASED** |
-| E-value (GROW narrow) | 97 | 3.0σ | Prior-sensitive |
-| E-value (GROW default) | 15 | 2.3σ | Prior-sensitive |
-| E-value (GROW wide) | 17 | 2.4σ | Prior-sensitive |
+| E-value (Uniform mix. narrow) | 97 | 3.0σ | Prior-sensitive |
+| E-value (Uniform mix. default) | 15 | 2.3σ | Prior-sensitive |
+| E-value (Uniform mix. wide) | 17 | 2.4σ | Prior-sensitive |
 | E-value (data-split) | **1.43** | **0.8σ** | **VALID** |
 | Bayesian evidence | ln B = -0.57 | Favors ΛCDM | External |
 
@@ -348,7 +348,7 @@ The evidence essentially vanishes.
 The apparent 3-4σ evidence for dynamic dark energy is **not robust**:
 
 1. **Overfitting:** E drops from 392 → 1.43 with proper validation
-2. **Prior sensitivity:** GROW E varies 7× with different choices
+2. **Prior sensitivity:** Uniform mixture E varies 7x with different choices
 3. **Bayesian contradiction:** Full data analysis favors ΛCDM
 4. **Power analysis:** E = 15 is consistent with either model
 

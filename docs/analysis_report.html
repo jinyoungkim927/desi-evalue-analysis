@@ -99,9 +99,9 @@
         <table>
             <tr><th>Method</th><th>E-value</th><th>σ equiv</th><th>Validity</th></tr>
             <tr style="background: #f8d7da;"><td>Simple Likelihood Ratio</td><td>392</td><td>3.9σ</td><td><strong>BIASED</strong> (overfitted)</td></tr>
-            <tr><td>GROW Mixture (narrow prior)</td><td>97</td><td>3.0σ</td><td>Prior-sensitive</td></tr>
-            <tr><td>GROW Mixture (default prior)</td><td>15</td><td>2.3σ</td><td>Prior-sensitive</td></tr>
-            <tr><td>GROW Mixture (wide prior)</td><td>17</td><td>2.4σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>Uniform Mixture (narrow prior)</td><td>97</td><td>3.0σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>Uniform Mixture (default prior)</td><td>15</td><td>2.3σ</td><td>Prior-sensitive</td></tr>
+            <tr><td>Uniform Mixture (wide prior)</td><td>17</td><td>2.4σ</td><td>Prior-sensitive</td></tr>
             <tr style="background: #d4edda;"><td><strong>Data-Split Test</strong></td><td><strong>1.4</strong></td><td><strong>0.8σ</strong></td><td><strong>VALID</strong></td></tr>
         </table>
 
@@ -120,7 +120,7 @@
         When we split data (train on z&lt;1, test on z≥1), E drops from 392 → 1.4.</p>
 
         <h3>2. Prior Sensitivity</h3>
-        <p>GROW e-values vary from 15 to 97 (~7x) depending on the w₀, wₐ range.
+        <p>Uniform mixture e-values vary from 15 to 97 (~7x) depending on the w₀, wₐ range.
         This shows results depend heavily on methodology choices.</p>
 
         <h3>3. Bayesian Analysis Contradicts</h3>
