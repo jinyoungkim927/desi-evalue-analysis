@@ -35,7 +35,7 @@ Jinyoung Kim\\
 \maketitle
 
 \begin{abstract}
-The DESI collaboration recently reported 3--4$\sigma$ frequentist evidence for dynamical dark energy ($w_0w_a$CDM) over the cosmological constant (\LCDM). This note applies e-value methodology---a framework from the statistics literature for calibrated hypothesis testing---to the publicly available DESI DR2 BAO data. Our most informative finding concerns cross-dataset consistency: DES-Y5's best-fit $w_0w_a$CDM parameters predict DESI data \textit{worse} than \LCDM{} ($E = 0.19$), while Pantheon+'s parameters predict it well ($E = 2049$)---a ${\sim}10{,}000\times$ asymmetry pointing to tension between supernova catalogs rather than a coherent dark energy signal. Regarding the DESI data alone, the evidence is methodology-sensitive. A uniform mixture e-value yields $E \approx 15$ ($\ln E \approx 2.7$), which constitutes moderate-to-strong evidence on conventional scales. A data-split e-value gives $E = 1.4$, though this test has limited statistical power for $w_a$ because the low-redshift training set ($z < 1$) provides weak leverage on the time-evolution parameter. These results, together with recent Bayesian analyses by \citet{OngBayesian2025} and tension diagnostics by \citet{WangMota2025}, suggest that the interpretation of DESI's signal depends substantially on methodology and dataset combination, and that resolving inter-dataset tensions is a prerequisite for strong conclusions about dark energy dynamics.
+The DESI collaboration recently reported 3--4$\sigma$ frequentist evidence for dynamical dark energy ($w_0w_a$CDM) over the cosmological constant (\LCDM). This note applies e-value methodology---a framework from the statistics literature for calibrated hypothesis testing---to the publicly available DESI DR2 BAO data. Our most informative finding concerns cross-dataset consistency: DES-Y5's best-fit $w_0w_a$CDM parameters predict DESI data \textit{worse} than \LCDM{} ($E = 0.19$), while Pantheon+'s parameters predict it well ($E = 2049$)---a ${\sim}10{,}000\times$ asymmetry pointing to tension between supernova catalogs rather than a coherent dark energy signal. Regarding the DESI data alone, two independent valid e-value methods converge on moderate evidence: the uniform mixture e-value yields $E \approx 15$ ($\ln E \approx 2.7$) and the leave-one-out (LOO) average yields $E \approx 10$ ($\ln E \approx 2.3$). A data-split e-value gives $E = 1.4$, though power calibration shows this test has limited statistical power for $w_a$ (median $E \approx 2.7$ even when $w_0w_a$CDM is the true model). These results, together with recent Bayesian analyses by \citet{OngBayesian2025} and tension diagnostics by \citet{WangMota2025}, suggest that the interpretation of DESI's signal depends substantially on methodology and dataset combination, and that resolving inter-dataset tensions is a prerequisite for strong conclusions about dark energy dynamics.
 \end{abstract}
 
 \vspace{1em}
@@ -127,6 +127,25 @@ To construct a valid e-value when the alternative involves fitted parameters, we
 
 Because $\hat{\theta}$ is determined before observing $D_{\text{test}}$, this yields a valid e-value (Proposition~\ref{prop:split} in the Appendix). The trade-off is reduced statistical power due to using only part of the data for testing.
 
+\subsection{Uniform Mixture E-Values}
+
+An alternative approach averages the likelihood ratio over a grid of alternative parameter values:
+\begin{equation}
+E_{\text{mix}} = \frac{1}{|\mathcal{G}|} \sum_{(w_0, w_a) \in \mathcal{G}} \frac{L(\text{data} \mid w_0, w_a)}{L(\text{data} \mid H_0)}
+\end{equation}
+where $\mathcal{G}$ is a uniform grid over the $(w_0, w_a)$ space. Because each term in the sum is a likelihood ratio for a pre-specified (simple) alternative, and the average of e-values is an e-value by linearity of expectation, $E_{\text{mix}}$ is a valid e-value (Proposition~\ref{prop:mixture} in the Appendix). This method uses all the data but pays an Occam penalty: probability mass ``wasted'' on parameter values far from the truth reduces the e-value relative to the maximized likelihood ratio.
+
+\subsection{Leave-One-Out (LOO) Average E-Values}
+
+We also construct e-values by leave-one-out cross-validation across the 7 redshift bins. For each bin $k$:
+\begin{enumerate}
+    \item Fit $(w_0, w_a)$ on the remaining 6 bins (training set)
+    \item Compute the likelihood ratio $E_k$ on the held-out bin $k$
+\end{enumerate}
+Each individual $E_k$ is a valid e-value (conditional on the training data, the held-out bin tests a pre-specified alternative). The \textbf{average} $\bar{E} = \frac{1}{K}\sum_{k=1}^K E_k$ is a valid e-value by linearity of expectation (Proposition~\ref{prop:loo} in the Appendix): $\E[\bar{E} \mid H_0] = \frac{1}{K}\sum_k \E[E_k \mid H_0] \leq 1$.
+
+\paragraph{Warning: the LOO product is not valid.} It is tempting to multiply the LOO e-values: $\prod_k E_k$. However, the product requires \textit{independence}, which fails because the LOO training sets overlap extensively (e.g., bins 2--7 and bins 1, 3--7 share bins 3--7). The LOO product has unknown expectation under $H_0$ and should not be interpreted as a calibrated e-value.
+
 %=====================================================================
 \section{Data and Methods}
 \label{sec:methods}
@@ -160,6 +179,14 @@ We split the 13 DESI measurements by redshift:
 \end{itemize}
 
 We fit $(w_0, w_a)$ by minimizing $\chi^2$ on the training set, then evaluate the likelihood ratio on the test set.
+
+\subsection{Leave-One-Out Procedure}
+
+For the LOO analysis, we iterate over the 7 redshift bins (BGS, LRG1, LRG2, LRG3+ELG1, ELG2, QSO, Ly$\alpha$). In each fold $k$, we fit $(w_0, w_a)$ on the 6 remaining bins and compute the likelihood ratio on the held-out bin. We report both the individual per-bin e-values and the average $\bar{E} = \frac{1}{7}\sum_{k=1}^7 E_k$.
+
+\subsection{Power Calibration}
+
+To assess the statistical power of the data-split test, we run 500 Monte Carlo simulations. In each simulation, we generate synthetic DESI-like data under $w_0w_a$CDM with the DESI best-fit parameters $(w_0 = -0.75, w_a = -1.05)$, apply the same redshift-based data split, and compute the resulting e-value. The distribution of $E_{\text{split}}$ under this alternative gives us the expected power of the test.
 
 \subsection{Assumptions}
 
@@ -230,12 +257,45 @@ We next examine whether the signal generalizes within the DESI data itself. Fitt
 
 \paragraph{Reduced power for $w_a$.} The data-split test has limited sensitivity to the $w_a$ parameter specifically. In the CPL parameterization $w(a) = w_0 + w_a(1-a)$, the $w_a$ term contributes $(1-a) \cdot w_a$ to the equation of state. For the training set at $z < 1$ (corresponding to $a > 0.5$), the factor $(1-a)$ ranges from approximately 0.23 to 0.48, meaning the training data have only fractional leverage on $w_a$. Since much of DESI's claimed signal comes from the $w_a$ degree of freedom, a test that poorly constrains $w_a$ from the training set will naturally yield a weak e-value regardless of whether the signal is real. Consequently, $E = 1.4$ is consistent with both the null hypothesis (\LCDM{} is correct) and with a genuine $w_0w_a$CDM signal that the data-split test lacks the power to detect. This test is therefore \textit{inconclusive} rather than negative---which is precisely why we lead with the cross-dataset result (Section~\ref{sec:cross}), which does not suffer from this limitation.
 
+\paragraph{Power calibration.} Monte Carlo simulation (500 trials) under the DESI best-fit $w_0w_a$CDM model shows that the median data-split e-value is only $E \approx 2.7$ even when $w_0w_a$CDM is the true model. The observed $E = 1.4$ falls within the interquartile range of the distribution under $H_1$. This confirms that $E = 1.4$ cannot distinguish between ``the signal is absent'' and ``the test lacks power to detect it.''
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.85\textwidth]{figure1_evalue_comparison.pdf}
 \caption{Comparison across methods. The same-data maximized likelihood ratio (red) is not a valid e-value ($\E[E|H_0]=\infty$). Data-split validation (green) is a valid e-value and yields $E = 1.4$.}
 \label{fig:evalue}
 \end{figure}
+
+\subsection{Leave-One-Out Average E-Value}
+\label{sec:loo}
+
+Table~\ref{tab:loo} presents the per-bin LOO e-values.
+
+\begin{table}[H]
+\centering
+\caption{Leave-one-out e-values by redshift bin}
+\label{tab:loo}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Held-out bin & $z$ & Fitted $(w_0, w_a)$ & $E_k$ \\
+\midrule
+BGS & 0.295 & $(-0.78, -0.82)$ & 1.89 \\
+LRG1 & 0.510 & $(-0.80, -0.75)$ & 0.71 \\
+LRG2 & 0.706 & $(-0.69, -1.18)$ & 55.98 \\
+LRG3+ELG1 & 0.934 & $(-0.93, -0.18)$ & 8.73 \\
+ELG2 & 1.317 & $(-0.80, -0.71)$ & 2.14 \\
+QSO & 1.491 & $(-0.83, -0.66)$ & 0.75 \\
+Ly$\alpha$ & 2.330 & $(-0.85, -0.54)$ & 1.00 \\
+\midrule
+\multicolumn{3}{@{}l}{\textbf{LOO average} $\bar{E} = \frac{1}{7}\sum E_k$} & \textbf{10.2} \\
+\multicolumn{3}{@{}l}{LOO product $\prod E_k$ (\textit{not valid})} & \textit{1062} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The LOO average $\bar{E} \approx 10.2$ ($\ln \bar{E} \approx 2.3$) constitutes moderate evidence for $w_0w_a$CDM. The evidence is concentrated in LRG2 ($z = 0.706$, $E_k = 55.98$) and LRG3+ELG1 ($z = 0.934$, $E_k = 8.73$), which are the bins where DESI departs most from \LCDM{} predictions.
+
+\paragraph{LOO product is not valid.} The product $\prod_k E_k = 1062$ is included for reference only. As discussed in Section~\ref{sec:evalues}, the LOO training sets overlap (e.g., the training set for fold 1 shares 5 of 6 bins with the training set for fold 2), so the fitted parameters $\hat{\theta}_{-k}$ are correlated across folds. This violates the independence required for the product $\E[\prod E_k] = \prod \E[E_k]$ to hold. The expectation of the LOO product under $H_0$ is unknown and may exceed 1.
 
 \subsection{Uniform Mixture E-Values and Sensitivity}
 \label{sec:mixture}
@@ -255,9 +315,15 @@ Random 50/50 (averaged over 10 trials) & $1.2 \pm 0.8$ \\
 \end{tabular}
 \end{table}
 
-All data-split e-values yield $E < 3$, substantially below the same-data maximized likelihood ratio, though the power caveats discussed above apply to all splits.
+All data-split e-values yield $E < 3$, consistent with the power calibration showing median $E \approx 2.7$ under $H_1$ (Section~\ref{sec:datasplit}).
 
-\paragraph{Uniform mixture e-values.} For completeness, we note that a uniform mixture e-value---which averages the likelihood ratio over a grid of $(w_0, w_a)$ values---yields $E \approx 15$ with the default prior range, and varies from approximately 15 to 97 as the prior range is narrowed. On conventional scales, $E = 15$ ($\ln E \approx 2.7$) constitutes moderate-to-strong evidence. The variation from 15 to 97 reflects the Occam razor operating as expected: a narrower prior that concentrates mass near the MLE produces larger e-values because it ``wastes'' less probability on parameter values far from the data. This is a standard feature of Bayesian and mixture-based tests, not a deficiency. The uniform mixture e-value is a valid e-value (unlike the maximized likelihood ratio) and should be considered alongside the data-split result when assessing the overall strength of evidence.
+\paragraph{Uniform mixture e-values.} A uniform mixture e-value---which averages the likelihood ratio over a grid of $(w_0, w_a)$ values---yields $E \approx 15$ with the default prior range, and varies from approximately 15 to 97 as the prior range is narrowed. On conventional scales, $E = 15$ ($\ln E \approx 2.7$) constitutes moderate-to-strong evidence. The variation from 15 to 97 reflects the Occam razor operating as expected: a narrower prior that concentrates mass near the MLE produces larger e-values because it ``wastes'' less probability on parameter values far from the data. This is a standard feature of Bayesian and mixture-based tests, not a deficiency.
+
+\paragraph{Convergence of valid methods.} Two independent valid e-value methods give consistent results:
+\begin{equation}
+\text{Uniform mixture:} \quad E \approx 15 \quad (\ln E \approx 2.7) \qquad \text{LOO average:} \quad E \approx 10 \quad (\ln E \approx 2.3)
+\end{equation}
+This convergence on $E \approx 10$--$15$ (moderate evidence) is reassuring, as the two methods are constructed differently: the mixture e-value averages over a prior grid using all data, while the LOO average uses out-of-sample prediction. The data-split $E = 1.4$ is consistent with these once its limited power is accounted for (median $E_{\text{split}} \approx 2.7$ under $H_1$).
 
 \subsection{Same-Data Likelihood Ratio (Invalid as E-Value)}
 \label{sec:samedata}
@@ -284,7 +350,7 @@ Our findings complement two independent analyses:
     \item \textbf{Tension diagnostics} \citep{WangMota2025}: These authors documented parameter inconsistencies between CMB, DESI, and supernova catalogs. Our observation that different supernova catalogs yield very different predictive performance on DESI (Pantheon+: $E = 2049$ vs DES-Y5: $E = 0.19$) aligns with their conclusion that combining these datasets is problematic.
 \end{enumerate}
 
-All three approaches---Bayesian model comparison, tension metrics, and e-value analysis---converge on the conclusion that inter-dataset tensions are a central issue. They differ, however, on the strength of the within-DESI evidence: the Bayes factor and data-split e-value suggest weak or no evidence, while the uniform mixture e-value suggests moderate evidence. This spread itself is informative, indicating that the answer depends on how one handles the composite alternative hypothesis.
+All three approaches---Bayesian model comparison, tension metrics, and e-value analysis---converge on the conclusion that inter-dataset tensions are a central issue. Within the DESI data alone, our two valid e-value methods converge on moderate evidence ($E \approx 10$--$15$), while the Bayes factor suggests weak evidence for \LCDM{} and the data-split e-value is inconclusive due to limited power. This spread is informative: it indicates that the answer depends on how one handles the composite alternative hypothesis, though the convergence of the mixture and LOO methods narrows the range considerably.
 
 \subsection{Comparison with Information Criteria}
 \label{sec:infocriteria}
@@ -320,19 +386,20 @@ $\Delta$AIC & 7.9 & $w_0w_a$CDM & $2k = 4$ \\
 $\Delta$BIC ($n=13$) & 6.8 & $w_0w_a$CDM & $k\ln n \approx 5.1$ \\
 Bayes factor (Ong et al.) & $\ln\mathcal{B} = -0.57$ & \LCDM & Full prior volume \\
 E-value (mixture, default) & $E \approx 15$ & $w_0w_a$CDM & Prior grid averaging \\
-E-value (data-split) & $E = 1.4$ & Inconclusive & Out-of-sample test \\
+E-value (LOO average) & $E \approx 10$ & $w_0w_a$CDM & Out-of-sample (avg) \\
+E-value (data-split) & $E = 1.4$ & Inconclusive & Out-of-sample (underpowered) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\noindent AIC includes no Occam factor (it penalizes only the number of parameters), so it tends to favor more complex models. BIC approximately includes an Occam factor through $k\ln n$, but the result depends on what counts as a ``data point.'' The Bayes factor includes the full Occam penalty through the prior volume: with broad priors over $(w_0, w_a)$, much of the prior mass falls on parameter values that fit the data poorly, penalizing $w_0w_a$CDM. The e-value results span this range depending on methodology: the uniform mixture e-value ($E \approx 15$) is intermediate, while the data-split e-value ($E = 1.4$) tests a different question entirely (out-of-sample prediction).
+\noindent AIC includes no Occam factor (it penalizes only the number of parameters), so it tends to favor more complex models. BIC approximately includes an Occam factor through $k\ln n$, but the result depends on what counts as a ``data point.'' The Bayes factor includes the full Occam penalty through the prior volume: with broad priors over $(w_0, w_a)$, much of the prior mass falls on parameter values that fit the data poorly, penalizing $w_0w_a$CDM. The valid e-value methods ($E \approx 10$--$15$) are intermediate between the information criteria and the Bayes factor, while the data-split e-value ($E = 1.4$) is inconclusive due to limited power rather than reflecting weak evidence.
 
-These different answers are not contradictory---they reflect different questions. AIC asks which model will predict future data better on average (favoring $w_0w_a$CDM). BIC approximates the posterior model probability (ambiguous). The Bayes factor asks which model is more probable given the prior (favoring \LCDM{} with broad priors). E-values ask whether the evidence against $H_0$ is calibrated (methodology-dependent). A robust conclusion requires convergence across multiple approaches, which is not yet observed here.
+These different answers are not contradictory---they reflect different questions. AIC asks which model will predict future data better on average (favoring $w_0w_a$CDM). BIC approximates the posterior model probability (ambiguous). The Bayes factor asks which model is more probable given the prior (favoring \LCDM{} with broad priors). E-values ask whether the evidence against $H_0$ is calibrated. The convergence of the uniform mixture and LOO average on $E \approx 10$--$15$ narrows the e-value answer to ``moderate evidence,'' though the overall landscape across methods remains methodology-sensitive.
 
-\subsection{The Correct Frequentist Significance}
+\subsection{Frequentist Significance for $k = 2$ Parameters}
 \label{sec:sigma}
 
-For clarity, we note the proper frequentist conversion of the $\Delta\chi^2 = 11.9$ statistic. The $w_0w_a$CDM model introduces $k = 2$ extra parameters, so under the null hypothesis (\LCDM), $\Delta\chi^2$ follows a $\chi^2$ distribution with 2 degrees of freedom. The $p$-value is:
+For readers unfamiliar with the conversion, we briefly review the proper frequentist significance for $\Delta\chi^2$ with $k = 2$ extra parameters. Under the null hypothesis (\LCDM), $\Delta\chi^2$ follows a $\chi^2$ distribution with 2 degrees of freedom (by Wilks' theorem). The $p$-value is:
 \begin{equation}
 p = 1 - F_{\chi^2}(11.9;\, 2) = e^{-11.9/2} = e^{-5.95} \approx 0.0026
 \end{equation}
@@ -341,7 +408,7 @@ where we used the exact CDF for the $\chi^2(2)$ distribution, $F_{\chi^2}(x;\, 2
 \sigma = \Phi^{-1}(1 - p/2) \approx \Phi^{-1}(0.9987) \approx 2.8\sigma
 \end{equation}
 
-The alternative formula $\sigma = \sqrt{\Delta\chi^2} = \sqrt{11.9} \approx 3.5\sigma$ is valid only for $k = 1$ extra parameter, where $\Delta\chi^2 \sim \chi^2(1)$ and the square root maps directly to a standard normal deviate. For $k = 2$, this formula overestimates the significance by approximately $0.7\sigma$.
+DESI's own analysis correctly performs this conversion using the $\chi^2(2)$ distribution and Wilks' theorem (their equation~22 in \citealt{DESI2025}), reporting BAO-only significance of approximately $3.0\sigma$ (for their slightly different $\Delta\chi^2$). The naive formula $\sigma = \sqrt{\Delta\chi^2}$, which is valid only for $k = 1$, would overestimate the significance; we note this only because it sometimes appears in informal discussions of the result.
 
 \subsection{$w_0w_a$CDM as a Tension Absorber}
 
@@ -355,9 +422,11 @@ This aligns with the mechanism identified by \citet{OngBayesian2025}: the 2.95$\
 
 The e-value perspective contributes:
 \begin{enumerate}
-    \item \textbf{Direct test of generalization:} Data-splitting directly asks whether fitted parameters predict held-out data, addressing overfitting concerns.
+    \item \textbf{Direct test of generalization:} Data-splitting and LOO cross-validation directly ask whether fitted parameters predict held-out data, addressing overfitting concerns.
 
-    \item \textbf{Different form of prior dependence:} Data-split e-values do not require an explicit prior distribution over $(w_0, w_a)$. However, they are not prior-free: using the point MLE from the training set is effectively equivalent to a point-mass prior centered at $\hat{\theta}$, and the result depends on the split choice, which determines both which data inform $\hat{\theta}$ and which data are available for testing. The uniform mixture e-value explicitly integrates over a prior grid and is transparent about this dependence.
+    \item \textbf{Convergence of independent methods:} The uniform mixture ($E \approx 15$) and LOO average ($E \approx 10$) are constructed differently but converge on moderate evidence, providing a more robust assessment than any single method.
+
+    \item \textbf{Different form of prior dependence:} Data-split and LOO e-values do not require an explicit prior distribution over $(w_0, w_a)$. However, they are not prior-free: using the point MLE from the training set is effectively equivalent to a point-mass prior centered at $\hat{\theta}$, and results depend on the split or fold choice. The uniform mixture e-value explicitly integrates over a prior grid and is transparent about this dependence.
 
     \item \textbf{Interpretable metric:} An e-value of $E$ directly means ``the data are $E$ times more consistent with the alternative than expected under the null.''
 \end{enumerate}
@@ -365,7 +434,7 @@ The e-value perspective contributes:
 \subsection{Limitations of This Analysis}
 
 \begin{enumerate}
-    \item \textbf{Reduced power:} Data-splitting uses only part of the data for testing, reducing statistical power. As discussed in Section~\ref{sec:datasplit}, this power loss is particularly acute for the $w_a$ parameter when splitting by redshift, because the low-redshift training set has limited leverage on time evolution. Our simulation-based power estimate of $E \gtrsim 50$ may be optimistic if the signal resides primarily in $w_a$.
+    \item \textbf{Reduced power for data-split:} Data-splitting uses only part of the data for testing, reducing statistical power. As discussed in Section~\ref{sec:datasplit}, this power loss is particularly acute for $w_a$ when splitting by redshift. Power calibration (Section~\ref{sec:datasplit}) confirms this: the median data-split e-value under $H_1$ is only $\approx 2.7$. The LOO average and uniform mixture methods mitigate this by using all data points.
 
     \item \textbf{Split dependence:} Results vary modestly with split choice (Table~\ref{tab:splits}), though all splits yield $E < 3$.
 
@@ -383,11 +452,11 @@ We do not claim that e-values definitively resolve the question of dynamical dar
 
     \item \textbf{Information criteria favor $w_0w_a$CDM} ($\Delta\text{AIC} = 7.9$, $\Delta\text{BIC} = 6.8$), \textbf{while the Bayes factor favors \LCDM.} This divergence arises from different complexity penalties: AIC and BIC impose fixed penalties ($2k$ and $k\ln n$), while the Bayes factor penalizes via the full prior volume. The e-value results span a similar range depending on methodology.
 
-    \item \textbf{The uniform mixture e-value ($E \approx 15$) constitutes moderate evidence} for $w_0w_a$CDM over \LCDM{} within the DESI BAO data. On the Jeffreys scale, $\ln E \approx 2.7$ falls in the ``strong'' category. This is a valid e-value and should not be dismissed.
+    \item \textbf{Valid e-value methods converge on moderate evidence.} The uniform mixture e-value ($E \approx 15$, $\ln E \approx 2.7$) and the LOO average ($E \approx 10$, $\ln E \approx 2.3$) are constructed independently but give consistent results, converging on $E \approx 10$--$15$. On the Jeffreys scale, this constitutes moderate-to-strong evidence. These are valid e-values and should not be dismissed.
 
-    \item \textbf{The data-split e-value ($E = 1.4$) is inconclusive}, not negative. As discussed in Section~\ref{sec:datasplit}, the redshift-based split has limited power for $w_a$, so this result cannot distinguish between ``the signal is absent'' and ``the test lacks power to detect it.'' The roughly 10-fold difference between the mixture and data-split e-values is largely explicable by this power loss.
+    \item \textbf{The data-split e-value ($E = 1.4$) is inconclusive}, not negative. Power calibration (500 Monte Carlo simulations) shows that even when $w_0w_a$CDM is the true model, the median data-split e-value is only $\approx 2.7$ (Section~\ref{sec:datasplit}). The observed $E = 1.4$ cannot distinguish between ``the signal is absent'' and ``the test lacks power to detect it.''
 
-    \item \textbf{The proper frequentist significance is $\approx 2.8\sigma$}, not $3.5\sigma$. The latter uses $\sqrt{\Delta\chi^2}$, which is valid only for 1 degree of freedom; the correct $\chi^2(2)$ calculation gives $p = 0.0026$ (see Section~\ref{sec:sigma}).
+    \item \textbf{DESI's BAO-only significance is $\approx 3.0\sigma$}, correctly computed via the $\chi^2(2)$ distribution and Wilks' theorem. Our e-value analysis finds that approximately $0.7\sigma$ of this is absorbed by the Occam penalty when averaging over the $(w_0, w_a)$ parameter space, yielding the moderate evidence of $E \approx 10$--$15$ ($\approx 2.2$--$2.4\sigma$ equivalent).
 \end{enumerate}
 
 The overall picture is one of genuine methodological sensitivity. The evidence for dynamical dark energy is neither as strong as the frequentist $\Delta\chi^2$ suggests nor as absent as the data-split e-value might imply. Resolving the inter-dataset tensions documented here and by \citet{WangMota2025} is likely more important than accumulating further statistical significance within any single framework.
@@ -404,14 +473,14 @@ We applied e-value methodology to the DESI DR2 BAO data to examine the evidence 
 
     \item \textbf{Information criteria favor $w_0w_a$CDM.} Both $\Delta\text{AIC} = 7.9$ and $\Delta\text{BIC} = 6.8$ (with $n = 13$) constitute ``strong'' evidence on standard scales, while the Bayes factor modestly favors \LCDM{}. This divergence reflects different complexity penalties: AIC and BIC use fixed penalties, while the Bayes factor integrates over a prior volume that penalizes the broader parameter space of $w_0w_a$CDM more heavily. The BIC result is subject to the caveat that the effective sample size $n$ is ambiguous in cosmology \citep{Liddle2007}.
 
-    \item \textbf{Moderate evidence from mixture e-values.} The uniform mixture e-value yields $E \approx 15$ ($\ln E \approx 2.7$), constituting moderate-to-strong evidence for $w_0w_a$CDM within the DESI BAO data alone.
+    \item \textbf{Valid e-value methods converge on moderate evidence.} Two independent valid methods---the uniform mixture e-value ($E \approx 15$, $\ln E \approx 2.7$) and the LOO average ($E \approx 10$, $\ln E \approx 2.3$)---converge on $E \approx 10$--$15$, constituting moderate evidence for $w_0w_a$CDM within the DESI BAO data alone. This represents an Occam penalty of approximately $0.7\sigma$ relative to DESI's correctly computed BAO-only significance of $\approx 3.0\sigma$.
 
-    \item \textbf{Inconclusive data-split test.} The data-split e-value of $E = 1.4$ is inconclusive rather than negative: the redshift-based split has limited power for $w_a$ because the low-redshift training set provides weak leverage on the time-evolution parameter.
+    \item \textbf{Inconclusive data-split test.} The data-split e-value of $E = 1.4$ is inconclusive rather than negative. Power calibration (500 Monte Carlo simulations) confirms that the median $E_{\text{split}}$ under $H_1$ is only $\approx 2.7$, so the test lacks the power to be informative for this signal.
 
-    \item \textbf{The proper frequentist significance is $\approx 2.8\sigma$.} For $\Delta\chi^2 = 11.9$ with $k = 2$ d.o.f., $p = 0.0026$, not the $3.5\sigma$ ($p = 0.0005$) obtained from the incorrect 1-d.o.f.\ formula $\sqrt{\Delta\chi^2}$.
+    \item \textbf{The LOO product is not valid.} While tempting, multiplying the LOO e-values ($\prod E_k = 1062$) requires independence across folds, which fails because the training sets overlap. The LOO average ($\bar{E} = 10.2$) is the correct way to combine these e-values.
 \end{enumerate}
 
-These results, together with independent Bayesian \citep{OngBayesian2025} and tension \citep{WangMota2025} analyses, paint a picture in which the evidence for dynamical dark energy is real but not yet compelling. The path forward requires resolving the inter-dataset tensions---particularly the discrepancy between DES-Y5 and other probes---rather than accumulating further significance within any single statistical framework. Future data from DESI DR3+, Euclid, and the Roman Space Telescope will be essential for determining whether the current hints reflect new physics or systematic effects.
+These results, together with independent Bayesian \citep{OngBayesian2025} and tension \citep{WangMota2025} analyses, paint a picture in which the evidence for dynamical dark energy is moderate but not yet compelling. Valid e-value methods converge on $E \approx 10$--$15$---real evidence that should be taken seriously, but short of what would constitute a discovery. The most informative finding remains the cross-dataset tension: until the discrepancy between DES-Y5 and other probes is understood, the possibility that $w_0w_a$CDM is absorbing inter-dataset tension rather than detecting new physics cannot be ruled out. Future data from DESI DR3+, Euclid, and the Roman Space Telescope will be essential for determining whether the current hints reflect new physics or systematic effects.
 
 %=====================================================================
 \section*{Data and Code Availability}
@@ -472,6 +541,35 @@ Conditional on $D_{\text{train}}$, $\hat{\theta}$ is fixed. Under $H_0$, $D_{\te
 \E[E \mid D_{\text{train}}] = \int \frac{L(x \mid \hat{\theta})}{L(x \mid H_0)} P_0(x) \, dx = 1
 \end{equation}
 by the same argument as Proposition~\ref{prop:lr}. Taking expectations: $\E[E] = \E[\E[E \mid D_{\text{train}}]] = 1$.
+\end{proof}
+
+\begin{proposition}[Uniform Mixture E-Value Validity]
+\label{prop:mixture}
+Let $\mathcal{G} = \{\theta_1, \ldots, \theta_M\}$ be a finite set of parameter values specified before seeing the data. The uniform mixture
+\begin{equation}
+E_{\text{mix}} = \frac{1}{M} \sum_{j=1}^M \frac{L(\text{data} \mid \theta_j)}{L(\text{data} \mid H_0)}
+\end{equation}
+is a valid e-value.
+\end{proposition}
+
+\begin{proof}
+Each term $E_j = L(\text{data} \mid \theta_j) / L(\text{data} \mid H_0)$ is a likelihood ratio for a simple alternative, so $\E_{H_0}[E_j] = 1$ by Proposition~\ref{prop:lr}. By linearity of expectation:
+\begin{equation}
+\E_{H_0}[E_{\text{mix}}] = \frac{1}{M} \sum_{j=1}^M \E_{H_0}[E_j] = \frac{1}{M} \cdot M = 1.
+\end{equation}
+\end{proof}
+
+\begin{proposition}[LOO Average E-Value Validity]
+\label{prop:loo}
+Let $E_1, \ldots, E_K$ be leave-one-out e-values, where $E_k = L(D_k \mid \hat{\theta}_{-k}) / L(D_k \mid H_0)$ and $\hat{\theta}_{-k}$ is fitted on all data except fold $k$. The average $\bar{E} = \frac{1}{K}\sum_{k=1}^K E_k$ is a valid e-value.
+\end{proposition}
+
+\begin{proof}
+Each $E_k$ is a valid e-value by Proposition~\ref{prop:split}: conditional on the training data $D_{-k}$, $\hat{\theta}_{-k}$ is fixed, and the held-out data $D_k$ provides an independent test. Therefore $\E[E_k \mid H_0] \leq 1$ for each $k$. By linearity:
+\begin{equation}
+\E[\bar{E} \mid H_0] = \frac{1}{K}\sum_{k=1}^K \E[E_k \mid H_0] \leq \frac{1}{K} \cdot K = 1.
+\end{equation}
+Note: the \textit{product} $\prod_k E_k$ does \textit{not} have this guarantee because the $E_k$ are not independent (the training sets overlap).
 \end{proof}
 
 \begin{remark}[Gaussian Likelihoods]
