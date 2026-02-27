@@ -414,7 +414,7 @@ For DESI DR2, the results are:
 \chi^2_{w_0w_a\text{CDM}} &\approx 13.5 \quad \text{(13 data points, 2 free params)} \\
 \Delta\chi^2 &= 25.4 - 13.5 = 11.9
 \end{align}
-With 2 extra parameters and $\Delta\chi^2 = 11.9$, the proper frequentist calculation uses the $\chi^2(2)$ distribution: $p = 1 - F_{\chi^2}(11.9;\, 2) = e^{-5.95} \approx 0.0026$, which corresponds to $\approx 2.8\sigma$ (two-sided). Note: the sometimes-quoted $3.5\sigma$ uses $\sqrt{\Delta\chi^2}$, which is only valid for $k=1$ extra parameter (see Section~\ref{sec:sigma_correct}).
+With 2 extra parameters and $\Delta\chi^2 = 11.9$, the proper frequentist calculation uses the $\chi^2(2)$ distribution: $p = 1 - F_{\chi^2}(11.9;\, 2) = e^{-5.95} \approx 0.0026$, which corresponds to $\approx 2.8\sigma$ (two-sided). DESI correctly performs this conversion (see their equation~22, citing Wilks' theorem). The naive formula $\sqrt{\Delta\chi^2} \approx 3.5\sigma$ applies only for $k=1$ (see Section~\ref{sec:sigma_correct}).
 
 \textbf{But is this real evidence, or just overfitting?} This is where e-values come in.
 \end{examplebox}
@@ -973,7 +973,7 @@ The uniform mixture e-value ($E \approx 15$) sits between AIC/BIC and the Bayes 
 \subsection{The Correct Frequentist $\sigma$-Conversion}
 \label{sec:sigma_correct}
 
-The conversion from $\Delta\chi^2$ to ``number of sigma'' is often done incorrectly. Here is the proper procedure.
+The conversion from $\Delta\chi^2$ to ``number of sigma'' depends on the number of extra parameters $k$. We review the proper procedure here, since the $k=1$ formula sometimes appears in informal discussions.
 
 \begin{conceptbox}{$\sigma$-Conversion for $k$ Extra Parameters}
 Under $H_0$, the statistic $\Delta\chi^2$ follows a $\chi^2$ distribution with $k$ degrees of freedom (by Wilks' theorem). The $p$-value is:
@@ -988,9 +988,9 @@ The equivalent Gaussian significance (two-sided) is $\sigma = \Phi^{-1}(1 - p/2)
 \end{conceptbox}
 
 \begin{examplebox}{$\sigma$-Conversion for DESI's $\Delta\chi^2 = 11.9$}
-\textbf{Wrong method} ($k=1$ formula): $\sigma = \sqrt{\Delta\chi^2} = \sqrt{11.9} \approx 3.45\sigma$.
+\textbf{$k=1$ formula} (not applicable here): $\sigma = \sqrt{\Delta\chi^2} = \sqrt{11.9} \approx 3.45\sigma$.
 
-This is only valid when there is 1 extra parameter. It treats $\Delta\chi^2$ as if it were the square of a single standard normal variable.
+This is valid only when there is 1 extra parameter. It treats $\Delta\chi^2$ as if it were the square of a single standard normal variable. DESI does not use this formula --- they correctly use the $\chi^2(2)$ CDF (their equation~22).
 
 \textbf{Correct method} ($k=2$):
 \begin{align}
@@ -1004,7 +1004,7 @@ For reference, a few values:
 \begin{center}
 \begin{tabular}{ccc}
 \toprule
-$\Delta\chi^2$ & $\sigma$ ($k=1$, \textbf{wrong}) & $\sigma$ ($k=2$, \textbf{correct}) \\
+$\Delta\chi^2$ & $\sigma$ ($k=1$) & $\sigma$ ($k=2$) \\
 \midrule
 6.0 & 2.4 & 1.8 \\
 9.2 & 3.0 & 2.3 \\
@@ -1142,7 +1142,7 @@ The picture that emerges: moderate evidence for $w_0w_a$CDM within DESI BAO alon
 
     \item \textbf{The data-split e-value ($E = 1.4$) is inconclusive.} Power calibration shows that even when $w_0w_a$CDM is the true model, the data-split test yields median $E \approx 2.7$. The observed $E = 1.4$ cannot distinguish between hypotheses. The data-split is underpowered for $w_a$ because the low-$z$ training set has only fractional leverage on the time-evolution parameter.
 
-    \item \textbf{The proper frequentist significance is $2.8\sigma$.} The $\chi^2(2)$ distribution gives $p = 0.0026$ for $\Delta\chi^2 = 11.9$, not the $3.5\sigma$ from the incorrect 1-d.o.f.\ formula.
+    \item \textbf{The frequentist BAO-only significance is $\approx 2.8$--$3.0\sigma$.} DESI correctly uses the $\chi^2(2)$ distribution and Wilks' theorem for this conversion (their equation~22). We note that the naive formula $\sqrt{\Delta\chi^2}$, which is valid only for $k=1$, would give $\approx 3.5\sigma$ --- this formula sometimes appears in informal discussions but was not used by DESI.
 
     \item \textbf{Invalid statistics overstate the evidence.} The maximized likelihood ratio ($\text{LR} = 392$) and the LOO product ($E = 1062$) are not valid e-values. The former has $\E[E|H_0] = \infty$; the latter uses dependent folds. Both should be treated as descriptive statistics only.
 \end{enumerate}
