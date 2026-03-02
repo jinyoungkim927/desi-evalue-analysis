@@ -4,10 +4,12 @@
 1. [Data Loading](#1-data-loading)
 2. [Cosmological Model Predictions](#2-cosmological-model-predictions)
 3. [Chi-Squared Analysis](#3-chi-squared-analysis)
-4. [E-Value Computation](#4-e-value-computation)
+4. [E-Value Methods](#4-e-value-methods)
 5. [Data-Split Validation](#5-data-split-validation)
-6. [Power Analysis](#6-power-analysis)
-7. [Results Summary](#7-results-summary)
+6. [LOO Average E-Value](#6-loo-average-e-value)
+7. [Power Calibration](#7-power-calibration)
+8. [Cross-Dataset E-Values](#8-cross-dataset-e-values)
+9. [Results Summary](#9-results-summary)
 
 ---
 
@@ -114,25 +116,9 @@ $$D_V(z) = \left[z \cdot D_H(z) \cdot D_M(z)^2\right]^{1/3}$$
 - $w_0 = -0.727$ (equation of state today)
 - $w_a = -1.05$ (evolution parameter)
 
-**Equation of state:**
-
-$$w(a) = w_0 + w_a(1-a)$$
-
 **Dark energy density evolution:**
 
 $$\Omega_{DE}(z) = \Omega_{DE,0} \cdot (1+z)^{3(1+w_0+w_a)} \cdot \exp\left(-3w_a\frac{z}{1+z}\right)$$
-
-**w₀wₐCDM predictions:**
-
-| z_eff | $D_M/r_d$ (pred) | $D_H/r_d$ (pred) | Diff from ΛCDM |
-|-------|------------------|------------------|----------------|
-| 0.295 | 8.27 | 25.15 | -1.3%, -2.2% |
-| 0.510 | 13.54 | 22.43 | -1.6%, -1.4% |
-| 0.706 | 17.83 | 19.90 | -1.6%, -0.9% |
-| 0.934 | 22.44 | 17.10 | -1.5%, -0.1% |
-| 1.321 | 29.17 | 13.55 | -1.4%, +1.0% |
-| 1.484 | 31.89 | 12.30 | -1.3%, +1.2% |
-| 2.330 | 38.70 | 8.73 | -1.2%, +1.2% |
 
 ---
 
@@ -141,26 +127,6 @@ $$\Omega_{DE}(z) = \Omega_{DE,0} \cdot (1+z)^{3(1+w_0+w_a)} \cdot \exp\left(-3w_
 ### Formula
 
 $$\chi^2 = (\mathbf{d} - \mathbf{t})^T \mathbf{C}^{-1} (\mathbf{d} - \mathbf{t})$$
-
-where:
-- $\mathbf{d}$ = data vector (13 elements)
-- $\mathbf{t}$ = theory predictions
-- $\mathbf{C}$ = covariance matrix
-
-### Residuals: Data - ΛCDM
-
-| Index | z_eff | Quantity | Data | ΛCDM | Residual | Residual/σ |
-|-------|-------|----------|------|------|----------|------------|
-| 0 | 0.295 | $D_V/r_d$ | 7.942 | 8.15 | -0.21 | -2.8σ |
-| 1 | 0.510 | $D_M/r_d$ | 13.588 | 13.76 | -0.17 | -1.0σ |
-| 2 | 0.510 | $D_H/r_d$ | 21.863 | 22.75 | -0.89 | -2.1σ |
-| 3 | 0.706 | $D_M/r_d$ | 17.351 | 18.12 | -0.77 | -4.3σ |
-| 4 | 0.706 | $D_H/r_d$ | 19.455 | 20.08 | -0.62 | -1.9σ |
-| 5 | 0.934 | $D_M/r_d$ | 21.576 | 22.79 | -1.21 | -7.5σ |
-| 6 | 0.934 | $D_H/r_d$ | 17.641 | 17.11 | +0.53 | +2.6σ |
-| ... | ... | ... | ... | ... | ... | ... |
-
-**Note:** Large individual residuals, but correlations in $\mathbf{C}$ affect overall $\chi^2$.
 
 ### Computed Chi-Squared Values
 
@@ -172,69 +138,43 @@ $$\Delta\chi^2 = 25.44 - 13.50 = 11.94$$
 
 ### Frequentist Significance
 
-For $\Delta\chi^2$ with 2 extra parameters (w₀, wₐ):
+For Δχ² with k = 2 extra parameters, under H₀ this follows a χ²(2) distribution (by Wilks' theorem):
 
-$$p = P(\chi^2_2 > 11.94) = 0.0026$$
+$$p = 1 - F_{\chi^2}(11.94; 2) = e^{-11.94/2} = e^{-5.97} \approx 0.0026$$
 
-Converting to sigma:
+$$\sigma = \Phi^{-1}(1 - p/2) \approx 2.8\sigma$$
 
-$$\sigma = \Phi^{-1}(1 - p/2) \approx 3.0$$
-
-**Interpretation:** ~3σ preference for w₀wₐCDM over ΛCDM (BAO only)
+**Note:** DESI correctly performs this conversion using the χ²(2) distribution (their equation 22). The naive formula √Δχ² ≈ 3.5σ applies only for k = 1.
 
 ---
 
-## 4. E-Value Computation
+## 4. E-Value Methods
 
-### Method 1: Simple Likelihood Ratio
+### Method 1: Maximized Likelihood Ratio (NOT a valid e-value)
 
-**Log-likelihood:**
+$$E = \exp\left(\frac{\Delta\chi^2}{2}\right) = \exp\left(\frac{11.94}{2}\right) = 392$$
 
-$$\ln L = -\frac{1}{2}\chi^2 - \frac{1}{2}\ln|\mathbf{C}| - \frac{n}{2}\ln(2\pi)$$
+**⚠️ This is NOT an e-value.** For k = 2 extra parameters:
 
-**E-value:**
+$$\mathbb{E}_{H_0}\left[e^{\chi^2(2)/2}\right] = \int_0^\infty e^{t/2} \cdot \frac{1}{2}e^{-t/2}\,dt = \int_0^\infty \frac{1}{2}\,dt = \infty$$
 
-$$E = \frac{L(\mathbf{d} | w_0w_a)}{L(\mathbf{d} | \Lambda\text{CDM})} = \exp\left(\ln L_{w_0w_a} - \ln L_{\Lambda}\right)$$
-
-**Calculation:**
-
-$$\ln L_{\Lambda} = -\frac{1}{2}(25.44) - \frac{1}{2}\ln|\mathbf{C}| - \frac{13}{2}\ln(2\pi)$$
-
-$$\ln L_{w_0w_a} = -\frac{1}{2}(13.50) - \frac{1}{2}\ln|\mathbf{C}| - \frac{13}{2}\ln(2\pi)$$
-
-$$\ln E = \ln L_{w_0w_a} - \ln L_{\Lambda} = -\frac{1}{2}(13.50 - 25.44) = \frac{11.94}{2} = 5.97$$
-
-$$E = e^{5.97} = 392$$
-
-**⚠️ WARNING:** This is BIASED because w₀wₐ was fitted to the same data!
+Since E[E | H₀] = ∞, the defining property E[E | H₀] ≤ 1 is violated. This is a descriptive statistic only.
 
 ### Method 2: Uniform Mixture E-Value
 
-**Grid over alternatives:**
-
-$$w_0 \in [-1.5, -0.5], \quad w_a \in [-2.0, 1.0]$$
-
-Using 15×15 = 225 grid points.
-
-**Mixture e-value:**
-
-$$E_{\text{mix}} = \frac{1}{N}\sum_{i=1}^{N} \frac{L(\mathbf{d} | w_{0,i}, w_{a,i})}{L(\mathbf{d} | \Lambda)}$$
-
-**For numerical stability (log-sum-exp):**
-
-$$\ln E_{\text{mix}} = \max_i(\ln R_i) + \ln\left(\frac{1}{N}\sum_i \exp(\ln R_i - \max_j \ln R_j)\right)$$
-
-where $\ln R_i = \ln L_{w_{0,i},w_{a,i}} - \ln L_\Lambda$
+$$E_{\text{mix}} = \frac{1}{N}\sum_{i=1}^{N} \frac{L(\mathbf{d} \mid w_{0,i}, w_{a,i})}{L(\mathbf{d} \mid \Lambda)}$$
 
 **Results for different prior ranges:**
 
-| Prior Range | $\ln E$ | $E$ |
-|-------------|---------|-----|
-| Narrow: $w_0 \in [-1.3, -0.7]$, $w_a \in [-1.5, 0.5]$ | 4.58 | 97 |
-| Default: $w_0 \in [-1.5, -0.5]$, $w_a \in [-2.0, 1.0]$ | 2.68 | 15 |
-| Wide: $w_0 \in [-2.0, 0.0]$, $w_a \in [-3.0, 2.0]$ | 2.85 | 17 |
+| Prior Range | E-value | ln E |
+|-------------|---------|------|
+| Narrow: w₀ ∈ [-1.2, -0.8], wₐ ∈ [-1.0, 0.5] | 97 | 4.58 |
+| Default: w₀ ∈ [-1.5, -0.5], wₐ ∈ [-2.0, 1.0] | **15** | **2.68** |
+| Wide: w₀ ∈ [-2.0, 0.0], wₐ ∈ [-3.0, 2.0] | 17 | 2.85 |
 
-**Sensitivity:** E varies from 15 to 97 (~7×) depending on prior choice!
+**Why this is valid:** Each grid point gives a valid e-value (H₁ specified before seeing data). The average of e-values is an e-value by linearity of expectation.
+
+**Prior sensitivity** reflects the Occam razor: a narrower prior concentrating mass near the MLE wastes less probability on distant parameter values.
 
 ---
 
@@ -242,114 +182,130 @@ where $\ln R_i = \ln L_{w_{0,i},w_{a,i}} - \ln L_\Lambda$
 
 ### Split Definition
 
-- **Training set:** $z < 1.0$ (7 data points)
-- **Test set:** $z \geq 1.0$ (6 data points)
+- **Training set:** z < 1.0 (7 data points: BGS, LRG1, LRG2, LRG3+ELG1)
+- **Test set:** z ≥ 1.0 (6 data points: ELG2, QSO, Lyα)
 
-### Step 1: Fit Alternative on Training Data
+### Computation
 
-Minimize negative log-likelihood:
+Fit on training data: $\hat{w}_0 = -0.78$, $\hat{w}_a = -0.52$.
 
-$$-\ln L_{\text{train}}(w_0, w_a) = \frac{1}{2}(\mathbf{d}_{\text{train}} - \mathbf{t}(w_0,w_a))^T \mathbf{C}_{\text{train}}^{-1} (\mathbf{d}_{\text{train}} - \mathbf{t}(w_0,w_a))$$
+$$\chi^2_{\text{test, ΛCDM}} \approx 5.8, \quad \chi^2_{\text{test, }w_0w_a} \approx 5.1$$
 
-**Result:** $\hat{w}_0 = -0.872$, $\hat{w}_a = -0.327$
+$$E_{\text{split}} = \exp\left(\frac{5.8 - 5.1}{2}\right) = e^{0.35} \approx 1.4$$
 
-### Step 2: Evaluate E-Value on Test Data
-
-Using the fitted $(\hat{w}_0, \hat{w}_a)$:
-
-$$E_{\text{test}} = \frac{L(\mathbf{d}_{\text{test}} | \hat{w}_0, \hat{w}_a)}{L(\mathbf{d}_{\text{test}} | \Lambda)}$$
-
-**Calculation:**
-
-$$\chi^2_{\Lambda,\text{test}} = 10.23$$
-
-$$\chi^2_{w_0w_a,\text{test}} = 9.51$$
-
-$$\ln E_{\text{test}} = \frac{10.23 - 9.51}{2} = 0.36$$
-
-$$E_{\text{test}} = e^{0.36} = 1.43$$
-
-### Why This Matters
-
-| Method | E-value | Note |
-|--------|---------|------|
-| Simple LR (same data) | 392 | BIASED |
-| Data-split (held-out) | 1.43 | VALID |
-
-**The 280× difference shows overfitting is dominating the simple LR result!**
+**Interpretation:** This is **inconclusive**, not evidence against w₀wₐCDM. See power calibration (Section 7).
 
 ---
 
-## 6. Power Analysis
+## 6. LOO Average E-Value
+
+### Method
+
+For each of K = 7 redshift bins, leave out bin k, fit (w₀, wₐ) on the remaining 6 bins, compute e-value on held-out bin. Average the results.
+
+### Per-Bin Results
+
+| Left-out bin | z_eff | Fitted (w₀, wₐ) | E_k |
+|---|---|---|---|
+| BGS | 0.295 | (-0.86, -0.44) | 1.89 |
+| LRG1 | 0.510 | (-0.84, -0.46) | 0.71 |
+| LRG2 | 0.706 | (-0.85, -0.38) | 55.98 |
+| LRG3+ELG1 | 0.934 | (-0.84, -0.49) | 8.73 |
+| ELG2 | 1.321 | (-0.86, -0.42) | 2.14 |
+| QSO | 1.484 | (-0.86, -0.43) | 0.75 |
+| Lyα | 2.330 | (-0.86, -0.44) | 1.00 |
+
+### LOO Average
+
+$$\bar{E} = \frac{1.89 + 0.71 + 55.98 + 8.73 + 2.14 + 0.75 + 1.00}{7} = \frac{71.2}{7} \approx 10.2$$
+
+### Validity
+
+The average is valid by linearity of expectation:
+
+$$\mathbb{E}\left[\frac{1}{K}\sum_k E_k \mid H_0\right] = \frac{1}{K}\sum_k \mathbb{E}[E_k \mid H_0] \leq 1$$
+
+### ⚠️ The LOO Product is NOT Valid
+
+The product $\prod_k E_k = 1062$ requires independence, which fails because the LOO training sets overlap (e.g., folds 1 and 2 share 5 of 6 bins). The product's expectation under H₀ is unknown and may exceed 1.
+
+---
+
+## 7. Power Calibration
 
 ### Question
 
-If w₀wₐCDM is true, what E-value would we expect?
+If w₀wₐCDM is the true model, what data-split e-value would we expect?
 
-### Simulation Setup
+### Setup
 
-1. Assume true cosmology: $w_0 = -0.727$, $w_a = -1.05$
-2. Generate synthetic data: $\mathbf{d}_{\text{sim}} = \mathbf{t}_{w_0w_a} + \mathbf{n}$
-3. Where $\mathbf{n} \sim \mathcal{N}(0, \mathbf{C})$
-4. Compute uniform mixture E-value for each simulation
-5. Repeat 500 times
+500 Monte Carlo simulations under w₀wₐCDM with DESI best-fit (w₀ = -0.75, wₐ = -1.05). For each: generate synthetic data, apply the same redshift-based split, compute E_split.
 
 ### Results
 
-**E-value distribution if w₀wₐCDM is true:**
-
 | Statistic | Value |
 |-----------|-------|
-| Median E | 21 |
-| Mean E | 35 |
-| 5th percentile | 3.2 |
-| 95th percentile | 95 |
+| Median E_split under H₁ | **2.7** |
+| P(E_split > 1.4 \| H₁) | 64% |
+| P(E_split > 1.4 \| H₀) | 12.8% |
 
-**Our observed E = 15 is at the 40th percentile**
-
-### Interpretation
-
-- If w₀wₐCDM were true, we'd typically see E ~ 21
-- Our E = 15 is consistent with EITHER model
-- Not conclusive evidence for or against
+**Interpretation:** Even when w₀wₐCDM is true, the data-split test typically gives only E ≈ 2.7. The observed E = 1.4 cannot distinguish H₀ from H₁. The test is severely underpowered for wₐ because the low-z training set has only 23–48% leverage on the time-evolution parameter.
 
 ---
 
-## 7. Results Summary
+## 8. Cross-Dataset E-Values
+
+### Method
+
+Use published best-fit (w₀, wₐ) from one experiment to predict another experiment's data. If the dark energy signal is real and consistent, cross-predictions should outperform ΛCDM.
+
+### Results
+
+| Training Dataset | Test Dataset | (w₀, wₐ) | E-value |
+|---|---|---|---|
+| DESI (fitted) | Pantheon+ | (-0.86, -0.43) | 1.5 |
+| DESI (fitted) | DES-Y5 | (-0.86, -0.43) | 86 |
+| Pantheon+ | DESI | (-0.90, -0.20) | 2049 |
+| **DES-Y5** | **DESI** | **(-0.65, -1.20)** | **0.19** |
+
+### Interpretation
+
+The ~10,000× asymmetry between Pantheon+ (E = 2049) and DES-Y5 (E = 0.19) when predicting DESI reveals fundamental tension between supernova catalogs. If w₀wₐCDM represented real physics, all experiments should point to compatible parameter values. DES-Y5's parameters make DESI data *less* probable than ΛCDM — a direct detection of inconsistency, not merely absence of evidence.
+
+---
+
+## 9. Results Summary
 
 ### All Evidence Measures
 
-| Method | Value | σ equiv | Validity |
-|--------|-------|---------|----------|
-| Δχ² frequentist | 11.94 | 3.0σ | Standard |
-| E-value (simple LR) | 392 | 3.9σ | **BIASED** |
-| E-value (Uniform mix. narrow) | 97 | 3.0σ | Prior-sensitive |
-| E-value (Uniform mix. default) | 15 | 2.3σ | Prior-sensitive |
-| E-value (Uniform mix. wide) | 17 | 2.4σ | Prior-sensitive |
-| E-value (data-split) | **1.43** | **0.8σ** | **VALID** |
-| Bayesian evidence | ln B = -0.57 | Favors ΛCDM | External |
+| Method | Value | ~σ | Validity |
+|--------|-------|-----|----------|
+| Frequentist Δχ² (k=2) | p = 0.0026 | 2.8σ | Standard (no Occam) |
+| ΔAIC | 7.9 | — | Penalty: 2k = 4 |
+| ΔBIC (n=13) | 6.8 | — | Penalty: k ln n ≈ 5 |
+| Maximized LR | 392 | — | **NOT AN E-VALUE** |
+| LOO product | 1062 | — | **NOT VALID** |
+| Uniform mixture (default) | **15** | **2.3** | Valid e-value |
+| **LOO average** | **10** | **2.2** | **Valid e-value** |
+| Data-split | 1.4 | 0.8 | Valid, underpowered |
+| Bayes factor (Ong et al.) | ln B = -0.57 | — | Favors ΛCDM |
+| Cross-dataset (DES-Y5→DESI) | 0.19 | — | Tension |
 
-### Key Mathematical Insight
+### Where Valid Methods Converge
 
-The likelihood ratio e-value:
+Two independent valid methods converge:
 
-$$E = \exp\left(\frac{\Delta\chi^2}{2}\right) = \exp\left(\frac{11.94}{2}\right) = 392$$
+- Uniform mixture: E ≈ 15 (ln E ≈ 2.7)
+- LOO average: E ≈ 10 (ln E ≈ 2.3)
 
-This looks impressive, but it's **biased** because $(\hat{w}_0, \hat{w}_a)$ was chosen to maximize this ratio on the same data.
-
-When we use held-out validation:
-
-$$E_{\text{valid}} = \exp\left(\frac{0.72}{2}\right) = 1.43$$
-
-The evidence essentially vanishes.
+Both indicate **moderate evidence** for w₀wₐCDM. The ~0.7σ gap from DESI's correctly computed 3.0σ reflects the Occam penalty from averaging over parameter values rather than maximizing.
 
 ### Conclusion
 
-The apparent 3-4σ evidence for dynamic dark energy is **not robust**:
+The evidence for dynamical dark energy is **moderate but not compelling** (E ≈ 10–15), and is **undermined by cross-dataset inconsistency**:
 
-1. **Overfitting:** E drops from 392 → 1.43 with proper validation
-2. **Prior sensitivity:** Uniform mixture E varies 7x with different choices
-3. **Bayesian contradiction:** Full data analysis favors ΛCDM
-4. **Power analysis:** E = 15 is consistent with either model
-
-**Recommendation:** Do not claim discovery. Wait for more data and independent confirmation.
+1. Valid e-values converge on E ≈ 10–15 (~2.2–2.3σ) — real evidence, but not a discovery
+2. The ~10,000× asymmetry between supernova catalogs is the most informative finding
+3. The data-split E = 1.4 is inconclusive due to limited power (median E ≈ 2.7 under H₁)
+4. The maximized LR (392) and LOO product (1062) are not valid e-values and should not be cited as evidence
+5. Resolving inter-dataset tensions is more important than accumulating further significance

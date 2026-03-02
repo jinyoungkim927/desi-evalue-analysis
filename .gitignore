@@ -9,3 +9,8 @@ build/
 .venv/
 .DS_Store
 *.zip
+funding/
+*.aux
+*.log
+*.out
+*.toc
