@@ -28,7 +28,7 @@ Jinyoung Kim\\
 \small \textit{Correspondence: jinyoungkim927@gmail.com}
 }
 
-\date{February 2026}
+\date{March 2026}
 
 \begin{document}
 
@@ -95,7 +95,9 @@ Our analysis proceeds as follows:
 
 \subsection{Definition and Interpretation}
 
-An \textbf{e-value} is a non-negative random variable $E$ satisfying $\E[E \mid H_0] \leq 1$ under the null hypothesis. The key properties are:
+An \textbf{e-value} is a non-negative random variable $E$ satisfying $\E[E \mid H_0] \leq 1$ under the null hypothesis. The concept has deep roots in the work of Ville (1939) on martingale theory, but has been rediscovered and systematized in recent years by \citet{Vovk2021}, \citet{Shafer2021}, and \citet{Ramdas2023} as a unifying framework for hypothesis testing. For cosmologists familiar with Bayesian and frequentist methods, e-values can be understood as follows: like a Bayes factor, an e-value quantifies relative evidence between hypotheses; like a $p$-value, it provides Type~I error control (via Ville's inequality rather than tail probabilities). Unlike Bayes factors, e-values do not require a full prior distribution---a mixture over a discrete grid suffices. Unlike $p$-values, e-values can be multiplied across independent datasets (enabling sequential analysis) and remain valid under optional stopping.
+
+The key properties are:
 \begin{itemize}
     \item \textbf{Type I error control:} Rejecting $H_0$ when $E \geq 1/\alpha$ yields a test with significance level $\alpha$ (see Theorem~\ref{thm:ville} in the Appendix).
 
@@ -153,13 +155,38 @@ Each individual $E_k$ is a valid e-value (conditional on the training data, the 
 
 \subsection{DESI DR2 BAO Data}
 
-We use the official DESI DR2 BAO measurements from the CobayaSampler repository, comprising 13 measurements across 7 redshift bins ($z = 0.295$ to $z = 2.33$). Each measurement provides either $D_M/r_d$, $D_H/r_d$, or $D_V/r_d$ with an associated covariance matrix.
+We use the official DESI DR2 BAO measurements from the CobayaSampler repository,\footnote{\url{https://github.com/CobayaSampler/bao_data}} comprising 13 measurements across 7 redshift bins ($z_{\text{eff}} = 0.295$ to $z_{\text{eff}} = 2.33$). The tracers are BGS ($z_{\text{eff}} = 0.295$, $D_V/r_d$), LRG1 ($z_{\text{eff}} = 0.510$), LRG2 ($z_{\text{eff}} = 0.706$), LRG3+ELG1 ($z_{\text{eff}} = 0.934$), ELG2 ($z_{\text{eff}} = 1.317$), QSO ($z_{\text{eff}} = 1.491$), and Ly$\alpha$ ($z_{\text{eff}} = 2.330$), where the last six each provide both $D_M/r_d$ and $D_H/r_d$. The full $13\times 13$ covariance matrix is block-diagonal by redshift bin: the off-diagonal blocks between different bins are zero, while within each bin the $D_M/r_d$ and $D_H/r_d$ measurements are correlated (with correlation coefficients ranging from $-0.4$ to $-0.5$). All values are taken directly from arXiv:2503.14738, Table~IV \citep{DESI2025}.
+
+Figure~\ref{fig:bao_data} shows the 13 BAO measurements with their $1\sigma$ error bars, overlaid with theoretical predictions for \LCDM{} (solid) and $w_0w_a$CDM with $(w_0, w_a) = (-0.75, -1.05)$ (dashed). Figure~\ref{fig:correlation} displays the correlation matrix, confirming the block-diagonal structure: bins are uncorrelated, while $D_M/r_d$ and $D_H/r_d$ within each bin are anti-correlated.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figure_bao_data.pdf}
+    \caption{DESI DR2 BAO measurements with $1\sigma$ error bars. Left: volume-averaged distance $D_V/r_d$ (BGS only). Center: transverse comoving distance $D_M/r_d$. Right: Hubble distance $D_H/r_d$. Solid black curves show the \LCDM{} prediction; dashed red curves show the $w_0w_a$CDM best fit $(w_0 = -0.75, w_a = -1.05)$. Tracer labels indicate the galaxy sample at each effective redshift.}
+    \label{fig:bao_data}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{figure_correlation.pdf}
+    \caption{Correlation matrix of the 13 DESI DR2 BAO measurements. The matrix is block-diagonal by redshift bin: off-diagonal blocks are exactly zero (bins are independent), while within each bin, $D_M/r_d$ and $D_H/r_d$ show anti-correlations of $-0.4$ to $-0.5$. Block outlines highlight the redshift-bin structure.}
+    \label{fig:correlation}
+\end{figure}
 
 \subsection{Models Compared}
+\label{sec:models}
 
 \textbf{Null hypothesis ($H_0$):} \LCDM{} with $w = -1$ (cosmological constant).
 
 \textbf{Alternative hypothesis ($H_1$):} $w_0w_a$CDM with equation of state $w(a) = w_0 + w_a(1-a)$, where $w_0$ and $w_a$ are free parameters.
+
+\paragraph{Fixed cosmological parameters.} In both models, we fix the background cosmological parameters to their Planck 2018 best-fit values: $h = 0.6766$, $\Omega_m = 0.3111$, and $r_d = 147.05\,$Mpc. Only $w_0$ and $w_a$ are varied when fitting the alternative hypothesis.
+
+This is standard practice for BAO-only analyses and is appropriate here because BAO summary statistics ($D_M/r_d$, $D_H/r_d$, $D_V/r_d$) depend on $\{h, \Omega_m, r_d\}$ and $\{w_0, w_a\}$, but the former are tightly constrained by CMB data independently of dark energy dynamics. The remaining \LCDM{} parameters ($\Omega_b h^2$, $n_s$, $A_s$, $\tau$) enter BAO predictions only through $r_d$, which we hold fixed. Consequently, the effective number of additional parameters in $w_0w_a$CDM relative to \LCDM{} is $k = 2$ (i.e., $w_0$ and $w_a$), not the full parameter count of each model.
+
+In principle, one could marginalize over $\{h, \Omega_m, r_d\}$ within the e-value framework---for instance, by extending the uniform mixture grid to include these parameters, or by fitting them jointly with $(w_0, w_a)$ in the data-split and LOO procedures. However, BAO data alone cannot simultaneously constrain $\Omega_m$, $h$, and $r_d$ without strong degeneracies, so informative priors (effectively, CMB constraints) would be required. We leave such an extended analysis for future work and note this as a limitation in Section~\ref{sec:limitations}.
+
+\paragraph{Source of best-fit $(w_0, w_a)$ values.} For the cross-dataset analysis (Section~\ref{sec:cross}), we use published best-fit $(w_0, w_a)$ values from supernova-only analyses. For the data-split and LOO analyses, $(w_0, w_a)$ are fitted directly to the DESI training data via $\chi^2$ minimization. For the power calibration, we use DESI's BAO-only best-fit $(w_0 = -0.75, w_a = -1.05)$ as the true model. These values are approximate, drawn from various tables in \citet{DESI2025} and the associated supernova literature; the precise values depend on which dataset combination and methodology are used.
 
 \subsection{Cross-Dataset Validation}
 
@@ -172,11 +199,13 @@ We examine whether parameters fitted on one dataset predict another dataset bett
 
 \subsection{Data-Split Procedure}
 
-We split the 13 DESI measurements by redshift:
+We split the 13 DESI measurements by redshift at $z = 1$:
 \begin{itemize}
     \item \textbf{Training:} 7 measurements at $z < 1$ (BGS, LRG1, LRG2, LRG3+ELG1)
     \item \textbf{Test:} 6 measurements at $z \geq 1$ (ELG2, QSO, Ly$\alpha$)
 \end{itemize}
+
+The $z = 1$ threshold is chosen because it approximately bisects the data (7 vs.\ 6 measurements) and provides a natural physical boundary: the low-$z$ training set constrains the equation of state near the present epoch, while the high-$z$ test set probes earlier times where dark energy effects differ most between models. We also test alternative splits (alternating bins, random 50/50) in Table~\ref{tab:splits} to assess sensitivity.
 
 We fit $(w_0, w_a)$ by minimizing $\chi^2$ on the training set, then evaluate the likelihood ratio on the test set.
 
@@ -186,7 +215,7 @@ For the LOO analysis, we iterate over the 7 redshift bins (BGS, LRG1, LRG2, LRG3
 
 \subsection{Power Calibration}
 
-To assess the statistical power of the data-split test, we run 500 Monte Carlo simulations. In each simulation, we generate synthetic DESI-like data under $w_0w_a$CDM with the DESI best-fit parameters $(w_0 = -0.75, w_a = -1.05)$, apply the same redshift-based data split, and compute the resulting e-value. The distribution of $E_{\text{split}}$ under this alternative gives us the expected power of the test.
+To assess the statistical power of the data-split test, we run 500 Monte Carlo simulations. In each simulation, we compute BAO distance predictions under $w_0w_a$CDM with parameters $(w_0 = -0.75, w_a = -1.05)$ and all other cosmological parameters fixed to their fiducial values (same as in the main analysis; see Section~\ref{sec:models}). We then add Gaussian noise drawn from the published DESI covariance matrix to generate a synthetic dataset, apply the same redshift-based data split ($z = 1$ threshold), and compute the resulting e-value. The distribution of $E_{\text{split}}$ under this alternative gives us the expected power of the test.
 
 \subsection{Assumptions}
 
@@ -273,11 +302,11 @@ Table~\ref{tab:loo} presents the per-bin LOO e-values.
 
 \begin{table}[H]
 \centering
-\caption{Leave-one-out e-values by redshift bin}
+\caption{Leave-one-out e-values by redshift bin. The redshift $z$ listed is the effective redshift $z_{\text{eff}}$ of each bin (not the bin edges).}
 \label{tab:loo}
 \begin{tabular}{@{}lccc@{}}
 \toprule
-Held-out bin & $z$ & Fitted $(w_0, w_a)$ & $E_k$ \\
+Held-out bin & $z_{\text{eff}}$ & Fitted $(w_0, w_a)$ & $E_k$ \\
 \midrule
 BGS & 0.295 & $(-0.78, -0.82)$ & 1.89 \\
 LRG1 & 0.510 & $(-0.80, -0.75)$ & 0.71 \\
@@ -432,15 +461,16 @@ The e-value perspective contributes:
 \end{enumerate}
 
 \subsection{Limitations of This Analysis}
+\label{sec:limitations}
 
 \begin{enumerate}
     \item \textbf{Reduced power for data-split:} Data-splitting uses only part of the data for testing, reducing statistical power. As discussed in Section~\ref{sec:datasplit}, this power loss is particularly acute for $w_a$ when splitting by redshift. Power calibration (Section~\ref{sec:datasplit}) confirms this: the median data-split e-value under $H_1$ is only $\approx 2.7$. The LOO average and uniform mixture methods mitigate this by using all data points.
 
     \item \textbf{Split dependence:} Results vary modestly with split choice (Table~\ref{tab:splits}), though all splits yield $E < 3$.
 
-    \item \textbf{Simplified cosmology:} We use approximate distance calculations rather than full Boltzmann codes. More sophisticated treatments may yield quantitatively different results.
+    \item \textbf{Simplified cosmology and no marginalization over nuisance parameters:} We fix the background cosmological parameters $\{h, \Omega_m, r_d\}$ to Planck 2018 values and use approximate distance calculations rather than full Boltzmann codes (CAMB/CLASS). In a full treatment, one would marginalize over these parameters, which could affect the e-values in two ways: (i) broadening the effective alternative hypothesis would reduce the uniform mixture e-value (more ``wasted'' prior volume), while (ii) allowing the fit to adjust $\Omega_m$ and $h$ could improve the $\chi^2$ and increase it. These effects partially cancel, but the net impact is unknown without explicit computation. This limitation is shared with any analysis that conditions on external parameter constraints, including standard $\Delta\chi^2$ and BIC calculations.
 
-    \item \textbf{Point estimates for SNe:} We use published best-fit values for supernova constraints rather than full posteriors.
+    \item \textbf{Point estimates for SNe:} We use published best-fit values for supernova constraints rather than full posteriors. Using the full posterior would be more rigorous---for example, marginalizing the cross-dataset e-value over the supernova $(w_0, w_a)$ posterior would account for parameter uncertainty in the training dataset.
 \end{enumerate}
 
 \subsection{Interpretation}
@@ -456,7 +486,7 @@ We do not claim that e-values definitively resolve the question of dynamical dar
 
     \item \textbf{The data-split e-value ($E = 1.4$) is inconclusive}, not negative. Power calibration (500 Monte Carlo simulations) shows that even when $w_0w_a$CDM is the true model, the median data-split e-value is only $\approx 2.7$ (Section~\ref{sec:datasplit}). The observed $E = 1.4$ cannot distinguish between ``the signal is absent'' and ``the test lacks power to detect it.''
 
-    \item \textbf{DESI's BAO-only significance is $\approx 3.0\sigma$}, correctly computed via the $\chi^2(2)$ distribution and Wilks' theorem. Our e-value analysis finds that approximately $0.7\sigma$ of this is absorbed by the Occam penalty when averaging over the $(w_0, w_a)$ parameter space, yielding the moderate evidence of $E \approx 10$--$15$ ($\approx 2.2$--$2.4\sigma$ equivalent).
+    \item \textbf{DESI's BAO-only significance is $\approx 3.0\sigma$}, correctly computed via the $\chi^2(2)$ distribution and Wilks' theorem. Our e-value analysis finds that approximately $0.7\sigma$ of this is absorbed by the Occam penalty when averaging over the $(w_0, w_a)$ parameter space, yielding the moderate evidence of $E \approx 10$--$15$ ($\approx 2.2$--$2.4\sigma$ equivalent). A note on this sigma conversion: we use $\sigma \approx \sqrt{2\ln E}$, which maps the e-value to the significance level of a one-parameter likelihood ratio via $E = e^{\sigma^2/2}$. This is a convenient scale for comparison with frequentist results, but it is approximate---e-values and $p$-values answer fundamentally different questions, and there is no exact universal conversion between them. The mapping is most accurate when the e-value arises from a simple likelihood ratio; for mixture or LOO average e-values, it should be understood as a rough calibration aid rather than an exact equivalence.
 \end{enumerate}
 
 The overall picture is one of genuine methodological sensitivity. The evidence for dynamical dark energy is neither as strong as the frequentist $\Delta\chi^2$ suggests nor as absent as the data-split e-value might imply. Resolving the inter-dataset tensions documented here and by \citet{WangMota2025} is likely more important than accumulating further statistical significance within any single framework.
