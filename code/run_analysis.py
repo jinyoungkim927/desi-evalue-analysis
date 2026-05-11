@@ -98,7 +98,7 @@ def main():
     # Sensitivity analysis
     print("\n[5] Sensitivity to Prior Range...")
     ranges = [
-        ((-1.2, -0.8), (-1.0, 0.5), "Narrow"),
+        ((-1.0, -0.5), (-1.5, 0.0), "Narrow"),  # half-width of Default, MLE (-0.75, -1.05) inside
         ((-1.5, -0.5), (-2.0, 1.0), "Default"),
         ((-2.0, 0.0), (-3.0, 2.0), "Wide"),
     ]
@@ -108,8 +108,8 @@ def main():
     log_L_null = log_likelihood(dr2.data, theory_null, dr2.cov)
 
     for w0_r, wa_r, name in ranges:
-        w0_grid = np.linspace(w0_r[0], w0_r[1], 10)
-        wa_grid = np.linspace(wa_r[0], wa_r[1], 10)
+        w0_grid = np.linspace(w0_r[0], w0_r[1], 30)
+        wa_grid = np.linspace(wa_r[0], wa_r[1], 30)
 
         log_ratios = []
         for w0 in w0_grid:

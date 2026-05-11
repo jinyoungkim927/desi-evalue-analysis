@@ -62,7 +62,7 @@ class CosmologyParams:
 # Standard cosmologies (omega_de derived from flatness constraint)
 LCDM = CosmologyParams(w0=-1.0, wa=0.0)
 DESI_DR1_BEST_FIT = CosmologyParams(w0=-0.836, wa=-0.807)
-DESI_DR2_BEST_FIT = CosmologyParams(w0=-0.75, wa=-1.05)
+DESI_DR2_BEST_FIT = CosmologyParams(w0=-0.856, wa=-0.430)  # Actual MLE from BAO-only chi^2 minimization at fixed Planck (h, Omega_m, r_d). Previously was (-0.75, -1.05) which appears to be DR1 DESI+CMB+DESY5 joint value.
 
 
 def E_z(z: float, cosmo: CosmologyParams) -> float:

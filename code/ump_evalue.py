@@ -118,10 +118,10 @@ def find_ump_theta(z_eff, quantities, cov, alpha=0.01, n_sims=500,
     # Default true alternatives: a spread around DESI best-fit
     if true_alternatives is None:
         true_alternatives = [
-            CosmologyParams(w0=-0.75, wa=-1.05),   # DESI BAO best-fit
-            CosmologyParams(w0=-0.85, wa=-0.50),    # Milder evolution
-            CosmologyParams(w0=-0.65, wa=-1.20),    # DES-Y5-like
-            CosmologyParams(w0=-0.90, wa=-0.20),    # Pantheon+-like
+            CosmologyParams(w0=-0.856, wa=-0.430),  # Actual DR2 BAO-only MLE at fixed Planck
+            CosmologyParams(w0=-0.85, wa=-0.50),    # Milder evolution (generic)
+            CosmologyParams(w0=-0.752, wa=-0.86),   # DESI+CMB+DESY5 (DR2 Table V)
+            CosmologyParams(w0=-0.838, wa=-0.62),   # DESI+CMB+Pantheon+ (DR2 Table V)
         ]
 
     # Precompute null theory vector

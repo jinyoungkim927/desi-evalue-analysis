@@ -165,37 +165,40 @@ class SNConstraint:
         return float(delta @ C_inv @ delta)
 
 
-# Published constraints from various SNe catalogs (approximate from figures)
+# SN + CMB (no DESI BAO) joint MAP values from each compilation's own paper.
+# These are the methodologically correct values for cross-predicting DESI BAO,
+# because they represent each SN sample's independent preference for (w0, wa)
+# without any DESI input.
 PANTHEON_PLUS = SNConstraint(
     name="Pantheon+",
-    omega_m=0.334,
-    w0=-0.90,
-    wa=-0.2,
+    omega_m=0.336,           # approx Pantheon+ + Planck w0wa-CDM
+    w0=-0.851,               # Brout et al. 2022, Pantheon+ + Planck CMB w0waCDM
+    wa=-0.70,                # Brout et al. 2022
     sigma_omega_m=0.018,
-    sigma_w0=0.12,
-    sigma_wa=0.5,
+    sigma_w0=0.095,
+    sigma_wa=0.50,
     corr_w0_wa=-0.7
 )
 
 DESY5 = SNConstraint(
     name="DES-Y5",
-    omega_m=0.352,
-    w0=-0.65,
-    wa=-1.2,
-    sigma_omega_m=0.017,
-    sigma_w0=0.18,
-    sigma_wa=0.6,
+    omega_m=0.325,           # DES Collab 2024 Table 2, DES-SN5YR + Planck 2020
+    w0=-0.73,                # DES Collab 2024 Table 2, Flat-w0waCDM
+    wa=-1.17,                # DES Collab 2024 Table 2
+    sigma_omega_m=0.014,
+    sigma_w0=0.11,
+    sigma_wa=0.59,
     corr_w0_wa=-0.85
 )
 
 UNION3 = SNConstraint(
     name="Union3",
-    omega_m=0.340,
-    w0=-0.78,
-    wa=-0.8,
-    sigma_omega_m=0.025,
-    sigma_w0=0.20,
-    sigma_wa=0.7,
+    omega_m=0.323,           # Rubin et al. 2023, SNe + CMB Flat w0-wa
+    w0=-0.699,               # Rubin et al. 2023
+    wa=-1.05,                # Rubin et al. 2023
+    sigma_omega_m=0.014,
+    sigma_w0=0.17,
+    sigma_wa=0.78,
     corr_w0_wa=-0.75
 )
 
